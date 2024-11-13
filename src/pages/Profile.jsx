@@ -32,7 +32,13 @@ function Profile() {
       }
       
       setAuth(updatedUser, user.token)
-      toast.success('Perfil atualizado com sucesso!')
+      toast.success(
+        <div>
+          <span className="font-medium text-green-600">Sucesso!</span>
+          <br />
+          <span className="text-sm text-green-950">Perfil atualizado com sucesso</span>
+        </div>
+      )
       setIsEditing(false)
       reset({
         ...data,
@@ -41,7 +47,13 @@ function Profile() {
         confirmPassword: ''
       })
     } catch (error) {
-      toast.error('Erro ao atualizar perfil')
+      toast.error(
+        <div>
+          <span className="font-medium text-red-600">Erro ao atualizar perfil</span>
+          <br />
+          <span className="text-sm text-red-950">Tente novamente mais tarde</span>
+        </div>
+      )
     }
   }
 

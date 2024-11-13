@@ -50,7 +50,13 @@ function DepartmentList({ onEdit, filters, searchTerm, refresh }) {
 					headers: { Authorization: `Bearer ${token}` }
 				}
 			)
-			toast.success('Setor removido com sucesso!')
+			toast.success(
+				<div>
+					<span className="font-medium text-green-600">Sucesso!</span>
+					<br />
+					<span className="text-sm text-green-950">Setor removido com sucesso</span>
+				</div>
+			)
 			// Remove o setor deletado da lista
 			setDepartments((prevDepartments) =>
 				prevDepartments.filter((dept) => dept.id !== confirmModal.departmentId)
@@ -58,7 +64,17 @@ function DepartmentList({ onEdit, filters, searchTerm, refresh }) {
 			setConfirmModal({ show: false, departmentId: null })
 		} catch (error) {
 			console.error('Erro ao deletar setor:', error)
-			toast.error('Erro ao remover setor')
+			const errorMessage = error.response?.data?.error || 'Erro ao deletar setor: Erro desconhecido'
+			const titleMessage = errorMessage.split(":")[0]
+			const bodyMessage = errorMessage.split(":")[1]
+			toast.error(
+				<div>
+					<span className="font-medium text-red-600">{titleMessage}</span>
+					<br />
+					<span className="text-sm text-red-950">{bodyMessage}</span>
+				</div>
+			)
+			setConfirmModal({ show: false, departmentId: null })
 		}
 	}
 

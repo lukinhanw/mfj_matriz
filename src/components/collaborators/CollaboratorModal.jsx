@@ -90,7 +90,13 @@ function CollaboratorModal({ open, onClose, collaborator }) {
 					payload,
 					{ headers: { Authorization: `Bearer ${token}` } }
 				)
-				toast.success('Colaborador atualizado com sucesso!')
+				toast.success(
+					<div>
+						<span className="font-medium text-green-600">Sucesso!</span>
+						<br />
+						<span className="text-sm text-green-950">Colaborador atualizado com sucesso</span>
+					</div>
+				)
 			} else {
 				// Create new collaborator
 				await axios.post(
@@ -98,13 +104,25 @@ function CollaboratorModal({ open, onClose, collaborator }) {
 					payload,
 					{ headers: { Authorization: `Bearer ${token}` } }
 				)
-				toast.success('Colaborador cadastrado com sucesso!')
+				toast.success(
+					<div>
+						<span className="font-medium text-green-600">Sucesso!</span>
+						<br />
+						<span className="text-sm text-green-950">Colaborador cadastrado com sucesso</span>
+					</div>
+				)
 			}
 
 			onClose()
 		} catch (error) {
 			console.error('Error submitting form:', error)
-			toast.error(error.response?.data?.message || 'Erro ao salvar colaborador')
+			toast.error(
+				<div>
+					<span className="font-medium text-red-600">Erro ao salvar colaborador</span>
+					<br />
+					<span className="text-sm text-red-950">{error.response?.data?.message || 'Tente novamente mais tarde'}</span>
+				</div>
+			)
 		} finally {
 			setIsSubmitting(false)
 		}

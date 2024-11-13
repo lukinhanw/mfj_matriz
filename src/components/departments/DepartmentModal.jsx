@@ -45,7 +45,13 @@ function DepartmentModal({ isOpen, onClose, department, refreshDepartments }) {
 						headers: { Authorization: `Bearer ${token}` }
 					}
 				)
-				toast.success('Setor atualizado com sucesso!')
+				toast.success(
+					<div>
+						<span className="font-medium text-green-600">Sucesso!</span>
+						<br />
+						<span className="text-sm text-green-950">Setor atualizado com sucesso</span>
+					</div>
+				)
 			} else {
 				// Criar novo setor
 				await axios.post(
@@ -55,7 +61,13 @@ function DepartmentModal({ isOpen, onClose, department, refreshDepartments }) {
 						headers: { Authorization: `Bearer ${token}` }
 					}
 				)
-				toast.success('Setor cadastrado com sucesso!')
+				toast.success(
+					<div>
+						<span className="font-medium text-green-600">Sucesso!</span>
+						<br />
+						<span className="text-sm text-green-950">Setor cadastrado com sucesso</span>
+					</div>
+				)
 			}
 			refreshDepartments()
 			onClose()
@@ -63,7 +75,13 @@ function DepartmentModal({ isOpen, onClose, department, refreshDepartments }) {
 			console.error('Error saving department:', error)
 			const errorMessage =
 				error.response?.data?.message || 'Erro ao salvar setor'
-			toast.error(errorMessage)
+			toast.error(
+				<div>
+					<span className="font-medium text-red-600">Erro ao salvar setor</span>
+					<br />
+					<span className="text-sm text-red-950">{errorMessage}</span>
+				</div>
+			)
 		} finally {
 			setIsSubmitting(false)
 		}

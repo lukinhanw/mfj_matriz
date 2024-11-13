@@ -36,7 +36,13 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 				setManagers(response.data)
 			} catch (error) {
 				console.error('Error fetching managers:', error)
-				toast.error('Erro ao carregar gestores')
+				toast.error(
+					<div>
+						<span className="font-medium text-red-600">Erro ao carregar gestores</span>
+						<br />
+						<span className="text-sm text-red-950">Tente novamente mais tarde</span>
+					</div>
+				)
 			} finally {
 				setIsLoading(false)
 			}
@@ -56,13 +62,28 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 					headers: { Authorization: `Bearer ${token}` }
 				}
 			)
-			toast.success('Gestor removido com sucesso!')
+			toast.success(
+				<div>
+					<span className="font-medium text-green-600">Sucesso!</span>
+					<br />
+					<span className="text-sm text-green-950">Gestor removido com sucesso</span>
+				</div>
+			)
 			// Remove o gestor deletado da lista
 			setManagers(prev => prev.filter(manager => manager.id !== confirmModal.managerId))
 			setConfirmModal({ show: false, type: null, managerId: null, currentStatus: null })
 		} catch (error) {
-			console.error('Error deleting manager:', error)
-			toast.error('Erro ao remover gestor')
+			console.error('Error remover gestor:', error)
+			const errorMessage = error.response?.data?.error || 'Erro ao deletar gestor: Erro desconhecido'
+			const titleMessage = errorMessage.split(":")[0]
+			const bodyMessage = errorMessage.split(":")[1]
+			toast.error(
+				<div>
+					<span className="font-medium text-red-600">{titleMessage}</span>
+					<br />
+					<span className="text-sm text-red-950">{bodyMessage}</span>
+				</div>
+			)
 		}
 	}
 

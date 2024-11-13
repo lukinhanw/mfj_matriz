@@ -92,7 +92,13 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 					required: requiredCredits,
 					available: companyInfo?.credits
 				})
-				toast.error('Créditos insuficientes para atribuir os cursos selecionados')
+				toast.error(
+					<div>
+						<span className="font-medium text-red-600">Ops!</span>
+						<br />
+						<span className="text-sm text-red-950">Créditos insuficientes para atribuir os cursos selecionados</span>
+					</div>
+				)
 				return
 			}
 
@@ -111,7 +117,13 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 				}
 			)
 
-			toast.success('Cursos atualizados com sucesso!')
+			toast.success(
+				<div>
+					<span className="font-medium text-green-600">Sucesso!</span>
+					<br />
+					<span className="text-sm text-green-950">Curso atualizado com sucesso</span>
+				</div>
+			)
 			onClose()
 		} catch (error) {
 			console.error('Error saving course assignments:', error)

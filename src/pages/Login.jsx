@@ -40,12 +40,24 @@ function Login() {
 				rememberMe
 			})
 
-			toast.success('Login realizado com sucesso!')
+			toast.success(
+				<div>
+					<span className="font-medium text-green-600">Sucesso!</span>
+					<br />
+					<span className="text-sm text-green-950">Login realizado com sucesso</span>
+				</div>
+			)
 			navigate('/')
 		} catch (error) {
 			let errorMessage = error.response.data.error
 
-			toast.error(errorMessage)
+			toast.error(
+				<div>
+					<span className="font-medium text-red-600">Erro ao fazer login</span>
+					<br />
+					<span className="text-sm text-red-950">{errorMessage}</span>
+				</div>
+			)
 		} finally {
 			setIsSubmitting(false)
 		}

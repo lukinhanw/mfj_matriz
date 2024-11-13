@@ -40,7 +40,7 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 				)
 				setCollaborators(response.data)
 			} catch (error) {
-				console.error('Error fetching collaborators:', error)
+				console.error('Error fetching collaborators:', error.response.data.error)
 				toast.error('Erro ao carregar colaboradores')
 			} finally {
 				setIsLoading(false)
@@ -66,7 +66,13 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 				prev.filter((collab) => collab.id !== confirmModal.collaboratorId)
 			)
 
-			toast.success('Colaborador removido com sucesso!')
+			toast.success(
+				<div>
+					<span className="font-medium text-green-600">Sucesso!</span>
+					<br />
+					<span className="text-sm text-green-950">Colaborador deletado com sucesso</span>
+				</div>
+			)
 			setConfirmModal({
 				show: false,
 				type: null,
@@ -75,7 +81,22 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 			})
 		} catch (error) {
 			console.error('Error deleting collaborator:', error)
-			toast.error('Erro ao remover colaborador')
+			const errorMessage = error.response?.data?.error || 'Erro ao deletar colaborador: Erro desconhecido'
+			const titleMessage = errorMessage.split(":")[0]
+			const bodyMessage = errorMessage.split(":")[1]
+			toast.error(
+				<div>
+					<span className="font-medium text-red-600">{titleMessage}</span>
+					<br />
+					<span className="text-sm text-red-950">{bodyMessage}</span>
+				</div>
+			)
+			setConfirmModal({
+				show: false,
+				type: null,
+				collaboratorId: null,
+				currentStatus: null
+			})
 		}
 	}
 
@@ -102,8 +123,13 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 			)
 
 			toast.success(
-				`Colaborador ${newStatus === 'active' ? 'ativado' : 'desativado'} com sucesso!`
+				<div>
+					<span className="font-medium text-green-600">Sucesso!</span>
+					<br />
+					<span className="text-sm text-green-950">Colaborador <span className='font-bold'>{newStatus === 'active' ? 'ativado' : 'desativado'}</span> com sucesso</span>
+				</div>
 			)
+
 			setConfirmModal({
 				show: false,
 				type: null,

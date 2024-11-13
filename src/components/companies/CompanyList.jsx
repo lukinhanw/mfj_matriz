@@ -66,7 +66,7 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 		try {
 			// Se não houver endpoint para deletar, podemos desativar a empresa ou omitir esta função
 			await axios.put(
-				`https://api-matriz-mfj.8bitscompany.com/admin/desativarEmpresa`,
+				`https://api-matriz-mfj.8bitscompany.com/admin/deletarEmpresa`,
 				{ companyId: confirmModal.companyId },
 				{
 					headers: { Authorization: `Bearer ${token}` }
@@ -83,8 +83,8 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 			)
 			setConfirmModal({ show: false, type: null, companyId: null })
 		} catch (error) {
-			console.error('Error deleting company:', error)
-			toast.error('Erro ao desativar empresa')
+			console.error('Error deletar empresa:', error)
+			toast.error('Erro ao deletar empresa')
 		}
 	}
 
@@ -128,14 +128,17 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 			})
 		} catch (error) {
 			console.error('Error updating company status:', error)
-			const errorMessage = error.response?.data?.error || 'Erro desconhecido'
+			const errorMessage = error.response?.data?.error || 'Erro ao atualizar empresa: Erro desconhecido'
+			const titleMessage = errorMessage.split(":")[0]
+			const bodyMessage = errorMessage.split(":")[1]
 			toast.error(
 				<div>
-					<span className="font-medium text-red-600">Erro ao alterar status</span>
+					<span className="font-medium text-red-600">{titleMessage}</span>
 					<br />
-					<span className="text-sm text-red-950">{errorMessage}</span>
+					<span className="text-sm text-red-950">{bodyMessage}</span>
 				</div>
 			)
+
 		}
 	}
 
@@ -253,8 +256,8 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 								<td className="px-6 py-4 whitespace-nowrap">
 									<span
 										className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${company.status === 'active'
-												? 'bg-green-100 text-green-800'
-												: 'bg-red-100 text-red-800'
+											? 'bg-green-100 text-green-800'
+											: 'bg-red-100 text-red-800'
 											}`}
 									>
 										{company.status === 'active' ? 'Ativo' : 'Inativo'}
@@ -271,8 +274,8 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 									<button
 										onClick={() => openCreditsModal(company, 'remove')}
 										className={`mr-4 transition-colors duration-200 ${company.credits > 0
-												? 'text-red-600 hover:text-red-900'
-												: 'text-gray-400 cursor-not-allowed'
+											? 'text-red-600 hover:text-red-900'
+											: 'text-gray-400 cursor-not-allowed'
 											}`}
 										title="Remover créditos"
 										disabled={company.credits === 0}
@@ -291,8 +294,8 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 											openConfirmModal('status', company.id, company.status)
 										}
 										className={`${company.status === 'active'
-												? 'text-red-600 hover:text-red-900'
-												: 'text-green-600 hover:text-green-900'
+											? 'text-red-600 hover:text-red-900'
+											: 'text-green-600 hover:text-green-900'
 											} mr-4 transition-colors duration-200`}
 										title={
 											company.status === 'active' ? 'Desativar' : 'Ativar'
