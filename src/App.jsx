@@ -1,0 +1,38 @@
+import { Toaster } from 'react-hot-toast'
+import { Routes, Route } from 'react-router-dom'
+import Layout from './components/Layout'
+import ProtectedRoute from './components/ProtectedRoute'
+import Login from './pages/Login'
+import Dashboard from './pages/Dashboard'
+import Companies from './pages/Companies'
+import Departments from './pages/Departments'
+import Managers from './pages/Managers'
+import Collaborators from './pages/Collaborators'
+import Courses from './pages/Courses'
+import Reports from './pages/Reports'
+import SystemLogs from './pages/SystemLogs'
+import Profile from './pages/Profile'
+import ReportsBuy from './pages/ReportsBuy'
+
+export default function App() {
+	return (
+		<>
+			<Toaster position="top-right" />
+			<Routes>
+				<Route path="/login" element={<Login />} />
+				<Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+					<Route path="/" element={<Dashboard />} />
+					<Route path="/companies" element={<Companies />} />
+					<Route path="/departments" element={<Departments />} />
+					<Route path="/managers" element={<Managers />} />
+					<Route path="/collaborators" element={<Collaborators />} />
+					<Route path="/courses" element={<Courses />} />
+					<Route path="/reports" element={<Reports />} />
+					<Route path="/reports_buy" element={<ReportsBuy />} />
+					<Route path="/logs" element={<SystemLogs />} />
+					<Route path="/profile" element={<Profile />} />
+				</Route>
+			</Routes>
+		</>
+	)
+}
