@@ -191,7 +191,7 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 	if (isLoading) {
 		return (
 			<div className="text-center py-12">
-				<p className="text-gray-500">Carregando colaboradores...</p>
+				<p className="text-gray-500 dark:text-gray-400">Carregando colaboradores...</p>
 			</div>
 		)
 	}
@@ -199,7 +199,7 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 	if (filteredCollaborators.length === 0) {
 		return (
 			<div className="text-center py-12">
-				<p className="text-gray-500">Nenhum colaborador encontrado com os filtros aplicados.</p>
+				<p className="text-gray-500 dark:text-gray-400">Nenhum colaborador encontrado com os filtros aplicados.</p>
 			</div>
 		)
 	}
@@ -207,63 +207,63 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 	return (
 		<>
 			<div className="overflow-x-auto">
-				<table className="min-w-full divide-y divide-gray-200">
-					<thead className="bg-gray-50">
+				<table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+					<thead className="bg-gray-50 dark:bg-gray-700">
 						<tr>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Nome
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Email
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								CPF
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Telefone
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Setor
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Empresa
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Status
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Ações
 							</th>
 						</tr>
 					</thead>
-					<tbody className="bg-white divide-y divide-gray-200">
+					<tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
 						{filteredCollaborators.map((collaborator) => (
 							<tr key={collaborator.id}>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm font-medium text-gray-900">
+									<div className="text-sm font-medium text-gray-900 dark:text-gray-100">
 										{collaborator.name}
 									</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{collaborator.email}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{collaborator.email}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{formatCpfCnpj(collaborator.cpf)}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{formatCpfCnpj(collaborator.cpf)}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{formatPhoneNumber(collaborator.phone)}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{formatPhoneNumber(collaborator.phone)}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{collaborator.department?.name}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{collaborator.department?.name}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{collaborator.company?.name}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{collaborator.company?.name}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<span
 										className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${collaborator.status === 'active'
-											? 'bg-green-100 text-green-800'
-											: 'bg-red-100 text-red-800'
+											? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+											: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
 											}`}
 									>
 										{collaborator.status === 'active' ? 'Ativo' : 'Inativo'}
@@ -272,14 +272,14 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
 									<button
 										onClick={() => onEdit(collaborator)}
-										className="text-primary-600 hover:text-primary-900 mr-4"
+										className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-600 mr-4"
 										title="Editar"
 									>
 										<PencilIcon className="h-5 w-5" />
 									</button>
 									<button
 										onClick={() => openCourseModal(collaborator)}
-										className="text-primary-600 hover:text-primary-900 mr-4"
+										className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-600 mr-4"
 										title="Gerenciar cursos"
 									>
 										<AcademicCapIcon className="h-5 w-5" />
@@ -287,8 +287,8 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 									<button
 										onClick={() => openConfirmModal('status', collaborator.id, collaborator.status)}
 										className={`${collaborator.status === 'active'
-											? 'text-red-600 hover:text-red-900'
-											: 'text-green-600 hover:text-green-900'
+											? 'text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600'
+											: 'text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-600'
 											} mr-4`}
 										title={collaborator.status === 'active' ? 'Desativar' : 'Ativar'}
 									>
@@ -300,7 +300,7 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 									</button>
 									<button
 										onClick={() => openConfirmModal('delete', collaborator.id)}
-										className="text-red-600 hover:text-red-900"
+										className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600"
 										title="Excluir"
 									>
 										<TrashIcon className="h-5 w-5" />

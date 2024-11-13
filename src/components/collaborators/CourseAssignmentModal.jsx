@@ -156,7 +156,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 					leaveFrom="opacity-100"
 					leaveTo="opacity-0"
 				>
-					<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+					<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity dark:bg-gray-900 dark:bg-opacity-75" />
 				</Transition.Child>
 
 				<div className="fixed inset-0 z-10 overflow-y-auto">
@@ -170,11 +170,11 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 							leaveFrom="opacity-100 translate-y-0 sm:scale-100"
 							leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 						>
-							<Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+							<Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
 								<div className="absolute right-0 top-0 pr-4 pt-4">
 									<button
 										type="button"
-										className="rounded-md bg-white text-gray-400 hover:text-gray-500"
+										className="rounded-md bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-400"
 										onClick={handleClose}
 									>
 										<span className="sr-only">Fechar</span>
@@ -184,16 +184,16 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 
 								<div className="sm:flex sm:items-start">
 									<div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-										<Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">
+										<Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900 dark:text-gray-100">
 											Gerenciar Cursos - {collaborator.name}
 										</Dialog.Title>
 
 										<div className="mt-4">
 											<div className="flex items-center justify-between mb-4">
-												<div className="text-sm text-gray-500">
+												<div className="text-sm text-gray-500 dark:text-gray-400">
 													Créditos necessários: {requiredCredits}
 												</div>
-												<div className="text-sm text-gray-500">
+												<div className="text-sm text-gray-500 dark:text-gray-400">
 													Créditos disponíveis: {companyInfo?.credits}
 												</div>
 											</div>
@@ -202,13 +202,13 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 											<div className="mb-4">
 												<div className="relative rounded-md shadow-sm">
 													<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-														<MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+														<MagnifyingGlassIcon className="h-5 w-5 text-gray-400 dark:text-gray-300" aria-hidden="true" />
 													</div>
 													<input
 														type="text"
 														value={searchTerm}
 														onChange={(e) => setSearchTerm(e.target.value)}
-														className="block w-full rounded-md border-gray-300 pl-10 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+														className="block w-full rounded-md border-gray-300 dark:border-gray-600 pl-10 focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100"
 														placeholder="Buscar cursos..."
 													/>
 												</div>
@@ -216,37 +216,37 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 
 											{isLoading ? (
 												<div className="text-center py-4">
-													<p className="text-gray-500">Carregando cursos...</p>
+													<p className="text-gray-500 dark:text-gray-400">Carregando cursos...</p>
 												</div>
 											) : (
 												<div className="space-y-3 max-h-96 overflow-y-auto">
 													{filteredCourses.length === 0 ? (
-														<p className="text-center text-gray-500 py-4">
+														<p className="text-center text-gray-500 py-4 dark:text-gray-400">
 															Nenhum curso encontrado
 														</p>
 													) : (
 														filteredCourses.map((course) => (
 															<label
 																key={course.id}
-																className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+																className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer dark:border-gray-600 dark:hover:bg-gray-700"
 															>
 																<div className="flex items-center flex-1">
 																	<input
 																		type="checkbox"
 																		checked={selectedCourses.includes(course.id)}
 																		onChange={() => handleCourseToggle(course.id)}
-																		className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+																		className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-primary-500"
 																	/>
 																	<div className="ml-3">
-																		<p className="text-sm font-medium text-gray-900">
+																		<p className="text-sm font-medium text-gray-900 dark:text-gray-100">
 																			{course.title}
 																		</p>
-																		<p className="text-sm text-gray-500">
+																		<p className="text-sm text-gray-500 dark:text-gray-400">
 																			{course.description}
 																		</p>
 																	</div>
 																</div>
-																<span className="ml-4 text-sm text-gray-500 whitespace-nowrap">
+																<span className="ml-4 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
 																	{course.credits} crédito{course.credits > 1 ? 's' : ''}
 																</span>
 															</label>
@@ -267,7 +267,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 											<button
 												type="button"
 												onClick={handleClose}
-												className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+												className="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto"
 											>
 												Cancelar
 											</button>

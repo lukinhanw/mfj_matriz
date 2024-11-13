@@ -20,7 +20,7 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 	return (
 		<Menu as="div" className="relative inline-block text-left">
 			<div>
-				<Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+				<Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
 					{label}
 					{selectedCount > 0 && (
 						<span className="ml-1 text-primary-600">({selectedCount})</span>
@@ -38,7 +38,7 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 				leaveFrom="transform opacity-100 scale-100"
 				leaveTo="transform opacity-0 scale-95"
 			>
-				<Menu.Items className="absolute right-0 z-[100] mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+				<Menu.Items className="absolute right-0 z-[100] mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
 					<div className="py-1">
 						{options.map((option) => (
 							<Menu.Item key={option.value}>
@@ -50,7 +50,7 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 												: [...selectedValues, option.value]
 											onChange(newValues)
 										}}
-										className={`${active ? 'bg-gray-100' : ''
+										className={`${active ? 'bg-gray-100 dark:bg-gray-700' : ''
 											} flex items-center px-4 py-2 text-sm w-full text-left`}
 									>
 										<input
@@ -59,7 +59,7 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 											onChange={() => { }}
 											className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 mr-2"
 										/>
-										<span className={isOptionSelected(option.value) ? 'text-primary-900 font-medium' : 'text-gray-700'}>
+										<span className={isOptionSelected(option.value) ? 'text-primary-900 dark:text-primary-300 font-medium' : 'text-gray-700 dark:text-gray-300'}>
 											{option.label}
 										</span>
 									</button>
@@ -85,7 +85,7 @@ function DateRangePicker({ startDate, endDate, onChange }) {
 					id="startDate"
 					value={startDate}
 					onChange={(e) => onChange('startDate', e.target.value)}
-					className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+					className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
 				/>
 			</div>
 			<div>
@@ -97,7 +97,7 @@ function DateRangePicker({ startDate, endDate, onChange }) {
 					id="endDate"
 					value={endDate}
 					onChange={(e) => onChange('endDate', e.target.value)}
-					className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+					className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
 				/>
 			</div>
 		</div>
@@ -137,13 +137,13 @@ function ActiveFilters({ filters, onRemove, companies, departments, courses }) {
 				{activeFilters.map((filter, index) => (
 					<span
 						key={`${filter.key}-${filter.value}-${index}`}
-						className="inline-flex items-center gap-x-1 rounded-md bg-primary-50 px-2 py-1 text-sm font-medium text-primary-700"
+						className="inline-flex items-center gap-x-1 rounded-md bg-primary-50 dark:bg-primary-900/20 px-2 py-1 text-sm font-medium text-primary-700 dark:text-primary-300"
 					>
 						{filter.label}
 						<button
 							type="button"
 							onClick={() => onRemove(filter.key, filter.value)}
-							className="group relative -mr-1 h-3.5 w-3.5 rounded-sm hover:bg-primary-600/20"
+							className="group relative -mr-1 h-3.5 w-3.5 rounded-sm hover:bg-primary-600/20 dark:hover:bg-primary-600/30"
 						>
 							<span className="sr-only">Remove filter</span>
 							<XMarkIcon className="h-3.5 w-3.5" />
@@ -152,7 +152,7 @@ function ActiveFilters({ filters, onRemove, companies, departments, courses }) {
 				))}
 				<button
 					onClick={() => onRemove('all')}
-					className="text-sm text-gray-500 hover:text-gray-700"
+					className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
 				>
 					Limpar todos
 				</button>
@@ -239,7 +239,7 @@ export default function ReportFilters({ filters, onChange }) {
 				<select
 					value={filters.period}
 					onChange={(e) => handleFilterChange('period', e.target.value)}
-					className="mt-1 block w-80 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+					className="mt-1 block w-80 rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
 				>
 					{periodOptions.map(option => (
 						<option key={option.value} value={option.value}>

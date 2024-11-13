@@ -111,7 +111,7 @@ function CourseList({ onEdit, refresh }) {
 				{courses.map((course) => (
 					<div
 						key={course.id}
-						className="bg-white rounded-lg shadow-sm overflow-hidden hover:scale-105 transition duration-500"
+						className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden hover:scale-105 transition duration-500"
 					>
 						<img
 							src={course.thumbnail ? `https://api-matriz-mfj.8bitscompany.com/imagem/${course.thumbnail}` : `https://api-matriz-mfj.8bitscompany.com/imagem/sem-foto.jpg`}
@@ -121,29 +121,29 @@ function CourseList({ onEdit, refresh }) {
 						<div className="p-4">
 							<div className="flex items-start justify-between">
 								<div>
-									<h3 className="text-lg font-medium text-gray-900">
+									<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
 										{course.title}
 									</h3>
-									<p className="mt-1 text-sm text-gray-500">{course.category}</p>
+									<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{course.category}</p>
 								</div>
 								<div className="flex space-x-2">
 									<button
 										onClick={() => onEdit(course)}
-										className="text-primary-600 hover:text-primary-900"
+										className="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-600"
 										title="Editar"
 									>
 										<PencilIcon className="h-5 w-5" />
 									</button>
 									<button
 										onClick={() => openConfirmModal(course)}
-										className="text-red-600 hover:text-red-900"
+										className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600"
 										title="Excluir"
 									>
 										<TrashIcon className="h-5 w-5" />
 									</button>
 								</div>
 							</div>
-							<p className="mt-2 text-sm text-gray-600">{course.description}</p>
+							<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{course.description}</p>
 						</div>
 					</div>
 				))}

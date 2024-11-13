@@ -64,13 +64,13 @@ function Login() {
 	}
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+		<div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
 			<div className="max-w-md w-full space-y-8">
 				<div>
-					<h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+					<h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
 						Sistema de Gestão de Cursos
 					</h2>
-					<p className="mt-2 text-center text-sm text-gray-600">
+					<p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
 						Faça login para acessar o sistema
 					</p>
 				</div>
@@ -87,12 +87,12 @@ function Login() {
 									}
 								})}
 								type="email"
-								className="input-field rounded-t-md"
+								className="input-field rounded-t-md dark:bg-gray-800 dark:text-gray-100"
 								placeholder="Email"
 								disabled={isSubmitting}
 							/>
 							{errors.email && (
-								<p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+								<p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
 							)}
 						</div>
 						<div>
@@ -106,12 +106,12 @@ function Login() {
 									}
 								})}
 								type="password"
-								className="input-field rounded-b-md"
+								className="input-field rounded-b-md dark:bg-gray-800 dark:text-gray-100"
 								placeholder="Senha"
 								disabled={isSubmitting}
 							/>
 							{errors.password && (
-								<p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+								<p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>
 							)}
 						</div>
 					</div>
@@ -121,12 +121,12 @@ function Login() {
 							<input
 								id="remember-me"
 								type="checkbox"
-								className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+								className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
 								checked={rememberMe}
 								onChange={(e) => setRememberMe(e.target.checked)}
 								disabled={isSubmitting}
 							/>
-							<label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+							<label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
 								Lembrar-me
 							</label>
 						</div>
@@ -136,7 +136,7 @@ function Login() {
 						<button
 							type="submit"
 							disabled={isSubmitting}
-							className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+							className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed dark:bg-primary-700 dark:text-gray-100"
 						>
 							{isSubmitting ? 'Entrando...' : 'Entrar'}
 						</button>

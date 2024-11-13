@@ -10,7 +10,7 @@ const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload
     return (
-      <div className="bg-white p-2 border border-gray-200 rounded shadow-sm">
+      <div className="bg-white dark:bg-gray-800 p-2 border border-gray-200 dark:border-gray-700 rounded shadow-sm">
         <p className="font-medium">{data.name}</p>
         <p className="text-sm text-gray-600">Créditos: {data.value}</p>
       </div>
@@ -55,7 +55,7 @@ export default function CreditAllocationChart() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p>Carregando...</p>
+        <p className="text-gray-500 dark:text-gray-400">Carregando...</p>
       </div>
     )
   }

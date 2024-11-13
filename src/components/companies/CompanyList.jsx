@@ -202,62 +202,62 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 	return (
 		<>
 			<div className="overflow-x-auto">
-				<table className="min-w-full divide-y divide-gray-200">
-					<thead className="bg-gray-50">
+				<table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+					<thead className="bg-gray-50 dark:bg-gray-700">
 						<tr>
 							{/* Cabeçalhos da tabela */}
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
 								Nome
 							</th>
 							{/* Outros cabeçalhos */}
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
 								CPF/CNPJ
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
 								Telefone
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
 								Email
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
 								Créditos
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
 								Status
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
 								Ações
 							</th>
 						</tr>
 					</thead>
-					<tbody className="bg-white divide-y divide-gray-200">
+					<tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
 						{filteredCompanies.map((company) => (
 							<tr key={company.id}>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm font-medium text-gray-900">
+									<div className="text-sm font-medium text-gray-900 dark:text-gray-100">
 										{company.name}
 									</div>
 								</td>
 								{/* Outras colunas */}
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{formatCpfCnpj(company.document)}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{formatCpfCnpj(company.document)}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{formatPhoneNumber(company.phone)}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{formatPhoneNumber(company.phone)}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{company.email}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{company.email}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm font-medium text-gray-900">
+									<div className="text-sm font-medium text-gray-900 dark:text-gray-100">
 										{company.credits}
 									</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<span
 										className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${company.status === 'active'
-											? 'bg-green-100 text-green-800'
-											: 'bg-red-100 text-red-800'
+											? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-400'
+											: 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-400'
 											}`}
 									>
 										{company.status === 'active' ? 'Ativo' : 'Inativo'}
@@ -266,7 +266,7 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
 									<button
 										onClick={() => openCreditsModal(company, 'add')}
-										className="text-green-600 hover:text-green-900 mr-4 transition-colors duration-200"
+										className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-600 mr-4 transition-colors duration-200"
 										title="Adicionar créditos"
 									>
 										<PlusIcon className="h-5 w-5" />
@@ -274,8 +274,8 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 									<button
 										onClick={() => openCreditsModal(company, 'remove')}
 										className={`mr-4 transition-colors duration-200 ${company.credits > 0
-											? 'text-red-600 hover:text-red-900'
-											: 'text-gray-400 cursor-not-allowed'
+											? 'text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600'
+											: 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
 											}`}
 										title="Remover créditos"
 										disabled={company.credits === 0}
@@ -284,7 +284,7 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 									</button>
 									<button
 										onClick={() => onEdit(company)}
-										className="text-primary-600 hover:text-primary-900 mr-4 transition-colors duration-200"
+										className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-600 mr-4 transition-colors duration-200"
 										title="Editar"
 									>
 										<PencilIcon className="h-5 w-5" />
@@ -294,8 +294,8 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 											openConfirmModal('status', company.id, company.status)
 										}
 										className={`${company.status === 'active'
-											? 'text-red-600 hover:text-red-900'
-											: 'text-green-600 hover:text-green-900'
+											? 'text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600'
+											: 'text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-600'
 											} mr-4 transition-colors duration-200`}
 										title={
 											company.status === 'active' ? 'Desativar' : 'Ativar'
@@ -307,14 +307,6 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 											<CheckCircleIcon className="h-5 w-5" />
 										)}
 									</button>
-									{/* Se não houver endpoint para deletar, podemos remover este botão */}
-									{/* <button
-                    onClick={() => openConfirmModal('delete', company.id)}
-                    className="text-red-600 hover:text-red-900 transition-colors duration-200"
-                    title="Excluir"
-                  >
-                    <TrashIcon className="h-5 w-5" />
-                  </button> */}
 								</td>
 							</tr>
 						))}

@@ -148,12 +148,12 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 							leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 						>
 							{/* Painel do modal */}
-							<Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+							<Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
 								{/* Botão de fechar */}
 								<div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
 									<button
 										type="button"
-										className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+										className="rounded-md bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
 										onClick={onClose}
 										disabled={isSubmitting}
 									>
@@ -166,7 +166,7 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 								<div className="sm:flex sm:items-start">
 									<div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
 										{/* Título */}
-										<Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">
+										<Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900 dark:text-gray-100">
 											{course ? 'Editar Curso' : 'Novo Curso'}
 										</Dialog.Title>
 
@@ -174,7 +174,7 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 										<form onSubmit={handleSubmit} className="mt-6 space-y-4">
 											{/* Campo Título */}
 											<div>
-												<label htmlFor="title" className="block text-sm font-medium text-gray-700">
+												<label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
 													Título
 												</label>
 												<input
@@ -184,14 +184,14 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 													value={formData.title}
 													onChange={handleChange}
 													disabled={isSubmitting}
-													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
 													required
 												/>
 											</div>
 
 											{/* Campo Categoria */}
 											<div>
-												<label htmlFor="category" className="block text-sm font-medium text-gray-700">
+												<label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
 													Categoria
 												</label>
 												<input
@@ -201,13 +201,13 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 													value={formData.category}
 													onChange={handleChange}
 													disabled={isSubmitting}
-													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
 												/>
 											</div>
 
 											{/* Campo Descrição */}
 											<div>
-												<label htmlFor="description" className="block text-sm font-medium text-gray-700">
+												<label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
 													Descrição
 												</label>
 												<textarea
@@ -217,16 +217,16 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 													value={formData.description}
 													onChange={handleChange}
 													disabled={isSubmitting}
-													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
 												/>
 											</div>
 
 											{/* Campo Thumbnail */}
 											<div>
-												<label className="block text-sm font-medium text-gray-700">
+												<label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
 													Thumbnail
 												</label>
-												<div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+												<div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6 dark:border-gray-600">
 													<div className="space-y-1 text-center">
 														{previewUrl ? (
 															<img
@@ -237,10 +237,10 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 														) : (
 															<PhotoIcon className="mx-auto h-12 w-12 text-gray-400" />
 														)}
-														<div className="flex text-sm text-gray-600">
+														<div className="flex text-sm text-gray-600 dark:text-gray-300">
 															<label
 																htmlFor="thumbnail"
-																className="relative cursor-pointer rounded-md bg-white font-medium text-primary-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 hover:text-primary-500"
+																className="relative cursor-pointer rounded-md bg-white dark:bg-gray-700 font-medium text-primary-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 dark:focus-within:ring-offset-gray-800 hover:text-primary-500"
 															>
 																<span>Upload uma imagem</span>
 																<input
@@ -254,7 +254,7 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 																/>
 															</label>
 														</div>
-														<p className="text-xs text-gray-500">
+														<p className="text-xs text-gray-500 dark:text-gray-400">
 															PNG, JPG, GIF até 10MB
 														</p>
 													</div>
@@ -272,7 +272,7 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 												</button>
 												<button
 													type="button"
-													className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+													className="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 sm:mt-0 sm:w-auto"
 													onClick={onClose}
 													disabled={isSubmitting}
 												>
