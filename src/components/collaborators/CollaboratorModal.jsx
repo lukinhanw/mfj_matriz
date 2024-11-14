@@ -6,15 +6,16 @@ import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import useAuthStore from '../../store/authStore'
 import MaskedInput from '../common/MaskedInput'
+import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
 
-function CollaboratorModal({ open, onClose, collaborator }) {
+function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved }) {
 	const { token } = useAuthStore()
 
 	const {
 		register,
 		handleSubmit,
 		control,
-		setValue,
+		reset,
 		watch,
 		formState: { errors }
 	} = useForm()
@@ -40,6 +41,26 @@ function CollaboratorModal({ open, onClose, collaborator }) {
 
 				setCompanies(companiesResponse.data || [])
 				setDepartments(departmentsResponse.data || [])
+
+				if (collaborator) {
+					reset({
+						name: collaborator.name || '',
+						email: collaborator.email || '',
+						cpf: collaborator.cpf || '',
+						phone: collaborator.phone || '',
+						departmentId: collaborator.department?.id?.toString() || '',
+						companyId: collaborator.company?.id?.toString() || ''
+					})
+				} else {
+					reset({
+						name: '',
+						email: '',
+						cpf: '',
+						phone: '',
+						departmentId: '',
+						companyId: ''
+					})
+				}
 			} catch (error) {
 				console.error('Error fetching data:', error)
 				toast.error('Erro ao carregar dados')
@@ -49,25 +70,7 @@ function CollaboratorModal({ open, onClose, collaborator }) {
 		if (open && token) {
 			fetchData()
 		}
-	}, [open, token])
-
-	useEffect(() => {
-		if (collaborator) {
-			setValue('name', collaborator.name || '')
-			setValue('email', collaborator.email || '')
-			setValue('cpf', collaborator.cpf || '')
-			setValue('phone', collaborator.phone || '')
-			setValue('departmentId', collaborator.department?.id?.toString() || '')
-			setValue('companyId', collaborator.company?.id?.toString() || '')
-		} else {
-			setValue('name', '')
-			setValue('email', '')
-			setValue('cpf', '')
-			setValue('phone', '')
-			setValue('departmentId', '')
-			setValue('companyId', '')
-		}
-	}, [collaborator, setValue])
+	}, [open, token, collaborator, reset])
 
 	const handleFormSubmit = async (data) => {
 		try {
@@ -113,7 +116,8 @@ function CollaboratorModal({ open, onClose, collaborator }) {
 				)
 			}
 
-			onClose()
+			onCollaboratorSaved(); // Chame a função para atualizar a lista de colaboradores
+			onClose();
 		} catch (error) {
 			console.error('Error submitting form:', error)
 			toast.error(
@@ -127,10 +131,6 @@ function CollaboratorModal({ open, onClose, collaborator }) {
 			setIsSubmitting(false)
 		}
 	}
-
-	useEffect(() => {
-		setValue('departmentId', '')
-	}, [selectedCompanyId, setValue])
 
 	return (
 		<Transition.Root show={open} as={Fragment}>
@@ -237,6 +237,7 @@ function CollaboratorModal({ open, onClose, collaborator }) {
 													control={control}
 													rules={{ required: 'CPF é obrigatório' }}
 													render={({ field }) => (
+														field.value = formatCpfCnpj(field.value),
 														<MaskedInput
 															{...field}
 															mask="cpf"
@@ -265,6 +266,7 @@ function CollaboratorModal({ open, onClose, collaborator }) {
 													control={control}
 													rules={{ required: 'Telefone é obrigatório' }}
 													render={({ field }) => (
+														field.value = formatPhoneNumber(field.value),
 														<MaskedInput
 															{...field}
 															mask="phone"

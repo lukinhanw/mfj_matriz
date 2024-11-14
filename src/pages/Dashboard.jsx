@@ -1,10 +1,7 @@
 import { useState } from 'react'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import StatsCard from '../components/dashboard/StatsCard'
 import ActivityFeed from '../components/dashboard/ActivityFeed'
-import PeriodFilter from '../components/dashboard/PeriodFilter'
 
 const mockData = {
 	stats: {
@@ -53,7 +50,6 @@ const mockData = {
 }
 
 function Dashboard() {
-	const [period, setPeriod] = useState('7d')
 	const { stats, courseCompletionData, creditsByCompany, activities } = mockData
 
 	const CustomTooltip = ({ active, payload, label }) => {
@@ -74,10 +70,6 @@ function Dashboard() {
 
 	return (
 		<div className="space-y-6">
-			<div className="sm:flex sm:items-center sm:justify-between">
-				<h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Dashboard</h1>
-				<PeriodFilter value={period} onChange={setPeriod} />
-			</div>
 
 			{/* Estatísticas Principais */}
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

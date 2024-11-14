@@ -49,7 +49,7 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 			// Atualiza os créditos no componente pai
 			onCreditsUpdated({ ...company, credits: newCredits })
 
-			onClose()
+			handleClose()
 		} catch (error) {
 			console.error('Error updating credits:', error)
 			const errorMessage =
@@ -69,9 +69,14 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 		}
 	}
 
+	const handleClose = () => {
+		setCredits(1) // Reseta o valor para 1
+		onClose()
+	}
+
 	return (
 		<Transition.Root show={open} as={Fragment}>
-			<Dialog as="div" className="relative z-50" onClose={onClose}>
+			<Dialog as="div" className="relative z-50" onClose={handleClose}>
 				<Transition.Child
 					as={Fragment}
 					enter="ease-out duration-300"
@@ -100,7 +105,7 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 									<button
 										type="button"
 										className="rounded-md bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200"
-										onClick={onClose}
+										onClick={handleClose}
 										disabled={isSubmitting}
 									>
 										<XMarkIcon className="h-6 w-6" />
@@ -152,7 +157,7 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 												<button
 													type="button"
 													className="mt-3 w-full sm:mt-0 sm:w-auto px-4 py-2 bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-600"
-													onClick={onClose}
+													onClick={handleClose}
 													disabled={isSubmitting}
 												>
 													Cancelar

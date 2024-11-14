@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast'
 import MaskedInput from '../common/MaskedInput'
 import axios from 'axios'
 import useAuthStore from '../../store/authStore'
+import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
 
 function CompanyModal({ open, onClose, company }) {
 	const { token } = useAuthStore()
@@ -94,12 +95,14 @@ function CompanyModal({ open, onClose, company }) {
 			onClose()
 		} catch (error) {
 			console.error('Error saving company:', error)
-			const errorMessage = error.response?.data?.error || 'Erro desconhecido'
+			const errorMessage = error.response?.data?.error || 'Erro ao salvar empresa: Erro desconhecido'
+			const titleMessage = errorMessage.split(":")[0]
+			const bodyMessage = errorMessage.split(":")[1]
 			toast.error(
 				<div>
-					<span className="font-medium text-red-600">Erro ao salvar empresa</span>
+					<span className="font-medium text-red-600">{titleMessage}</span>
 					<br />
-					<span className="text-sm text-red-950">{errorMessage}</span>
+					<span className="text-sm text-red-950">{bodyMessage}</span>
 				</div>
 			)
 		} finally {
@@ -236,6 +239,8 @@ function CompanyModal({ open, onClose, company }) {
 														validate: validateDocument
 													}}
 													render={({ field }) => (
+														field.value = formatCpfCnpj(field.value),
+														
 														<MaskedInput
 															{...field}
 															mask={documentType}
@@ -268,6 +273,7 @@ function CompanyModal({ open, onClose, company }) {
 													control={control}
 													rules={{ required: 'Telefone é obrigatório' }}
 													render={({ field }) => (
+														field.value = formatPhoneNumber(field.value),
 														<MaskedInput
 															{...field}
 															mask="phone"

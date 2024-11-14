@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
 import {
 	PencilIcon,
@@ -8,7 +8,7 @@ import ConfirmationModal from '../common/ConfirmationModal'
 import axios from 'axios'
 import useAuthStore from '../../store/authStore'
 
-function CourseList({ onEdit, refresh }) {
+function CourseList({ onEdit, refresh, searchTerm }) {
 	const { token } = useAuthStore()
 	const [courses, setCourses] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
@@ -48,6 +48,15 @@ function CourseList({ onEdit, refresh }) {
 			fetchCourses()
 		}
 	}, [token, refresh])
+
+	const filteredCourses = useMemo(() => {
+		if (!searchTerm) return courses;
+		
+		return courses.filter(course => 
+			course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			course.category.toLowerCase().includes(searchTerm.toLowerCase())
+		);
+	}, [courses, searchTerm]);
 
 	const handleDelete = async () => {
 		try {
@@ -97,7 +106,7 @@ function CourseList({ onEdit, refresh }) {
 		)
 	}
 
-	if (courses.length === 0) {
+	if (filteredCourses.length === 0) {
 		return (
 			<div className="text-center py-12">
 				<p className="text-gray-500">Nenhum curso encontrado.</p>
@@ -108,7 +117,7 @@ function CourseList({ onEdit, refresh }) {
 	return (
 		<>
 			<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-				{courses.map((course) => (
+					{filteredCourses.map((course) => (
 					<div
 						key={course.id}
 						className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden hover:scale-105 transition duration-500"

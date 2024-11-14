@@ -12,6 +12,7 @@ import CourseAssignmentModal from './CourseAssignmentModal'
 import axios from 'axios'
 import useAuthStore from '../../store/authStore'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
+import CollaboratorModal from './CollaboratorModal'
 
 function CollaboratorList({ onEdit, filters, searchTerm }) {
 	const { token } = useAuthStore()
@@ -27,30 +28,36 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 		show: false,
 		collaborator: null
 	})
+	const [modalOpen, setModalOpen] = useState(false);
+	const [selectedCollaborator, setSelectedCollaborator] = useState(null);
+
+	const fetchCollaborators = async () => {
+		try {
+			setIsLoading(true)
+			const response = await axios.get(
+				'https://api-matriz-mfj.8bitscompany.com/admin/listarColaboradores',
+				{
+					headers: { Authorization: `Bearer ${token}` }
+				}
+			)
+			setCollaborators(response.data)
+		} catch (error) {
+			console.error('Error fetching collaborators:', error.response.data.error)
+			toast.error('Erro ao carregar colaboradores')
+		} finally {
+			setIsLoading(false)
+		}
+	}
 
 	useEffect(() => {
-		const fetchCollaborators = async () => {
-			try {
-				setIsLoading(true)
-				const response = await axios.get(
-					'https://api-matriz-mfj.8bitscompany.com/admin/listarColaboradores',
-					{
-						headers: { Authorization: `Bearer ${token}` }
-					}
-				)
-				setCollaborators(response.data)
-			} catch (error) {
-				console.error('Error fetching collaborators:', error.response.data.error)
-				toast.error('Erro ao carregar colaboradores')
-			} finally {
-				setIsLoading(false)
-			}
-		}
-
 		if (token) {
 			fetchCollaborators()
 		}
 	}, [token])
+
+	const handleCollaboratorSaved = () => {
+		fetchCollaborators();
+	}
 
 	const handleDelete = async () => {
 		try {
@@ -156,6 +163,11 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 			show: true,
 			collaborator
 		})
+	}
+
+	const handleEdit = (collaborator) => {
+		setSelectedCollaborator(collaborator);
+		setModalOpen(true);
 	}
 
 	const filteredCollaborators = collaborators.filter(collaborator => {
@@ -271,7 +283,7 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
 									<button
-										onClick={() => onEdit(collaborator)}
+										onClick={() => handleEdit(collaborator)}
 										className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-600 mr-4"
 										title="Editar"
 									>
@@ -316,6 +328,13 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 				isOpen={courseModal.show}
 				onClose={() => setCourseModal({ show: false, collaborator: null })}
 				collaborator={courseModal.collaborator}
+			/>
+
+			 <CollaboratorModal
+				open={modalOpen}
+				onClose={() => setModalOpen(false)}
+				collaborator={selectedCollaborator}
+				onCollaboratorSaved={handleCollaboratorSaved}
 			/>
 
 			<ConfirmationModal

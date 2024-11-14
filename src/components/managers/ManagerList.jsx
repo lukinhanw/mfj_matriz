@@ -69,8 +69,8 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 					<span className="text-sm text-green-950">Gestor removido com sucesso</span>
 				</div>
 			)
-			// Remove o gestor deletado da lista
-			setManagers(prev => prev.filter(manager => manager.id !== confirmModal.managerId))
+			 // Atualiza a lista após deletar
+			refresh()
 			setConfirmModal({ show: false, type: null, managerId: null, currentStatus: null })
 		} catch (error) {
 			console.error('Error remover gestor:', error)
@@ -105,12 +105,8 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 			)
 
 			toast.success(`Status alterado com sucesso!`)
-			// Atualiza o status na lista
-			setManagers(prevManagers =>
-				prevManagers.map(manager =>
-					manager.id === managerId ? { ...manager, status: newStatus } : manager
-				)
-			)
+			// Atualiza a lista após alterar o status
+			refresh()
 			setConfirmModal({ show: false, type: null, managerId: null, currentStatus: null })
 		} catch (error) {
 			console.error('Error toggling manager status:', error)
@@ -202,7 +198,7 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Status
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+							<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Ações
 							</th>
 						</tr>

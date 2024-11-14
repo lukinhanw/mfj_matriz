@@ -15,7 +15,7 @@ import axios from 'axios'
 import useAuthStore from '../../store/authStore'
 import { formatPhoneNumber, formatCpfCnpj } from '../../utils/helpers'
 
-function CompanyList({ onEdit, filters, searchTerm }) {
+function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 	const { token } = useAuthStore()
 	const [companies, setCompanies] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
@@ -60,31 +60,53 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 		if (token) {
 			fetchCompanies()
 		}
-	}, [token])
+	}, [token, refreshKey])
 
 	const handleDelete = async () => {
 		try {
-			// Se não houver endpoint para deletar, podemos desativar a empresa ou omitir esta função
-			await axios.put(
-				`https://api-matriz-mfj.8bitscompany.com/admin/deletarEmpresa`,
-				{ companyId: confirmModal.companyId },
-				{
-					headers: { Authorization: `Bearer ${token}` }
-				}
+			await axios({
+				method: 'delete',
+				url: `https://api-matriz-mfj.8bitscompany.com/admin/deletarEmpresa`,
+				data: { companyId: confirmModal.companyId },
+				headers: { Authorization: `Bearer ${token}` }
+			})
+			toast.success(
+				<div>
+					<span className="font-medium text-green-600">Sucesso!</span>
+					<br />
+					<span className="text-sm text-green-950">
+						Empresa excluída com sucesso
+					</span>
+				</div>
 			)
-			toast.success('Empresa desativada com sucesso!')
-			// Atualiza o status da empresa na lista
+			// Remove a empresa da lista
 			setCompanies((prevCompanies) =>
-				prevCompanies.map((company) =>
-					company.id === confirmModal.companyId
-						? { ...company, status: 'inactive' }
-						: company
-				)
+				prevCompanies.filter(company => company.id !== confirmModal.companyId)
 			)
-			setConfirmModal({ show: false, type: null, companyId: null })
+			setConfirmModal({
+				show: false,
+				type: null,
+				companyId: null,
+				currentStatus: null
+			})
 		} catch (error) {
-			console.error('Error deletar empresa:', error)
-			toast.error('Erro ao deletar empresa')
+			console.error('Error deleting company:', error)
+			const errorMessage = error.response?.data?.error || 'Erro ao excluir empresa: Erro desconhecido'
+			const titleMessage = errorMessage.split(":")[0]
+			const bodyMessage = errorMessage.split(":")[1]
+			toast.error(
+				<div>
+					<span className="font-medium text-red-600">{titleMessage}</span>
+					<br />
+					<span className="text-sm text-red-950">{bodyMessage}</span>
+				</div>
+			)
+			setConfirmModal({
+				show: false,
+				type: null,
+				companyId: null,
+				currentStatus: null
+			})
 		}
 	}
 
@@ -307,6 +329,13 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 											<CheckCircleIcon className="h-5 w-5" />
 										)}
 									</button>
+									<button
+										onClick={() => openConfirmModal('delete', company.id)}
+										className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600 transition-colors duration-200"
+										title="Excluir"
+									>
+										<TrashIcon className="h-5 w-5" />
+									</button>
 								</td>
 							</tr>
 						))}
@@ -337,7 +366,7 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 				}
 				message={
 					confirmModal.type === 'delete'
-						? 'Tem certeza que deseja excluir esta empresa?'
+						? 'Tem certeza que deseja excluir permanentemente esta empresa? Esta ação não poderá ser desfeita.'
 						: `Tem certeza que deseja ${confirmModal.currentStatus === 'active'
 							? 'desativar'
 							: 'ativar'
@@ -345,7 +374,7 @@ function CompanyList({ onEdit, filters, searchTerm }) {
 				}
 				confirmText={
 					confirmModal.type === 'delete'
-						? 'Excluir'
+						? 'Excluir Permanentemente'
 						: confirmModal.currentStatus === 'active'
 							? 'Desativar'
 							: 'Ativar'
