@@ -170,7 +170,7 @@ export default function Sidebar({ sidebarOpen = false, setSidebarOpen }) {
 			</Transition.Root>
 
 			<div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-				<div className="flex grow flex-col overflow-y-auto border-r border-gray-200 bg-white">
+				<div className="flex grow flex-col overflow-y-auto border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors">
 					<SidebarContent />
 				</div>
 			</div>

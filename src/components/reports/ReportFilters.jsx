@@ -20,7 +20,7 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 	return (
 		<Menu as="div" className="relative inline-block text-left">
 			<div>
-				<Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+			<Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
 					{label}
 					{selectedCount > 0 && (
 						<span className="ml-1 text-primary-600">({selectedCount})</span>
@@ -77,7 +77,7 @@ function DateRangePicker({ startDate, endDate, onChange }) {
 	return (
 		<div className="flex gap-4">
 			<div>
-				<label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
+				<label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-500">
 					Data inicial
 				</label>
 				<input
@@ -85,11 +85,11 @@ function DateRangePicker({ startDate, endDate, onChange }) {
 					id="startDate"
 					value={startDate}
 					onChange={(e) => onChange('startDate', e.target.value)}
-					className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+					className="mt-1 block w-full rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-normal text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
 				/>
 			</div>
 			<div>
-				<label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
+				<label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-500">
 					Data final
 				</label>
 				<input
@@ -97,7 +97,7 @@ function DateRangePicker({ startDate, endDate, onChange }) {
 					id="endDate"
 					value={endDate}
 					onChange={(e) => onChange('endDate', e.target.value)}
-					className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+					className="mt-1 block w-full rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-normal text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
 				/>
 			</div>
 		</div>
@@ -233,13 +233,13 @@ export default function ReportFilters({ filters, onChange }) {
 			</div>
 
 			<div>
-				<label className="block text-sm font-medium text-gray-700">
+				<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
 					Período
 				</label>
 				<select
 					value={filters.period}
 					onChange={(e) => handleFilterChange('period', e.target.value)}
-					className="mt-1 block w-80 rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+					className="mt-1 block w-80 justify-center gap-x-1.5 rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
 				>
 					{periodOptions.map(option => (
 						<option key={option.value} value={option.value}>
@@ -259,7 +259,7 @@ export default function ReportFilters({ filters, onChange }) {
 
 			<div className="grid gap-4 md:grid-cols-3">
 				<div>
-					<label className="block text-sm font-medium text-gray-700">
+					<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
 						Empresa
 					</label>
 					<FilterDropdown
@@ -274,7 +274,7 @@ export default function ReportFilters({ filters, onChange }) {
 				</div>
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700">
+					<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
 						Setor
 					</label>
 					<FilterDropdown
@@ -289,7 +289,7 @@ export default function ReportFilters({ filters, onChange }) {
 				</div>
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700">
+					<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
 						Curso
 					</label>
 					<FilterDropdown

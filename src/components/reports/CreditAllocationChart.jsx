@@ -11,8 +11,8 @@ const CustomTooltip = ({ active, payload }) => {
     const data = payload[0].payload
     return (
       <div className="bg-white dark:bg-gray-800 p-2 border border-gray-200 dark:border-gray-700 rounded shadow-sm">
-        <p className="font-medium">{data.name}</p>
-        <p className="text-sm text-gray-600">Créditos: {data.value}</p>
+        <p className="font-medium text-gray-600 dark:text-gray-400">{data.name}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">Créditos: {data.value}</p>
       </div>
     )
   }

@@ -2,9 +2,23 @@ import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { FunnelIcon, ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
-const statusOptions = [
-	{ value: 'active', label: 'Ativos' },
-	{ value: 'inactive', label: 'Inativos' }
+const typeOptions = [
+	{ value: 'system', label: 'Sistema' },
+	{ value: 'user', label: 'Usuário' },
+	{ value: 'course', label: 'Curso' }
+]
+
+const periodOptions = [
+	{ value: '7d', label: 'Últimos 7 dias' },
+	{ value: '30d', label: 'Últimos 30 dias' },
+	{ value: '90d', label: 'Últimos 3 meses' },
+	{ value: '365d', label: 'Últimos 12 meses' }
+]
+
+// Mock data - substituir por dados da API
+const users = [
+	{ id: 1, name: 'João Silva' },
+	{ id: 2, name: 'Maria Santos' }
 ]
 
 function FilterDropdown({ label, options, selectedValues, onChange }) {
@@ -65,41 +79,39 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 	)
 }
 
-function ActiveFilters({ filters, companies, departments, onRemove }) {
+function ActiveFilters({ filters, onRemove }) {
 	const activeFilters = []
-	if (filters.status.length > 0) {
-		filters.status.forEach(status => {
-			const statusLabel = statusOptions.find(s => s.value === status)?.label
-			activeFilters.push({ key: 'status', value: status, label: `Status: ${statusLabel}` })
+
+	if (filters.type.length > 0) {
+		filters.type.forEach(type => {
+			const typeLabel = typeOptions.find(t => t.value === type)?.label
+			activeFilters.push({ key: 'type', value: type, label: `Tipo: ${typeLabel}` })
 		})
 	}
-	if (filters.companies.length > 0) {
-		filters.companies.forEach(companyId => {
-			const companyName = companies.find(c => c.id.toString() === companyId)?.name
-			activeFilters.push({ key: 'companies', value: companyId, label: `Empresa: ${companyName}` })
+
+	if (filters.user.length > 0) {
+		filters.user.forEach(userId => {
+			const userName = users.find(u => u.id.toString() === userId)?.name
+			activeFilters.push({ key: 'user', value: userId, label: `Usuário: ${userName}` })
 		})
 	}
-	if (filters.departments.length > 0) {
-		filters.departments.forEach(departmentId => {
-			const departmentName = departments.find(d => d.id.toString() === departmentId)?.name
-			activeFilters.push({ key: 'departments', value: departmentId, label: `Setor: ${departmentName}` })
-		})
-	}
+
 	if (activeFilters.length === 0) return null
+
 	return (
 		<div className="mt-4">
-			<h4 className="text-sm font-medium text-gray-700">Filtros ativos:</h4>
+			<h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Filtros ativos:</h4>
 			<div className="mt-2 flex flex-wrap gap-2">
 				{activeFilters.map((filter, index) => (
 					<span
 						key={`${filter.key}-${filter.value}-${index}`}
-						className="inline-flex items-center gap-x-1 rounded-md bg-primary-50 px-2 py-1 text-sm font-medium text-primary-700"
+						className="inline-flex items-center gap-x-1 rounded-md bg-primary-50 dark:bg-primary-900 px-2 py-1 text-sm font-medium text-primary-700 dark:text-primary-200"
 					>
 						{filter.label}
 						<button
 							type="button"
 							onClick={() => onRemove(filter.key, filter.value)}
-							className="group relative -mr-1 h-3.5 w-3.5 rounded-sm hover:bg-primary-600/20"
+							className="group relative -mr-1 h-3.5 w-3.5 rounded-sm hover:bg-primary-600/20 dark:hover:bg-primary-600/30"
 						>
 							<span className="sr-only">Remove filter</span>
 							<XMarkIcon className="h-3.5 w-3.5" />
@@ -108,7 +120,7 @@ function ActiveFilters({ filters, companies, departments, onRemove }) {
 				))}
 				<button
 					onClick={() => onRemove('all')}
-					className="text-sm text-gray-500 hover:text-gray-700"
+					className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
 				>
 					Limpar todos
 				</button>
@@ -117,17 +129,17 @@ function ActiveFilters({ filters, companies, departments, onRemove }) {
 	)
 }
 
-function ManagerFilters({ filters, onChange, companies = [], departments = [] }) {
-	const handleFilterChange = (key, values) => {
-		onChange({ ...filters, [key]: values })
+export default function LogFilters({ filters, onChange }) {
+	const handleFilterChange = (key, value) => {
+		onChange({ ...filters, [key]: value })
 	}
 
 	const handleRemoveFilter = (key, value) => {
 		if (key === 'all') {
 			onChange({
-				status: [],
-				companies: [],
-				departments: []
+				type: [],
+				user: [],
+				period: '7d'
 			})
 		} else {
 			onChange({
@@ -137,52 +149,62 @@ function ManagerFilters({ filters, onChange, companies = [], departments = [] })
 		}
 	}
 
-	// Filter departments based on selected companies
-	const filteredDepartments = departments.filter(dept =>
-		filters.companies.length === 0 ||
-		filters.companies.includes(dept.empresa_id?.toString())
-	)
-
 	return (
-		<div className="relative">
+		<div className="space-y-4">
 			<div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
 				<FunnelIcon className="h-5 w-5" />
 				<span>Filtros:</span>
 			</div>
-			<div className="mt-4 flex flex-wrap gap-4">
-				<FilterDropdown
-					label="Status"
-					selectedValues={filters.status}
-					onChange={(values) => handleFilterChange('status', values)}
-					options={statusOptions}
-				/>
-				<FilterDropdown
-					label="Empresa"
-					selectedValues={filters.companies}
-					onChange={(values) => handleFilterChange('companies', values)}
-					options={companies.map(company => ({
-						value: company.id.toString(),
-						label: company.name
-					}))}
-				/>
-				<FilterDropdown
-					label="Setor"
-					selectedValues={filters.departments}
-					onChange={(values) => handleFilterChange('departments', values)}
-					options={filteredDepartments.map(dept => ({
-						value: dept.id.toString(),
-						label: dept.name
-					}))}
-				/>
+
+			<div className="space-y-4">
+				<div>
+					<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
+						Período
+					</label>
+					<select
+						value={filters.period}
+						onChange={(e) => handleFilterChange('period', e.target.value)}
+						className="mt-1 block w-full md:w-80 justify-center gap-x-1.5 rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
+					>
+						{periodOptions.map(option => (
+							<option key={option.value} value={option.value}>
+								{option.label}
+							</option>
+						))}
+					</select>
+				</div>
+
+				<div className="grid gap-4 md:grid-cols-2">
+					<div>
+						<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
+							Tipo
+						</label>
+						<FilterDropdown
+							label="Selecionar tipos"
+							selectedValues={filters.type}
+							onChange={(values) => handleFilterChange('type', values)}
+							options={typeOptions}
+						/>
+					</div>
+
+					<div>
+						<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
+							Usuário
+						</label>
+						<FilterDropdown
+							label="Selecionar usuários"
+							selectedValues={filters.user}
+							onChange={(values) => handleFilterChange('user', values)}
+							options={users.map(user => ({
+								value: user.id.toString(),
+								label: user.name
+							}))}
+						/>
+					</div>
+				</div>
 			</div>
-			<ActiveFilters
-				filters={filters}
-				companies={companies}
-				departments={departments}
-				onRemove={handleRemoveFilter}
-			/>
+
+			<ActiveFilters filters={filters} onRemove={handleRemoveFilter} />
 		</div>
 	)
 }
-
-export default ManagerFilters

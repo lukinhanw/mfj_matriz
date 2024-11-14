@@ -84,7 +84,7 @@ function Managers() {
 			{/* Seção de Pesquisa e Filtros */}
 			<div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 space-y-6">
 				<ManagerSearch value={searchTerm} onChange={setSearchTerm} />
-				<div className="border-t border-gray-200 pt-6">
+				<div className="border-t border-gray-200 dark:border-gray-700 pt-6">
 					<ManagerFilters
 						filters={filters}
 						onChange={setFilters}

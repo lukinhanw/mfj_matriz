@@ -157,10 +157,10 @@ function Dashboard() {
 								</Pie>
 								<Tooltip
 									contentStyle={{
-										backgroundColor: 'rgb(31 41 55)',
+										backgroundColor: '#F9FAFB',
 										border: 'none',
 										borderRadius: '0.5rem',
-										color: '#F3F4F6'
+										color: '#F9FAFB'
 									}}
 								/>
 							</PieChart>
