@@ -1,6 +1,5 @@
-import { Fragment } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { FunnelIcon, ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import Select from 'react-select'
 
 const statusOptions = [
 	{ value: 'active', label: 'Ativas' },
@@ -8,60 +7,72 @@ const statusOptions = [
 ]
 
 function FilterDropdown({ label, options, selectedValues, onChange }) {
-	const isOptionSelected = (value) => selectedValues.includes(value)
-	const selectedCount = selectedValues.length
+
+	const customStyles = {
+		control: (base, state) => ({
+			...base,
+			backgroundColor: 'var(--bg-input)',
+			borderColor: 'var(--border-input)',
+			color: 'var(--text-primary)',
+			boxShadow: state.isFocused ? 'none' : base.boxShadow,
+			'&:hover': {
+				borderColor: 'var(--border-input-hover)'
+			}
+		}),
+		menu: (base) => ({
+			...base,
+			backgroundColor: 'var(--bg-input)',
+			zIndex: 100
+		}),
+		option: (base, { isFocused, isSelected }) => ({
+			...base,
+			backgroundColor: isSelected
+				? 'var(--primary-600)'
+				: isFocused
+					? 'var(--bg-hover)'
+					: 'var(--bg-input)',
+			color: isSelected
+				? 'white'
+				: 'var(--text-primary)'
+		}),
+		multiValue: (base) => ({
+			...base,
+			backgroundColor: 'var(--primary-100)',
+		}),
+		multiValueLabel: (base) => ({
+			...base,
+			color: 'var(--primary-700)',
+		}),
+		multiValueRemove: (base) => ({
+			...base,
+			color: 'var(--primary-700)',
+			'&:hover': {
+				backgroundColor: 'var(--primary-200)',
+				color: 'var(--primary-900)',
+			},
+		}),
+		input: (base) => ({
+			...base,
+			color: 'var(--text-primary)',
+		}),
+		placeholder: (base) => ({
+			...base,
+			color: 'var(--text-primary)',
+		}),
+	}
+
 	return (
-		<Menu as="div" className="relative inline-block text-left">
-			<div>
-				<Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
-					{label}
-					{selectedCount > 0 && (
-						<span className="ml-1 text-primary-600">({selectedCount})</span>
-					)}
-					<ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400 dark:text-gray-300" aria-hidden="true" />
-				</Menu.Button>
-			</div>
-			<Transition
-				as={Fragment}
-				enter="transition ease-out duration-100"
-				enterFrom="transform opacity-0 scale-95"
-				enterTo="transform opacity-100 scale-100"
-				leave="transition ease-in duration-75"
-				leaveFrom="transform opacity-100 scale-100"
-				leaveTo="transform opacity-0 scale-95"
-			>
-				<Menu.Items className="absolute right-0 z-[100] mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-700 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-gray-600 focus:outline-none">
-					<div className="py-1">
-						{options.map((option) => (
-							<Menu.Item key={option.value}>
-								{({ active }) => (
-									<button
-										onClick={() => {
-											const newValues = isOptionSelected(option.value)
-												? selectedValues.filter(v => v !== option.value)
-												: [...selectedValues, option.value]
-											onChange(newValues)
-										}}
-										className={`${active ? 'bg-gray-100 dark:bg-gray-600' : ''
-											} flex items-center px-4 py-2 text-sm w-full text-left dark:text-white`}
-									>
-										<input
-											type="checkbox"
-											checked={isOptionSelected(option.value)}
-											onChange={() => { }}
-											className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 mr-2"
-										/>
-										<span className={isOptionSelected(option.value) ? 'text-primary-900 dark:text-primary-400 font-medium' : 'text-gray-700 dark:text-gray-300'}>
-											{option.label}
-										</span>
-									</button>
-								)}
-							</Menu.Item>
-						))}
-					</div>
-				</Menu.Items>
-			</Transition>
-		</Menu>
+		<Select
+			isMulti
+			options={options}
+			value={options.filter(option => selectedValues.includes(option.value))}
+			onChange={(selected) => onChange(selected ? selected.map(item => item.value) : [])}
+			placeholder={label}
+			className="w-full"
+			classNamePrefix="select"
+			styles={customStyles}
+			noOptionsMessage={() => 'Nenhum item encontrado'}
+		/>
 	)
 }
 
@@ -127,13 +138,13 @@ function CompanyFilters({ filters, onChange }) {
 	}
 
 	return (
-		<div className="relative">
+		<div className="space-y-6">
 			<div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
 				<FunnelIcon className="h-5 w-5" />
 				<span>Filtros:</span>
 			</div>
 
-			<div className="mt-4 flex flex-wrap gap-4">
+			<div className="grid gap-4 md:grid-cols-3">
 				<FilterDropdown
 					label="Status"
 					selectedValues={filters.status}

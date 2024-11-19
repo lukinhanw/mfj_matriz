@@ -1,15 +1,17 @@
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import {
 	AcademicCapIcon,
 	UserGroupIcon,
-	UsersIcon
+	UsersIcon,
+	UserIcon
 } from '@heroicons/react/24/outline'
 
 const icons = {
 	course: AcademicCapIcon,
 	employee: UserGroupIcon,
-	client: UsersIcon
+	client: UsersIcon,
+	user: UserIcon
 }
 
 function ActivityFeed({ activities }) {
@@ -44,7 +46,7 @@ function ActivityFeed({ activities }) {
 														{activity.description}
 													</p>
 													<div className="mt-1 text-sm text-gray-400 dark:text-gray-500">
-														{format(new Date(activity.date), "d 'de' MMMM 'às' HH:mm", {
+														{format(parseISO(activity.date), "d 'de' MMMM 'às' HH:mm", {
 															locale: ptBR
 														})}
 													</div>

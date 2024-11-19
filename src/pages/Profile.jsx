@@ -1,37 +1,78 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 import useAuthStore from '../store/authStore'
+import MaskedInput from '../components/common/MaskedInput'
+import PasswordChangeModal from '../components/profile/PasswordChangeModal'
+import { formatCpfCnpj, formatPhoneNumber } from '../utils/helpers'
 
 function Profile() {
   const { user, setAuth } = useAuthStore()
   const [isEditing, setIsEditing] = useState(false)
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
+  const [documentType, setDocumentType] = useState(user?.role === 'empresa' ? 'cnpj' : 'cpf')
   
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     reset
   } = useForm({
     defaultValues: {
       name: user?.name || '',
       email: user?.email || '',
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
+      document: user?.document || '',
+      phone: user?.phone || ''
     }
   })
 
+  const validateDocument = (value) => {
+    const numbers = value.replace(/\D/g, '')
+    
+    if (documentType === 'cpf') {
+      if (numbers.length !== 11) {
+        return 'CPF deve ter 11 dígitos'
+      }
+    } else {
+      if (numbers.length !== 14) {
+        return 'CNPJ deve ter 14 dígitos'
+      }
+    }
+    return true
+  }
+
+  const validatePhone = (value) => {
+    const numbers = value.replace(/\D/g, '')
+    if (numbers.length < 10 || numbers.length > 11) {
+      return 'Telefone deve ter 10 ou 11 dígitos'
+    }
+    return true
+  }
+
   const onSubmit = async (data) => {
     try {
-      // Simulação de API - Substituir por chamada real
-      const updatedUser = {
-        ...user,
+      // Prepare payload
+      const payload = {
         name: data.name,
-        email: data.email
+        email: data.email,
+        phone: data.phone.replace(/\D/g, ''),
       }
+
+      if (user?.role === 'empresa') {
+        payload.document = data.document.replace(/\D/g, '')
+      } else if (['gestor', 'colaborador'].includes(user?.role)) {
+        payload.cpf = data.document.replace(/\D/g, '')
+      }
+
+      // Simulate API call - Replace with actual API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000))
       
-      setAuth(updatedUser, user.token)
+      setAuth({
+        ...user,
+        ...payload
+      })
+
       toast.success(
         <div>
           <span className="font-medium text-green-600">Sucesso!</span>
@@ -40,12 +81,6 @@ function Profile() {
         </div>
       )
       setIsEditing(false)
-      reset({
-        ...data,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      })
     } catch (error) {
       toast.error(
         <div>
@@ -74,12 +109,73 @@ function Profile() {
                 type="text"
                 {...register('name', { required: 'Nome é obrigatório' })}
                 disabled={!isEditing}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500 dark:bg-gray-700 dark:text-gray-300"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
               />
               {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>
               )}
             </div>
+
+            {user?.role === 'empresa' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Tipo de Documento
+                </label>
+                <div className="mt-2 flex gap-4">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      value="cpf"
+                      checked={documentType === 'cpf'}
+                      onChange={(e) => setDocumentType(e.target.value)}
+                      className="form-radio h-4 w-4 text-primary-600 focus:ring-primary-500"
+                      disabled={!isEditing}
+                    />
+                    <span className="ml-2 text-gray-700 dark:text-gray-300">CPF</span>
+                  </label>
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      value="cnpj"
+                      checked={documentType === 'cnpj'}
+                      onChange={(e) => setDocumentType(e.target.value)}
+                      className="form-radio h-4 w-4 text-primary-600 focus:ring-primary-500"
+                      disabled={!isEditing}
+                    />
+                    <span className="ml-2 text-gray-700 dark:text-gray-300">CNPJ</span>
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {(['gestor', 'colaborador', 'empresa'].includes(user?.role)) && (
+              <div>
+                <label htmlFor="document" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {user?.role === 'empresa' ? (documentType === 'cpf' ? 'CPF' : 'CNPJ') : 'CPF'}
+                </label>
+                <Controller
+                  name="document"
+                  control={control}
+                  rules={{
+                    required: 'Documento é obrigatório',
+                    validate: validateDocument
+                  }}
+                  render={({ field }) => (
+                    field.value = formatCpfCnpj(field.value),
+                    <MaskedInput
+                      {...field}
+                      mask={documentType}
+                      placeholder={documentType === 'cpf' ? '999.999.999-99' : '99.999.999/9999-99'}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                      disabled={!isEditing}
+                    />
+                  )}
+                />
+                {errors.document && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.document.message}</p>
+                )}
+              </div>
+            )}
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -95,74 +191,60 @@ function Profile() {
                   }
                 })}
                 disabled={!isEditing}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500 dark:bg-gray-700 dark:text-gray-300"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
               )}
             </div>
 
-            {isEditing && (
-              <>
-                <div>
-                  <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Senha Atual
-                  </label>
-                  <input
-                    type="password"
-                    {...register('currentPassword')}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:text-gray-300"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Nova Senha
-                  </label>
-                  <input
-                    type="password"
-                    {...register('newPassword', {
-                      minLength: {
-                        value: 6,
-                        message: 'A senha deve ter no mínimo 6 caracteres'
-                      }
-                    })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:text-gray-300"
-                  />
-                  {errors.newPassword && (
-                    <p className="mt-1 text-sm text-red-600">{errors.newPassword.message}</p>
+            {(['gestor', 'colaborador', 'empresa'].includes(user?.role)) && (
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Telefone
+                </label>
+                <Controller
+                  name="phone"
+                  control={control}
+                  rules={{
+                    required: 'Telefone é obrigatório',
+                    validate: validatePhone
+                  }}
+                  render={({ field }) => (
+                    field.value = formatPhoneNumber(field.value),
+                    <MaskedInput
+                      {...field}
+                      mask="phone"
+                      placeholder="(99) 99999-9999"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                      disabled={!isEditing}
+                    />
                   )}
-                </div>
-
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Confirmar Nova Senha
-                  </label>
-                  <input
-                    type="password"
-                    {...register('confirmPassword', {
-                      validate: (value, formValues) => 
-                        !formValues.newPassword || value === formValues.newPassword || 
-                        'As senhas não coincidem'
-                    })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:text-gray-300"
-                  />
-                  {errors.confirmPassword && (
-                    <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
-                  )}
-                </div>
-              </>
+                />
+                {errors.phone && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.phone.message}</p>
+                )}
+              </div>
             )}
 
             <div className="flex justify-end gap-3">
               {!isEditing ? (
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(true)}
-                  className="btn-primary"
-                >
-                  Editar Perfil
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsPasswordModalOpen(true)}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
+                  >
+                    Alterar Senha
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(true)}
+                    className="btn-primary"
+                  >
+                    Editar Perfil
+                  </button>
+                </div>
               ) : (
                 <>
                   <button
@@ -171,7 +253,7 @@ function Profile() {
                       setIsEditing(false)
                       reset()
                     }}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
                   >
                     Cancelar
                   </button>
@@ -187,6 +269,11 @@ function Profile() {
           </form>
         </div>
       </div>
+
+      <PasswordChangeModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
     </div>
   )
 }

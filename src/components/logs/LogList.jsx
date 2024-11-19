@@ -1,37 +1,41 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import axios from 'axios'
+import { toast } from 'react-hot-toast'
+import useAuthStore from '../../store/authStore'
 
-// Mock data - substituir por chamada à API
-const mockLogs = [
-	{
-		id: 1,
-		type: 'user',
-		action: 'login',
-		description: 'Login realizado com sucesso',
-		user: { id: 1, name: 'João Silva' },
-		timestamp: '2024-03-15T10:30:00'
-	},
-	{
-		id: 2,
-		type: 'course',
-		action: 'create',
-		description: 'Novo curso criado: React Avançado',
-		user: { id: 2, name: 'Maria Santos' },
-		timestamp: '2024-03-15T09:15:00'
-	},
-	{
-		id: 3,
-		type: 'system',
-		action: 'backup',
-		description: 'Backup do sistema realizado automaticamente',
-		user: { id: 1, name: 'Sistema' },
-		timestamp: '2024-03-14T16:45:00'
-	}
-]
+function LogList({ filters, searchTerm, itemsPerPage = 10 }) {
+	const { token } = useAuthStore()
+	const [logs, setLogs] = useState([])
+	const [isLoading, setIsLoading] = useState(true)
+	const [currentPage, setCurrentPage] = useState(1)
+	const [totalPages, setTotalPages] = useState(1)
 
-function LogList({ filters, searchTerm }) {
-	const [logs] = useState(mockLogs)
+	useEffect(() => {
+		const fetchLogs = async () => {
+			setIsLoading(true)
+			try {
+				const response = await axios.get(
+					`https://api-matriz-mfj.8bitscompany.com/admin/logs?page=${currentPage}&limit=${itemsPerPage}`,
+					{
+						headers: { Authorization: `Bearer ${token}` }
+					}
+				)
+				setLogs(response.data.logs)
+				setTotalPages(Math.ceil(response.data.total / itemsPerPage))
+			} catch (error) {
+				console.error('Erro ao carregar logs:', error)
+				toast.error('Erro ao carregar logs')
+			} finally {
+				setIsLoading(false)
+			}
+		}
+
+		if (token) {
+			fetchLogs()
+		}
+	}, [token, currentPage, itemsPerPage])
 
 	const getDateRange = () => {
 		const now = new Date()
@@ -97,6 +101,19 @@ function LogList({ filters, searchTerm }) {
 		return true
 	})
 
+	const handlePageChange = (newPage) => {
+		setCurrentPage(newPage)
+		window.scrollTo(0, 0)
+	}
+
+	if (isLoading) {
+		return (
+			<div className="text-center py-12">
+				<p className="text-gray-500 dark:text-gray-400">Carregando logs...</p>
+			</div>
+		)
+	}
+
 	if (filteredLogs.length === 0) {
 		return (
 			<div className="text-center py-12">
@@ -106,45 +123,68 @@ function LogList({ filters, searchTerm }) {
 	}
 
 	return (
-		<div className="overflow-hidden">
-			<ul className="divide-y divide-gray-200 dark:divide-gray-700">
-				{filteredLogs.map((log) => (
-					<li key={log.id} className="p-6">
-						<div className="flex items-center justify-between">
-							<div className="flex-1">
-								<p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-									{log.description}
-								</p>
-								<div className="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
-									<span className="mr-2">{log.user.name}</span>
-									<span>•</span>
-									<span className="ml-2">
-										{format(new Date(log.timestamp), "d 'de' MMMM 'às' HH:mm", {
-											locale: ptBR
-										})}
-									</span>
+		<div>
+			<div className="overflow-hidden dark:bg-gray-800">
+				<ul className="divide-y divide-gray-200 dark:divide-gray-700">
+					{filteredLogs.map((log) => (
+						<li key={log.id} className="p-6">
+							<div className="flex items-center justify-between">
+								<div className="flex-1">
+									<p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+										{log.description}
+									</p>
+									<div className="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
+										<span className="mr-2">{log.user.name}</span>
+										<span>•</span>
+										<span className="ml-2">
+											{format(new Date(log.timestamp), "d 'de' MMMM 'às' HH:mm", {
+												locale: ptBR
+											})}
+										</span>
+									</div>
 								</div>
-							</div>
-							<div>
-								<span
-									className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${log.type === 'system'
+								<div>
+									<span
+										className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${log.type === 'system'
 											? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
 											: log.type === 'user'
 												? 'bg-blue-100 text-blue-800 dark:bg-blue-700 dark:text-blue-200'
 												: 'bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-200'
-										}`}
-								>
-									{log.type === 'system'
-										? 'Sistema'
-										: log.type === 'user'
-											? 'Usuário'
-											: 'Curso'}
-								</span>
+											}`}
+									>
+										{log.type === 'system'
+											? 'Sistema'
+											: log.type === 'user'
+												? 'Usuário'
+												: 'Curso'}
+									</span>
+								</div>
 							</div>
-						</div>
-					</li>
-				))}
-			</ul>
+						</li>
+					))}
+				</ul>
+			</div>
+
+			{/* Paginação */}
+			<div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+				<button
+					onClick={() => handlePageChange(currentPage - 1)}
+					disabled={currentPage === 1}
+					className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600"
+				>
+					Anterior
+				</button>
+				<span className="text-sm text-gray-700 dark:text-gray-300">
+					Página {currentPage} de {totalPages}
+				</span>
+				<button
+					onClick={() => handlePageChange(currentPage + 1)}
+					disabled={currentPage === totalPages}
+					className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600"
+				>
+					Próxima
+				</button>
+			</div>
 		</div>
 	)
 }

@@ -1,56 +1,45 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import StatsCard from '../components/dashboard/StatsCard'
 import ActivityFeed from '../components/dashboard/ActivityFeed'
-
-const mockData = {
-	stats: {
-		totalCompanies: 25,
-		totalDepartments: 48,
-		totalManagers: 35,
-		totalEmployees: 150,
-		totalCourses: 42,
-		totalCredits: 1000,
-		usedCredits: 750,
-		availableCredits: 250
-	},
-	courseCompletionData: [
-		{ name: 'React Básico', completed: 25, inProgress: 15, notStarted: 10 },
-		{ name: 'JavaScript Avançado', completed: 20, inProgress: 12, notStarted: 8 },
-		{ name: 'Node.js', completed: 18, inProgress: 10, notStarted: 7 },
-		{ name: 'Python', completed: 22, inProgress: 13, notStarted: 5 },
-		{ name: 'UX/UI Design', completed: 15, inProgress: 8, notStarted: 12 }
-	],
-	creditsByCompany: [
-		{ name: 'Empresa A', value: 300, color: '#0284c7' },
-		{ name: 'Empresa B', value: 200, color: '#22c55e' },
-		{ name: 'Empresa C', value: 150, color: '#eab308' },
-		{ name: 'Empresa D', value: 100, color: '#ef4444' }
-	],
-	activities: [
-		{
-			id: 1,
-			type: 'course',
-			description: 'Novo curso adicionado: React Avançado',
-			date: '2024-03-15T10:30:00'
-		},
-		{
-			id: 2,
-			type: 'employee',
-			description: 'Funcionário João Silva cadastrado',
-			date: '2024-03-15T09:15:00'
-		},
-		{
-			id: 3,
-			type: 'client',
-			description: 'Cliente Maria Santos vinculada ao curso de JavaScript',
-			date: '2024-03-14T16:45:00'
-		}
-	]
-}
+import axios from 'axios'
+import useAuthStore from '../store/authStore'
+import { toast } from 'react-hot-toast'
 
 function Dashboard() {
-	const { stats, courseCompletionData, creditsByCompany, activities } = mockData
+	const [dashboardData, setDashboardData] = useState(null)
+	const [isLoading, setIsLoading] = useState(true)
+	const { token } = useAuthStore()
+
+	useEffect(() => {
+		const fetchDashboardData = async () => {
+			try {
+				setIsLoading(true)
+				const response = await axios.get(
+					'https://api-matriz-mfj.8bitscompany.com/admin/dashboard',
+					{
+						headers: { Authorization: `Bearer ${token}` }
+					}
+				)
+				setDashboardData(response.data)
+			} catch (error) {
+				console.error('Erro ao buscar dados do dashboard:', error)
+				toast.error('Erro ao carregar dados do dashboard')
+			} finally {
+				setIsLoading(false)
+			}
+		}
+
+		if (token) {
+			fetchDashboardData()
+		}
+	}, [token])
+
+	if (isLoading || !dashboardData) {
+		return <div className="flex justify-center items-center h-full">
+			<p className="text-gray-500">Carregando dashboard...</p>
+		</div>
+	}
 
 	const CustomTooltip = ({ active, payload, label }) => {
 		if (active && payload && payload.length) {
@@ -68,58 +57,51 @@ function Dashboard() {
 		return null
 	}
 
+	const formattedCreditsByCompany = dashboardData.creditsByCompany.map(company => ({
+		...company,
+		value: parseInt(company.value, 10) // Converte string para número
+	}));
+
 	return (
 		<div className="space-y-6">
-
 			{/* Estatísticas Principais */}
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 				<StatsCard
 					title="Total de Empresas"
-					value={stats.totalCompanies}
+					value={dashboardData.stats.totalCompanies}
 					icon="companies"
 				/>
 				<StatsCard
 					title="Total de Setores"
-					value={stats.totalDepartments}
+					value={dashboardData.stats.totalDepartments}
 					icon="departments"
 				/>
 				<StatsCard
 					title="Total de Gestores"
-					value={stats.totalManagers}
+					value={dashboardData.stats.totalManagers}
 					icon="managers"
 				/>
 				<StatsCard
 					title="Total de Colaboradores"
-					value={stats.totalEmployees}
+					value={dashboardData.stats.totalEmployees}
 					icon="employees"
 				/>
 			</div>
 
-			{/* Métricas de Créditos */}
 			<div className="grid gap-6 lg:grid-cols-2">
-				{/* Gráfico de Conclusão de Cursos */}
+				{/* Gráfico de Inscrições em Cursos */}
 				<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
 					<h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-						Status dos Cursos
+						Inscrições por Curso
 					</h2>
 					<div className="h-80">
 						<ResponsiveContainer width="100%" height="100%">
-							<BarChart data={courseCompletionData}>
+							<BarChart data={dashboardData.courseCompletionData}>
 								<CartesianGrid strokeDasharray="3 3" stroke="#374151" />
 								<XAxis dataKey="name" stroke="#9CA3AF" />
 								<YAxis stroke="#9CA3AF" />
-								<Tooltip
-									content={<CustomTooltip />}
-									contentStyle={{
-										backgroundColor: 'rgb(31 41 55)',
-										border: 'none',
-										borderRadius: '0.5rem',
-										color: '#F3F4F6'
-									}}
-								/>
-								<Bar dataKey="completed" name="Concluídos" stackId="a" fill="#22c55e" />
-								<Bar dataKey="inProgress" name="Em Andamento" stackId="a" fill="#eab308" />
-								<Bar dataKey="notStarted" name="Não Iniciados" stackId="a" fill="#ef4444" />
+								<Tooltip content={<CustomTooltip />} />
+								<Bar dataKey="subscriptions" name="Inscrições" fill="#22c55e" />
 							</BarChart>
 						</ResponsiveContainer>
 					</div>
@@ -134,25 +116,32 @@ function Dashboard() {
 						<ResponsiveContainer width="100%" height="100%">
 							<PieChart>
 								<Pie
-									data={creditsByCompany}
+									data={formattedCreditsByCompany}
 									cx="50%"
 									cy="50%"
-									labelLine={false}
+									labelLine
 									outerRadius={120}
 									fill="#8884d8"
 									dataKey="value"
-									label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+									nameKey="name"
+									label={({ name, value }) => `${name}: ${value}`}
 								>
-									{creditsByCompany.map((entry, index) => (
+									{formattedCreditsByCompany.map((entry, index) => (
 										<Cell key={`cell-${index}`} fill={entry.color} />
 									))}
 								</Pie>
 								<Tooltip
-									contentStyle={{
-										backgroundColor: '#F9FAFB',
-										border: 'none',
-										borderRadius: '0.5rem',
-										color: '#F9FAFB'
+									content={({ active, payload }) => {
+										if (active && payload && payload.length) {
+											const data = payload[0].payload;
+											return (
+												<div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded shadow-sm">
+													<p className="font-medium" style={{ color: data.color }}>{data.name}</p>
+													<p className="text-gray-600 dark:text-gray-400">Créditos: {data.value}</p>
+												</div>
+											);
+										}
+										return null;
 									}}
 								/>
 							</PieChart>
@@ -165,20 +154,20 @@ function Dashboard() {
 			<div className="grid gap-6 md:grid-cols-3">
 				<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
 					<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total de Créditos</h3>
-					<p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-gray-100">{stats.totalCredits}</p>
+					<p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-gray-100">{dashboardData.stats.totalCredits}</p>
 				</div>
 				<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
 					<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Créditos Utilizados</h3>
-					<p className="mt-2 text-3xl font-semibold text-green-600 dark:text-green-400">{stats.usedCredits}</p>
+					<p className="mt-2 text-3xl font-semibold text-green-600 dark:text-green-400">2</p>
 				</div>
 				<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
 					<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Créditos Disponíveis</h3>
-					<p className="mt-2 text-3xl font-semibold text-blue-600 dark:text-blue-400">{stats.availableCredits}</p>
+					<p className="mt-2 text-3xl font-semibold text-blue-600 dark:text-blue-400">{dashboardData.stats.availableCredits}</p>
 				</div>
 			</div>
 
 			{/* Feed de Atividades */}
-			<ActivityFeed activities={activities} />
+			<ActivityFeed activities={dashboardData.activities} />
 		</div>
 	)
 }

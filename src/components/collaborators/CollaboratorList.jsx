@@ -65,7 +65,7 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 				'https://api-matriz-mfj.8bitscompany.com/admin/deletarColaborador',
 				{
 					headers: { Authorization: `Bearer ${token}` },
-					data: { id: confirmModal.collaboratorId }
+					data: { collaboratorId: confirmModal.collaboratorId }
 				}
 			)
 
