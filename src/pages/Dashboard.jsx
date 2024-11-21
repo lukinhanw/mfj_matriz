@@ -36,8 +36,8 @@ function Dashboard() {
 	}, [token])
 
 	if (isLoading || !dashboardData) {
-		return <div className="flex justify-center items-center h-full">
-			<p className="text-gray-500">Carregando dashboard...</p>
+		return <div className="flex justify-center items-center h-full text-white">
+			<span class="loader mt-5"></span>
 		</div>
 	}
 
