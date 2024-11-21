@@ -45,7 +45,8 @@ export default function SystemLogs() {
 						<option value="100">100 itens</option>
 						<option value="500">500 itens</option>
 						<option value="1000">1000 itens</option>
-						<option value="all">Todos</option>
+						<option value="10000">10000 itens</option>
+						<option value="100000">100000 itens</option>
 					</select>
 				</div>
 				<LogList 

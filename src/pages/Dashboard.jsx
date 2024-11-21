@@ -9,14 +9,29 @@ import { toast } from 'react-hot-toast'
 function Dashboard() {
 	const [dashboardData, setDashboardData] = useState(null)
 	const [isLoading, setIsLoading] = useState(true)
-	const { token } = useAuthStore()
+	const { user, token } = useAuthStore()
 
 	useEffect(() => {
 		const fetchDashboardData = async () => {
+			let url;
+			switch (user.role) {
+				case 'admin':
+					url = 'https://api-matriz-mfj.8bitscompany.com/admin/dashboard'
+					break
+				case 'empresa':
+					url = 'https://api-matriz-mfj.8bitscompany.com/company/dashboard'
+					break
+				case 'gestor':
+					url = 'https://api-matriz-mfj.8bitscompany.com/manager/dashboard'
+					break
+				case 'colaborador':
+					url = 'https://api-matriz-mfj.8bitscompany.com/collaborator/dashboard'
+					break
+			}
 			try {
 				setIsLoading(true)
 				const response = await axios.get(
-					'https://api-matriz-mfj.8bitscompany.com/admin/dashboard',
+					url,
 					{
 						headers: { Authorization: `Bearer ${token}` }
 					}
@@ -37,7 +52,7 @@ function Dashboard() {
 
 	if (isLoading || !dashboardData) {
 		return <div className="flex justify-center items-center h-full text-white">
-			<span class="loader mt-5"></span>
+			<span className="loader mt-5"></span>
 		</div>
 	}
 

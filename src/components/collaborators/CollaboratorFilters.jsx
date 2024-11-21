@@ -104,7 +104,7 @@ function ActiveFilters({ filters, companies, departments, onRemove }) {
 
 	return (
 		<div className="mt-4">
-			<h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Filtros ativos:</h4>
+			<h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Filtros ativos:</h4>
 			<div className="mt-2 flex flex-wrap gap-2">
 				{activeFilters.map((filter, index) => (
 					<span
@@ -174,25 +174,29 @@ function CollaboratorFilters({ filters, onChange, companies = [], departments = 
 					options={statusOptions}
 				/>
 
-				<FilterDropdown
-					label="Empresa"
-					selectedValues={filters.companies}
-					onChange={(values) => handleFilterChange('companies', values)}
-					options={companies.map(company => ({
-						value: company.id.toString(),
-						label: company.name
-					}))}
-				/>
+				{companies.length > 0 && (
+					<FilterDropdown
+						label="Empresa"
+						selectedValues={filters.companies}
+						onChange={(values) => handleFilterChange('companies', values)}
+						options={companies.map(company => ({
+							value: company.id.toString(),
+							label: company.name
+						}))}
+					/>
+				)}
 
-				<FilterDropdown
-					label="Setor"
-					selectedValues={filters.departments}
-					onChange={(values) => handleFilterChange('departments', values)}
-					options={filteredDepartments.map(dept => ({
-						value: dept.id.toString(),
-						label: dept.name
-					}))}
-				/>
+				{departments.length > 0 && (
+					<FilterDropdown
+						label="Setor"
+						selectedValues={filters.departments}
+						onChange={(values) => handleFilterChange('departments', values)}
+						options={departments.map(dept => ({
+							value: dept.id.toString(),
+							label: dept.name
+						}))}
+					/>
+				)}
 			</div>
 
 			<ActiveFilters

@@ -142,7 +142,7 @@ function ActiveFilters({ filters, onRemove, companies, departments, courses }) {
 
 	return (
 		<div className="mt-4">
-			<h4 className="text-sm font-medium text-gray-700">Filtros ativos:</h4>
+			<h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Filtros ativos:</h4>
 			<div className="mt-2 flex flex-wrap gap-2">
 				{activeFilters.map((filter, index) => (
 					<span
@@ -171,38 +171,8 @@ function ActiveFilters({ filters, onRemove, companies, departments, courses }) {
 	)
 }
 
-export default function ReportFilters({ filters, onChange }) {
-	const { token } = useAuthStore()
-	const [companies, setCompanies] = useState([])
-	const [departments, setDepartments] = useState([])
-	const [courses, setCourses] = useState([])
-
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const [companiesResponse, departmentsResponse, coursesResponse] = await Promise.all([
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarEmpresas', {
-						headers: { Authorization: `Bearer ${token}` }
-					}),
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarSetores', {
-						headers: { Authorization: `Bearer ${token}` }
-					}),
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarCursos', {
-						headers: { Authorization: `Bearer ${token}` }
-					})
-				])
-
-				setCompanies(companiesResponse.data)
-				setDepartments(departmentsResponse.data)
-				setCourses(coursesResponse.data)
-			} catch (error) {
-				console.error('Error fetching data:', error)
-				toast.error('Erro ao carregar dados dos filtros')
-			}
-		}
-
-		fetchData()
-	}, [token])
+export default function ReportFilters({ filters, onChange, companies, departments, courses }) {
+	const { user } = useAuthStore()
 
 	const handleFilterChange = (key, values) => {
 		onChange({ ...filters, [key]: values })
@@ -268,20 +238,22 @@ export default function ReportFilters({ filters, onChange }) {
 			)}
 
 			<div className="grid gap-4 md:grid-cols-3">
-				<div>
-					<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
-						Empresa
-					</label>
-					<FilterDropdown
-						label="Selecionar empresas"
-						selectedValues={filters.company}
-						onChange={(values) => handleFilterChange('company', values)}
-						options={companies?.map(company => ({
-							value: company.id.toString(),
-							label: company.name
-						}))}
-					/>
-				</div>
+				{user.role === 'admin' &&
+					<div>
+						<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
+							Empresa
+						</label>
+						<FilterDropdown
+							label="Selecionar empresas"
+							selectedValues={filters.company}
+							onChange={(values) => handleFilterChange('company', values)}
+							options={companies?.map(company => ({
+								value: company.id.toString(),
+								label: company.name
+							}))}
+						/>
+					</div>
+				}
 
 				<div>
 					<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
@@ -308,10 +280,11 @@ export default function ReportFilters({ filters, onChange }) {
 						onChange={(values) => handleFilterChange('course', values)}
 						options={courses?.map(course => ({
 							value: course.id.toString(),
-							label: course.title
+							label: course.name
 						}))}
 					/>
 				</div>
+
 			</div>
 
 			<ActiveFilters filters={filters} onRemove={handleRemoveFilter} companies={companies} departments={departments} courses={courses} />

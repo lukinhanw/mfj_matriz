@@ -184,7 +184,7 @@ function CompanyModal({ open, onClose, company }) {
 												<input
 													type="text"
 													{...register('name', { required: 'Nome é obrigatório' })}
-													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
 													disabled={isSubmitting}
 												/>
 												{errors.name && (
@@ -205,7 +205,7 @@ function CompanyModal({ open, onClose, company }) {
 															value="cpf"
 															checked={documentType === 'cpf'}
 															onChange={(e) => setDocumentType(e.target.value)}
-															className="form-radio h-4 w-4 text-primary-600 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+															className="form-radio h-4 w-4 text-orange-600 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600"
 															disabled={isSubmitting}
 														/>
 														<span className="ml-2 dark:text-gray-300">CPF</span>
@@ -216,7 +216,7 @@ function CompanyModal({ open, onClose, company }) {
 															value="cnpj"
 															checked={documentType === 'cnpj'}
 															onChange={(e) => setDocumentType(e.target.value)}
-															className="form-radio h-4 w-4 text-primary-600 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+															className="form-radio h-4 w-4 text-orange-600 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600"
 															disabled={isSubmitting}
 														/>
 														<span className="ml-2 dark:text-gray-300">CNPJ</span>
@@ -247,7 +247,7 @@ function CompanyModal({ open, onClose, company }) {
 																	? '999.999.999-99'
 																	: '99.999.999/9999-99'
 															}
-															className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
+															className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
 															disabled={isSubmitting}
 														/>
 													)}
@@ -275,7 +275,7 @@ function CompanyModal({ open, onClose, company }) {
 															{...field}
 															mask="phone"
 															placeholder="(99) 99999-9999"
-															className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
+															className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
 															disabled={isSubmitting}
 														/>
 													)}
@@ -303,7 +303,7 @@ function CompanyModal({ open, onClose, company }) {
 															message: 'Email inválido'
 														}
 													})}
-													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
 													disabled={isSubmitting}
 												/>
 												{errors.email && (
@@ -316,7 +316,7 @@ function CompanyModal({ open, onClose, company }) {
 											<div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
 												<button
 													type="submit"
-													className="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 disabled:bg-primary-300 sm:ml-3 sm:w-auto dark:bg-primary-700 dark:hover:bg-primary-600 dark:disabled:bg-primary-400"
+													className="inline-flex w-full justify-center rounded-md bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 disabled:bg-orange-300 sm:ml-3 sm:w-auto dark:bg-orange-700 dark:hover:bg-orange-600 dark:disabled:bg-orange-400"
 													disabled={isSubmitting}
 												>
 													{isSubmitting

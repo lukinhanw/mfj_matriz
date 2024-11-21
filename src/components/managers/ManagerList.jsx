@@ -10,10 +10,12 @@ import ConfirmationModal from '../common/ConfirmationModal'
 import axios from 'axios'
 import useAuthStore from '../../store/authStore'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
+import { usePermissions } from '../../hooks/usePermissions'
 
 export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
-	
-	const { token } = useAuthStore()
+
+	const { user, token } = useAuthStore()
+	const { can } = usePermissions()
 	const [managers, setManagers] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
 	const [confirmModal, setConfirmModal] = useState({
@@ -27,8 +29,23 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 		const fetchManagers = async () => {
 			try {
 				setIsLoading(true)
+				let url;
+				switch (user.role) {
+					case 'admin':
+						url = 'https://api-matriz-mfj.8bitscompany.com/admin/listarGestores'
+						break
+					case 'empresa':
+						url = 'https://api-matriz-mfj.8bitscompany.com/company/listarGestores'
+						break
+					case 'gestor':
+						url = 'https://api-matriz-mfj.8bitscompany.com/manager/listarGestores'
+						break
+					case 'colaborador':
+						url = 'https://api-matriz-mfj.8bitscompany.com/collaborator/listarGestores'
+						break
+				}
 				const response = await axios.get(
-					'https://api-matriz-mfj.8bitscompany.com/admin/listarGestores',
+					url,
 					{
 						headers: { Authorization: `Bearer ${token}` }
 					}
@@ -69,7 +86,7 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 					<span className="text-sm text-green-950">Gestor removido com sucesso</span>
 				</div>
 			)
-			 // Atualiza a lista após deletar
+			// Atualiza a lista após deletar
 			refresh()
 			setConfirmModal({ show: false, type: null, managerId: null, currentStatus: null })
 		} catch (error) {
@@ -229,42 +246,49 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 								<td className="px-6 py-4 whitespace-nowrap">
 									<span
 										className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${manager.status === "active"
-												? 'bg-green-100 text-green-800'
-												: 'bg-red-100 text-red-800'
+											? 'bg-green-100 text-green-800'
+											: 'bg-red-100 text-red-800'
 											}`}
 									>
 										{manager.status === "active" ? 'Ativo' : 'Inativo'}
 									</span>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-									<button
-										onClick={() => onEdit(manager)}
-										className="text-primary-600 hover:text-primary-900 mr-4"
-										title="Editar"
-									>
-										<PencilIcon className="h-5 w-5" />
-									</button>
-									<button
-										onClick={() => openConfirmModal('status', manager.id, manager.status)}
-										className={`${manager.status === "active"
-												? 'text-red-600 hover:text-red-900'
-												: 'text-green-600 hover:text-green-900'
-											} mr-4`}
-										title={manager.status === "active" ? 'Desativar' : 'Ativar'}
-									>
-										{manager.status === "active" ? (
-											<NoSymbolIcon className="h-5 w-5" />
-										) : (
-											<CheckCircleIcon className="h-5 w-5" />
-										)}
-									</button>
-									<button
-										onClick={() => openConfirmModal('delete', manager.id)}
-										className="text-red-600 hover:text-red-900"
-										title="Excluir"
-									>
-										<TrashIcon className="h-5 w-5" />
-									</button>
+									{can('canEditManager') &&
+										<>
+											<button
+												onClick={() => onEdit(manager)}
+												className="text-primary-600 hover:text-primary-900 mr-4"
+												title="Editar"
+											>
+												<PencilIcon className="h-5 w-5" />
+											</button>
+
+											<button
+												onClick={() => openConfirmModal('status', manager.id, manager.status)}
+												className={`${manager.status === "active"
+													? 'text-red-600 hover:text-red-900'
+													: 'text-green-600 hover:text-green-900'
+													} mr-4`}
+												title={manager.status === "active" ? 'Desativar' : 'Ativar'}
+											>
+												{manager.status === "active" ? (
+													<NoSymbolIcon className="h-5 w-5" />
+												) : (
+													<CheckCircleIcon className="h-5 w-5" />
+												)}
+											</button>
+										</>
+									}
+									{can('canDeleteManager') &&
+										<button
+											onClick={() => openConfirmModal('delete', manager.id)}
+											className="text-red-600 hover:text-red-900"
+											title="Excluir"
+										>
+											<TrashIcon className="h-5 w-5" />
+										</button>
+									}
 								</td>
 							</tr>
 						))}

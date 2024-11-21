@@ -7,7 +7,7 @@ function Layout() {
 	const [sidebarOpen, setSidebarOpen] = useState(false)
 
 	return (
-		<div className="dark:bg-gray-900 min-h-screen">
+		<div className="bg-slate-100 dark:bg-gray-900 min-h-screen">
 			<Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
 			<div className="lg:pl-72">

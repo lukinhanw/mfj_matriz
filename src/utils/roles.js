@@ -16,7 +16,7 @@ export const ROUTE_PERMISSIONS = {
 	'/courses': [ROLES.ADMIN],
 	'/reports': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA],
 	'/reports_buy': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA],
-	'/logs': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA],
+	'/logs': [ROLES.ADMIN],
 	'/profile': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA]
 }
 
@@ -34,20 +34,23 @@ export const ACTION_PERMISSIONS = {
 		canDeleteManager: true,
 		canCreateCollaborator: true,
 		canEditCollaborator: true,
+		canEditCourseCollaborator: true,
 		canDeleteCollaborator: true,
+		canViewCreditsAssign: true,
 		canCreateCourse: true,
 		canEditCourse: true,
 		canDeleteCourse: true,
 		canAssignCourses: true,
 		canViewReports: true,
 		canViewLogs: true,
-		canExportData: true
+		canExportData: true,
 	},
 	[ROLES.GESTOR]: {
 		canViewManagers: false,
 		canViewCollaborators: true,
 		canCreateCollaborator: false,
 		canEditCollaborator: false,
+		canEditCourseCollaborator: false,
 		canDeleteCollaborator: false,
 		canAssignCourses: true,
 		canViewReports: true,
@@ -62,9 +65,10 @@ export const ACTION_PERMISSIONS = {
 	[ROLES.EMPRESA]: {
 		canViewManagers: true,
 		canViewCollaborators: true,
+		canEditCourseCollaborator: false,
 		canViewReports: true,
 		canViewLogs: true,
-		canExportData: true
+		canExportData: true,
 	}
 }
 
@@ -137,13 +141,21 @@ export const getNavigationByRole = (userRole) => {
 
 	// Common items for all roles
 	baseNavigation.push({
-		title: 'Relatórios de Uso',
+		title: 'Relatórios',
 		items: [
 			{ name: 'Relatórios de Uso', href: '/reports', icon: 'ChartBarIcon' },
-			{ name: 'Relatórios de Compras', href: '/reports_buy', icon: 'ChartBarIcon' },
-			{ name: 'Logs do Sistema', href: '/logs', icon: 'ClockIcon' }
+			{ name: 'Relatórios de Créditos', href: '/reports_buy', icon: 'ChartBarIcon' },
 		]
 	})
+
+	if (userRole === ROLES.ADMIN) {
+		baseNavigation.push({
+			title: 'Sistema',
+			items: [
+				{ name: 'Logs', href: '/logs', icon: 'ClockIcon' }
+			]
+		})
+	}
 
 	return baseNavigation
 }

@@ -23,7 +23,7 @@ function StatsCard({ title, value, icon }) {
 		<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
 			<div className="flex items-center">
 				<div className="flex-shrink-0">
-					<Icon className="h-8 w-8 text-primary-600 dark:text-primary-400" />
+					<Icon className="h-8 w-8 text-orange-600 dark:text-orange-400" />
 				</div>
 				<div className="ml-5 w-0 flex-1">
 					<dl>

@@ -1,10 +1,13 @@
-import { Fragment } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { NavLink } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
 import { getNavigationByRole } from '../utils/roles'
+import logo from '../assets/logo.png'
+import logoBlack from '../assets/logo-black.png'
+
 import {
 	HomeIcon,
 	BuildingOfficeIcon,
@@ -16,6 +19,7 @@ import {
 	ClockIcon,
 	ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/outline'
+import ConfirmationModal from './common/ConfirmationModal'
 
 const icons = {
 	HomeIcon,
@@ -33,12 +37,24 @@ export default function Sidebar({ sidebarOpen = false, setSidebarOpen }) {
 	const navigate = useNavigate()
 	const { user, logout } = useAuthStore()
 	const navigation = getNavigationByRole(user?.role)
+	const [logoutModalOpen, setLogoutModalOpen] = useState(false)
+	const [isDarkMode, setIsDarkMode] = useState(document.documentElement.classList.contains('dark'))
+
+	useEffect(() => {
+		const observer = new MutationObserver(() => {
+			setIsDarkMode(document.documentElement.classList.contains('dark'))
+		})
+		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+		return () => observer.disconnect()
+	}, [])
 
 	const handleLogout = () => {
-		if (window.confirm('Tem certeza que deseja sair?')) {
-			logout()
-			navigate('/login')
-		}
+		setLogoutModalOpen(true)
+	}
+
+	const confirmLogout = () => {
+		logout()
+		navigate('/login')
 	}
 
 	const SidebarContent = () => (
@@ -46,7 +62,7 @@ export default function Sidebar({ sidebarOpen = false, setSidebarOpen }) {
 			<div className="flex h-16 shrink-0 items-center justify-center border-b border-gray-200 dark:border-gray-700">
 				<img
 					className="h-8 w-auto"
-					src="https://fakeimg.pl/200x80"
+					src={isDarkMode ? logoBlack : logo}
 					alt="Logo"
 				/>
 			</div>
@@ -67,8 +83,8 @@ export default function Sidebar({ sidebarOpen = false, setSidebarOpen }) {
 												to={item.href}
 												className={({ isActive }) =>
 													`group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold hover:scale-105 transition duration-500 ${isActive
-														? 'bg-primary-50 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400'
-														: 'text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30'
+														? 'bg-orange-50 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400'
+														: 'text-gray-700 dark:text-gray-200 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/30'
 													}`
 												}
 												onClick={() => setSidebarOpen?.(false)}
@@ -91,8 +107,8 @@ export default function Sidebar({ sidebarOpen = false, setSidebarOpen }) {
 			<div className="border-t border-gray-200 dark:border-gray-700 p-4">
 				<div className="flex flex-col items-start space-y-3">
 					<div className="flex items-start space-x-3">
-						<div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center">
-							<span className="text-primary-700 dark:text-primary-400 font-semibold text-lg">
+						<div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-900/50 flex items-center justify-center">
+							<span className="text-orange-700 dark:text-orange-400 font-semibold text-lg">
 								{user?.name?.charAt(0).toUpperCase()}
 							</span>
 						</div>
@@ -174,6 +190,15 @@ export default function Sidebar({ sidebarOpen = false, setSidebarOpen }) {
 					<SidebarContent />
 				</div>
 			</div>
+			<ConfirmationModal
+				isOpen={logoutModalOpen}
+				onClose={() => setLogoutModalOpen(false)}
+				onConfirm={confirmLogout}
+				title="Sair"
+				message="Tem certeza que deseja sair?"
+				confirmText="Sair"
+				confirmStyle="danger"
+			/>
 		</>
 	)
 }

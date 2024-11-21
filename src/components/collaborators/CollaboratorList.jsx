@@ -13,9 +13,11 @@ import axios from 'axios'
 import useAuthStore from '../../store/authStore'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
 import CollaboratorModal from './CollaboratorModal'
+import { usePermissions } from '../../hooks/usePermissions'
 
 const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
-	const { token } = useAuthStore()
+	const { user, token } = useAuthStore()
+	const { can } = usePermissions()
 	const [collaborators, setCollaborators] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
 	const [confirmModal, setConfirmModal] = useState({
@@ -32,10 +34,25 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 	const [selectedCollaborator, setSelectedCollaborator] = useState(null);
 
 	const fetchCollaborators = async () => {
+		let url;
+		switch (user.role) {
+			case 'admin':
+				url = 'https://api-matriz-mfj.8bitscompany.com/admin/listarColaboradores'
+				break
+			case 'empresa':
+				url = 'https://api-matriz-mfj.8bitscompany.com/company/listarColaboradores'
+				break
+			case 'gestor':
+				url = 'https://api-matriz-mfj.8bitscompany.com/manager/listarColaboradores'
+				break
+			case 'colaborador':
+				url = 'https://api-matriz-mfj.8bitscompany.com/collaborator/listarColaboradores'
+				break
+		}
 		try {
 			setIsLoading(true)
 			const response = await axios.get(
-				'https://api-matriz-mfj.8bitscompany.com/admin/listarColaboradores',
+				url,
 				{
 					headers: { Authorization: `Bearer ${token}` }
 				}
@@ -56,8 +73,8 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 	}, [token])
 
 	useImperativeHandle(ref, () => ({
-        fetchCollaborators
-    }))
+		fetchCollaborators
+	}))
 
 	const handleCollaboratorSaved = () => {
 		fetchCollaborators();
@@ -247,7 +264,7 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Status
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+							<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Ações
 							</th>
 						</tr>
@@ -286,13 +303,16 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 									</span>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-									<button
-										onClick={() => handleEdit(collaborator)}
-										className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-600 mr-4"
-										title="Editar"
-									>
-										<PencilIcon className="h-5 w-5" />
-									</button>
+									{can('canEditCollaborator') &&
+
+										<button
+											onClick={() => handleEdit(collaborator)}
+											className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-600 mr-4"
+											title="Editar"
+										>
+											<PencilIcon className="h-5 w-5" />
+										</button>
+									}
 									<button
 										onClick={() => openCourseModal(collaborator)}
 										className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-600 mr-4"
@@ -300,27 +320,32 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 									>
 										<AcademicCapIcon className="h-5 w-5" />
 									</button>
-									<button
-										onClick={() => openConfirmModal('status', collaborator.id, collaborator.status)}
-										className={`${collaborator.status === 'active'
-											? 'text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600'
-											: 'text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-600'
-											} mr-4`}
-										title={collaborator.status === 'active' ? 'Desativar' : 'Ativar'}
-									>
-										{collaborator.status === 'active' ? (
-											<NoSymbolIcon className="h-5 w-5" />
-										) : (
-											<CheckCircleIcon className="h-5 w-5" />
-										)}
-									</button>
-									<button
-										onClick={() => openConfirmModal('delete', collaborator.id)}
-										className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600"
-										title="Excluir"
-									>
-										<TrashIcon className="h-5 w-5" />
-									</button>
+
+									{can('canEditCollaborator') &&
+										<button
+											onClick={() => openConfirmModal('status', collaborator.id, collaborator.status)}
+											className={`${collaborator.status === 'active'
+												? 'text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600'
+												: 'text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-600'
+												} mr-4`}
+											title={collaborator.status === 'active' ? 'Desativar' : 'Ativar'}
+										>
+											{collaborator.status === 'active' ? (
+												<NoSymbolIcon className="h-5 w-5" />
+											) : (
+												<CheckCircleIcon className="h-5 w-5" />
+											)}
+										</button>
+									}
+									{can('canDeleteCollaborator') &&
+										<button
+											onClick={() => openConfirmModal('delete', collaborator.id)}
+											className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600"
+											title="Excluir"
+										>
+											<TrashIcon className="h-5 w-5" />
+										</button>
+									}
 								</td>
 							</tr>
 						))}
@@ -334,7 +359,7 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 				collaborator={courseModal.collaborator}
 			/>
 
-			 <CollaboratorModal
+			<CollaboratorModal
 				open={modalOpen}
 				onClose={() => setModalOpen(false)}
 				collaborator={selectedCollaborator}

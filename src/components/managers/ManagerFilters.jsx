@@ -99,7 +99,7 @@ function ActiveFilters({ filters, companies, departments, onRemove }) {
 	if (activeFilters.length === 0) return null
 	return (
 		<div className="mt-4">
-			<h4 className="text-sm font-medium text-gray-700">Filtros ativos:</h4>
+			<h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Filtros ativos:</h4>
 			<div className="mt-2 flex flex-wrap gap-2">
 				{activeFilters.map((filter, index) => (
 					<span
@@ -148,44 +148,46 @@ function ManagerFilters({ filters, onChange, companies = [], departments = [] })
 		}
 	}
 
-	// Filter departments based on selected companies
-	const filteredDepartments = departments.filter(dept =>
-		filters.companies.length === 0 ||
-		filters.companies.includes(dept.empresa_id?.toString())
-	)
-
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
 				<FunnelIcon className="h-5 w-5" />
 				<span>Filtros:</span>
 			</div>
-			<div className="grid gap-4 md:grid-cols-3">
-				<FilterDropdown
-					label="Status"
-					selectedValues={filters.status}
-					onChange={(values) => handleFilterChange('status', values)}
-					options={statusOptions}
-				/>
-				<FilterDropdown
-					label="Empresa"
-					selectedValues={filters.companies}
-					onChange={(values) => handleFilterChange('companies', values)}
-					options={companies.map(company => ({
-						value: company.id.toString(),
-						label: company.name
-					}))}
-				/>
-				<FilterDropdown
-					label="Setor"
-					selectedValues={filters.departments}
-					onChange={(values) => handleFilterChange('departments', values)}
-					options={filteredDepartments.map(dept => ({
-						value: dept.id.toString(),
-						label: dept.name
-					}))}
-				/>
-			</div>
+	
+				<div className="grid gap-4 md:grid-cols-3">
+					<FilterDropdown
+						label="Status"
+						selectedValues={filters.status}
+						onChange={(values) => handleFilterChange('status', values)}
+						options={statusOptions}
+					/>
+
+					{companies.length > 0 && (
+						<FilterDropdown
+							label="Empresa"
+							selectedValues={filters.companies}
+							onChange={(values) => handleFilterChange('companies', values)}
+							options={companies.map(company => ({
+								value: company.id.toString(),
+								label: company.name
+							}))}
+						/>
+					)}
+
+					{departments.length > 0 && (
+						<FilterDropdown
+							label="Setor"
+							selectedValues={filters.departments}
+							onChange={(values) => handleFilterChange('departments', values)}
+							options={departments.map(dept => ({
+								value: dept.id.toString(),
+								label: dept.name
+							}))}
+						/>
+					)}
+				</div>
+			
 			<ActiveFilters
 				filters={filters}
 				companies={companies}

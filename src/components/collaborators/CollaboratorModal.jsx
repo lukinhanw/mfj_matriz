@@ -192,7 +192,7 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 												<input
 													type="text"
 													{...register('name', { required: 'Nome é obrigatório' })}
-													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
 													disabled={isSubmitting}
 												/>
 												{errors.name && (
@@ -218,7 +218,7 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 															message: 'Email inválido'
 														}
 													})}
-													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
 													disabled={isSubmitting}
 												/>
 												{errors.email && (
@@ -244,7 +244,7 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 															{...field}
 															mask="cpf"
 															placeholder="999.999.999-99"
-															className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+															className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
 															disabled={isSubmitting}
 														/>
 													)}
@@ -272,7 +272,7 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 															{...field}
 															mask="phone"
 															placeholder="(99) 99999-9999"
-															className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+															className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
 															disabled={isSubmitting}
 														/>
 													)}
@@ -295,7 +295,7 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 													{...register('companyId', {
 														required: 'Empresa é obrigatória'
 													})}
-													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
 													disabled={isSubmitting}
 												>
 													<option value="">Selecione uma empresa</option>
@@ -323,7 +323,7 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 													{...register('departmentId', {
 														required: 'Setor é obrigatório'
 													})}
-													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
 													disabled={isSubmitting || !selectedCompanyId}
 												>
 													<option value="">Selecione um setor</option>
@@ -344,7 +344,7 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 												<button
 													type="submit"
 													disabled={isSubmitting}
-													className="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 disabled:bg-primary-300 sm:ml-3 sm:w-auto"
+													className="inline-flex w-full justify-center rounded-md bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 disabled:bg-orange-300 sm:ml-3 sm:w-auto"
 												>
 													{isSubmitting ? 'Salvando...' : collaborator ? 'Atualizar' : 'Cadastrar'}
 												</button>

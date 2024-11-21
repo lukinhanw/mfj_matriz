@@ -36,8 +36,8 @@ function ActivityFeed({ activities }) {
 										)}
 										<div className="relative flex items-start space-x-3">
 											<div className="relative">
-												<div className="h-10 w-10 rounded-full bg-primary-50 dark:bg-primary-900/50 flex items-center justify-center ring-8 ring-white dark:ring-gray-800">
-													<Icon className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+												<div className="h-10 w-10 rounded-full bg-orange-50 dark:bg-orange-900/50 flex items-center justify-center ring-8 ring-white dark:ring-gray-800">
+													<Icon className="h-6 w-6 text-orange-600 dark:text-orange-400" />
 												</div>
 											</div>
 											<div className="min-w-0 flex-1">

@@ -4,21 +4,38 @@ import { XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import useAuthStore from '../../store/authStore'
+import { usePermissions } from '../../hooks/usePermissions'
 
 function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
-	const { token } = useAuthStore()
+	const { user, token } = useAuthStore()
 	const [courses, setCourses] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
 	const [selectedCourses, setSelectedCourses] = useState([])
 	const [searchTerm, setSearchTerm] = useState('')
 	const [companyInfo, setCompanyInfo] = useState({})
+	const { can } = usePermissions()
 
 	useEffect(() => {
 		const fetchCourses = async () => {
+			let url;
+			switch (user.role) {
+				case 'admin':
+					url = 'https://api-matriz-mfj.8bitscompany.com/admin/listarCursos'
+					break
+				case 'empresa':
+					url = 'https://api-matriz-mfj.8bitscompany.com/company/listarCursos'
+					break
+				case 'gestor':
+					url = 'https://api-matriz-mfj.8bitscompany.com/manager/listarCursos'
+					break
+				case 'colaborador':
+					url = 'https://api-matriz-mfj.8bitscompany.com/collaborator/listarCursos'
+					break
+			}
 			try {
 				setIsLoading(true)
 				const response = await axios.get(
-					'https://api-matriz-mfj.8bitscompany.com/admin/listarCursos',
+					url,
 					{
 						headers: { Authorization: `Bearer ${token}` }
 					}
@@ -37,7 +54,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 		}
 	}, [isOpen, token])
 
-	
+
 	useEffect(() => {
 		if (collaborator) {
 			// Definir os cursos selecionados inicialmente
@@ -58,7 +75,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 				}
 			}
 
-			fetchEmpresa()
+			user.role === 'admin' && fetchEmpresa()
 		}
 	}, [collaborator])
 
@@ -139,6 +156,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 	if (!collaborator) return null
 
 	const requiredCredits = calculateRequiredCredits(selectedCourses)
+
 	const filteredCourses = courses.filter(course =>
 		course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
 		course.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -189,14 +207,16 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 										</Dialog.Title>
 
 										<div className="mt-4">
-											<div className="flex items-center justify-between mb-4">
-												<div className="text-sm text-gray-500 dark:text-gray-400">
-													Créditos necessários: {requiredCredits}
+											{can('canViewCreditsAssign') &&
+												<div className="flex items-center justify-between mb-4">
+													<div className="text-sm text-gray-500 dark:text-gray-400">
+														Créditos necessários: {requiredCredits}
+													</div>
+													<div className="text-sm text-gray-500 dark:text-gray-400">
+														Créditos disponíveis: {companyInfo?.credits}
+													</div>
 												</div>
-												<div className="text-sm text-gray-500 dark:text-gray-400">
-													Créditos disponíveis: {companyInfo?.credits}
-												</div>
-											</div>
+											}
 
 											{/* Campo de busca */}
 											<div className="mb-4">
@@ -235,6 +255,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 																		type="checkbox"
 																		checked={selectedCourses.includes(course.id)}
 																		onChange={() => handleCourseToggle(course.id)}
+																		disabled={!can('canAssignCourses')}
 																		className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-primary-500"
 																	/>
 																	<div className="ml-3">
@@ -255,23 +276,25 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 												</div>
 											)}
 										</div>
+										{can('canAssignCourses') &&
+											<div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+												<button
+													type="button"
+													onClick={handleSave}
+													className="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 sm:ml-3 sm:w-auto"
+												>
+													Salvar
+												</button>
+												<button
+													type="button"
+													onClick={handleClose}
+													className="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto"
+												>
+													Cancelar
+												</button>
+											</div>
+										}
 
-										<div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-											<button
-												type="button"
-												onClick={handleSave}
-												className="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 sm:ml-3 sm:w-auto"
-											>
-												Salvar
-											</button>
-											<button
-												type="button"
-												onClick={handleClose}
-												className="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto"
-											>
-												Cancelar
-											</button>
-										</div>
 									</div>
 								</div>
 							</Dialog.Panel>

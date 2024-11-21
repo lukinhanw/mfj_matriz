@@ -101,7 +101,7 @@ function ActiveFilters({ filters, onRemove }) {
 
 	return (
 		<div className="mt-4">
-			<h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Filtros ativos:</h4>
+			<h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Filtros ativos:</h4>
 			<div className="mt-2 flex flex-wrap gap-2">
 				{activeFilters.map((filter, index) => (
 					<span

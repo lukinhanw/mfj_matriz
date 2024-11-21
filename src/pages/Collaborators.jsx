@@ -10,7 +10,7 @@ import { usePermissions } from '../hooks/usePermissions'
 import { toast } from 'react-hot-toast'
 
 function Collaborators() {
-	const { token } = useAuthStore()
+	const { user, token } = useAuthStore()
 	const { can } = usePermissions()
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedCollaborator, setSelectedCollaborator] = useState(null)
@@ -52,7 +52,9 @@ function Collaborators() {
 		}
 
 		if (token) {
-			fetchData()
+			if (token && user.role === 'admin') {
+				fetchData()
+			}
 		}
 	}, [token])
 
@@ -79,7 +81,7 @@ function Collaborators() {
 					<button
 						type="button"
 						onClick={handleNew}
-						className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all hover:scale-105 transform"
+						className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all hover:scale-105 transform"
 					>
 						<PlusIcon className="h-5 w-5 mr-2" />
 						Novo Colaborador

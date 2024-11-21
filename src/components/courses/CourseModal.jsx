@@ -24,7 +24,7 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 				description: course.description || '',
 				thumbnail: null
 			})
-			setPreviewUrl(course.thumbnail || '')
+			setPreviewUrl(course.thumbnail ? `https://api-matriz-mfj.8bitscompany.com/imagem/${course.thumbnail}` : '')
 		} else {
 			setFormData({
 				title: '',
