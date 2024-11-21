@@ -28,8 +28,8 @@ function CompanyModal({ open, onClose, company }) {
 
 			reset({
 				name: company.name,
-				document: company.document,
-				phone: company.phone,
+				document: formatCpfCnpj(company.document) || '',
+				phone: formatPhoneNumber(company.phone) || '',
 				email: company.email,
 			})
 		} else {
@@ -239,8 +239,6 @@ function CompanyModal({ open, onClose, company }) {
 														validate: validateDocument
 													}}
 													render={({ field }) => (
-														field.value = formatCpfCnpj(field.value),
-														
 														<MaskedInput
 															{...field}
 															mask={documentType}
@@ -273,7 +271,6 @@ function CompanyModal({ open, onClose, company }) {
 													control={control}
 													rules={{ required: 'Telefone é obrigatório' }}
 													render={({ field }) => (
-														field.value = formatPhoneNumber(field.value),
 														<MaskedInput
 															{...field}
 															mask="phone"

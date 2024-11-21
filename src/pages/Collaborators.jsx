@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import CollaboratorList from '../components/collaborators/CollaboratorList'
 import CollaboratorModal from '../components/collaborators/CollaboratorModal'
@@ -22,6 +22,14 @@ function Collaborators() {
 	const [searchTerm, setSearchTerm] = useState('')
 	const [companies, setCompanies] = useState([])
 	const [departments, setDepartments] = useState([])
+
+	const collaboratorListRef = useRef()
+
+	const handleCollaboratorSaved = () => {
+		if (collaboratorListRef.current) {
+			collaboratorListRef.current.fetchCollaborators()
+		}
+	}
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -101,6 +109,7 @@ function Collaborators() {
 					</p>
 				</div>
 				<CollaboratorList
+					ref={collaboratorListRef}
 					onEdit={handleEdit}
 					filters={filters}
 					searchTerm={searchTerm}
@@ -113,6 +122,7 @@ function Collaborators() {
 				open={isModalOpen}
 				onClose={handleClose}
 				collaborator={selectedCollaborator}
+				onCollaboratorSaved={handleCollaboratorSaved}
 			/>
 		</div>
 	)

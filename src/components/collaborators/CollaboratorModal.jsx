@@ -46,8 +46,8 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 					reset({
 						name: collaborator.name || '',
 						email: collaborator.email || '',
-						cpf: collaborator.cpf || '',
-						phone: collaborator.phone || '',
+						cpf: formatCpfCnpj(collaborator.cpf) || '',
+						phone: formatPhoneNumber(collaborator.phone) || '',
 						departmentId: collaborator.department?.id?.toString() || '',
 						companyId: collaborator.company?.id?.toString() || ''
 					})
@@ -120,11 +120,14 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 			onClose();
 		} catch (error) {
 			console.error('Error submitting form:', error)
+			const errorMessage = error.response?.data?.error || 'Erro ao cadastrar colaborador: Erro desconhecido'
+			const titleMessage = errorMessage.split(":")[0]
+			const bodyMessage = errorMessage.split(":")[1]
 			toast.error(
 				<div>
-					<span className="font-medium text-red-600">Erro ao salvar colaborador</span>
+					<span className="font-medium text-red-600">{titleMessage}</span>
 					<br />
-					<span className="text-sm text-red-950">{error.response?.data?.message || 'Tente novamente mais tarde'}</span>
+					<span className="text-sm text-red-950">{bodyMessage}</span>
 				</div>
 			)
 		} finally {
@@ -237,7 +240,6 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 													control={control}
 													rules={{ required: 'CPF é obrigatório' }}
 													render={({ field }) => (
-														field.value = formatCpfCnpj(field.value),
 														<MaskedInput
 															{...field}
 															mask="cpf"
@@ -266,7 +268,6 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 													control={control}
 													rules={{ required: 'Telefone é obrigatório' }}
 													render={({ field }) => (
-														field.value = formatPhoneNumber(field.value),
 														<MaskedInput
 															{...field}
 															mask="phone"

@@ -19,7 +19,6 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 		handleSubmit,
 		control,
 		watch,
-		setValue,
 		formState: { errors },
 		reset
 	} = useForm({
@@ -58,8 +57,8 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 						reset({
 							name: manager.name || '',
 							email: manager.email || '',
-							cpf: manager.cpf || '',
-							phone: manager.phone || '',
+							cpf: formatCpfCnpj(manager.cpf) || '',
+							phone: formatPhoneNumber(manager.phone) || '',
 							departmentId: manager.department?.id?.toString() || '',
 							companyId: manager.company?.id?.toString() || ''
 						});
@@ -256,7 +255,6 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 														validate: validateCPF
 													}}
 													render={({ field }) => (
-														field.value = formatCpfCnpj(field.value),
 														<MaskedInput
 															{...field}
 															mask="cpf"
@@ -283,7 +281,6 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 														validate: validatePhone
 													}}
 													render={({ field }) => (
-														field.value = formatPhoneNumber(field.value),
 														<MaskedInput
 															{...field}
 															mask="phone"

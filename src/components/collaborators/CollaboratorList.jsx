@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react'
 import { toast } from 'react-hot-toast'
 import {
 	PencilIcon,
@@ -14,7 +14,7 @@ import useAuthStore from '../../store/authStore'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
 import CollaboratorModal from './CollaboratorModal'
 
-function CollaboratorList({ onEdit, filters, searchTerm }) {
+const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 	const { token } = useAuthStore()
 	const [collaborators, setCollaborators] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
@@ -54,6 +54,10 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 			fetchCollaborators()
 		}
 	}, [token])
+
+	useImperativeHandle(ref, () => ({
+        fetchCollaborators
+    }))
 
 	const handleCollaboratorSaved = () => {
 		fetchCollaborators();
@@ -358,6 +362,6 @@ function CollaboratorList({ onEdit, filters, searchTerm }) {
 			/>
 		</>
 	)
-}
+})
 
 export default CollaboratorList
