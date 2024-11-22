@@ -315,7 +315,7 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 									}
 									<button
 										onClick={() => openCourseModal(collaborator)}
-										className="text-orange-600 dark:text-orange-400 hover:text-orange-900 dark:hover:text-orange-600 mr-4"
+										className="text-orange-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-600 mr-4"
 										title="Gerenciar cursos"
 									>
 										<AcademicCapIcon className="h-5 w-5" />
