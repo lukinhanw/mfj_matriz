@@ -16,7 +16,7 @@ function ManagerSearch({ value, onChange }) {
 					id="search"
 					value={value}
 					onChange={(e) => onChange(e.target.value)}
-					className="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 pl-10 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+					className="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 pl-10 focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
 					placeholder="Buscar por nome ou email..."
 				/>
 			</div>

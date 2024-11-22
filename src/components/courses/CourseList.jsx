@@ -130,7 +130,7 @@ function CourseList({ onEdit, refresh, searchTerm }) {
 						<div className="p-4">
 							<div className="flex items-start justify-between">
 								<div>
-									<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+									<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 me-1">
 										{course.title}
 									</h3>
 									<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{course.category}</p>

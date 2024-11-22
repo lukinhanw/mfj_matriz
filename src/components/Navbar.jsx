@@ -31,7 +31,7 @@ function Navbar({ onMenuClick }) {
 
 					<div className="flex items-center">
 						<Menu as="div" className="relative ml-3">
-							<Menu.Button className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-colors">
+							<Menu.Button className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-800 transition-colors">
 								<UserCircleIcon className="h-8 w-8 text-gray-400 dark:text-gray-300" />
 								<span className="ml-2 text-gray-700 dark:text-gray-200">{user?.name}</span>
 							</Menu.Button>

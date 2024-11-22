@@ -232,22 +232,22 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 									<div className="text-sm text-gray-500 dark:text-gray-400">{manager.email}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{formatCpfCnpj(manager.cpf)}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{formatCpfCnpj(manager.cpf)}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{formatPhoneNumber(manager.phone)}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{formatPhoneNumber(manager.phone)}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{manager.department.name || 'N/A'}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{manager.department.name || 'N/A'}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500">{manager.company.name || 'N/A'}</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">{manager.company.name || 'N/A'}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<span
 										className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${manager.status === "active"
-											? 'bg-green-100 text-green-800'
-											: 'bg-red-100 text-red-800'
+											? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-400'
+											: 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-400'
 											}`}
 									>
 										{manager.status === "active" ? 'Ativo' : 'Inativo'}

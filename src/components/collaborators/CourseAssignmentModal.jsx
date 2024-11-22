@@ -228,7 +228,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 														type="text"
 														value={searchTerm}
 														onChange={(e) => setSearchTerm(e.target.value)}
-														className="block w-full rounded-md border-gray-300 dark:border-gray-600 pl-10 focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100"
+														className="block w-full rounded-md border-gray-300 dark:border-gray-600 pl-10 focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100"
 														placeholder="Buscar cursos..."
 													/>
 												</div>
@@ -256,7 +256,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 																		checked={selectedCourses.includes(course.id)}
 																		onChange={() => handleCourseToggle(course.id)}
 																		disabled={!can('canAssignCourses')}
-																		className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-primary-500"
+																		className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-orange-500"
 																	/>
 																	<div className="ml-3">
 																		<p className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -281,7 +281,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 												<button
 													type="button"
 													onClick={handleSave}
-													className="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 sm:ml-3 sm:w-auto"
+													className="inline-flex w-full justify-center rounded-md bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 sm:ml-3 sm:w-auto"
 												>
 													Salvar
 												</button>

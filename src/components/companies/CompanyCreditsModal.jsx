@@ -133,7 +133,7 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 													max={type === 'remove' ? company?.credits : undefined}
 													value={credits}
 													onChange={(e) => setCredits(Number(e.target.value))}
-													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
 													required
 													disabled={isSubmitting}
 												/>

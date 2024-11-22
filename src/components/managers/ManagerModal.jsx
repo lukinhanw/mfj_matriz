@@ -214,7 +214,7 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 												<input
 													type="text"
 													{...register('name', { required: 'Nome é obrigatório' })}
-													className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
+													className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
 													disabled={isSubmitting}
 												/>
 												{errors.name && (
@@ -235,7 +235,7 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 															message: 'Email inválido'
 														}
 													})}
-													className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
+													className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
 													disabled={isSubmitting}
 												/>
 												{errors.email && (
@@ -259,7 +259,7 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 															{...field}
 															mask="cpf"
 															placeholder="999.999.999-99"
-															className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
+															className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
 															disabled={isSubmitting}
 														/>
 													)}
@@ -285,7 +285,7 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 															{...field}
 															mask="phone"
 															placeholder="(99) 99999-9999"
-															className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
+															className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
 															disabled={isSubmitting}
 														/>
 													)}
@@ -301,7 +301,7 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 												</label>
 												<select
 													{...register('companyId', { required: 'Empresa é obrigatória' })}
-													className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
+													className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
 													disabled={isSubmitting}
 												>
 													<option value="">Selecione uma empresa</option>
@@ -322,7 +322,7 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 												</label>
 												<select
 													{...register('departmentId', { required: 'Setor é obrigatório' })}
-													className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
+													className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
 													disabled={isSubmitting || !selectedCompanyId}
 												>
 													<option value="">Selecione um setor</option>
@@ -341,7 +341,7 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 												<button
 													type="submit"
 													disabled={isSubmitting}
-													className="inline-flex w-full justify-center rounded-md bg-primary-600 dark:bg-primary-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 dark:hover:bg-primary-600 disabled:bg-primary-300 dark:disabled:bg-primary-800 sm:ml-3 sm:w-auto"
+													className="inline-flex w-full justify-center rounded-md bg-orange-600 dark:bg-orange-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 dark:hover:bg-orange-600 disabled:bg-orange-300 dark:disabled:bg-orange-800 sm:ml-3 sm:w-auto"
 												>
 													{isSubmitting ? 'Salvando...' : manager ? 'Atualizar' : 'Criar'}
 												</button>

@@ -27,7 +27,7 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 		option: (base, { isFocused, isSelected }) => ({
 			...base,
 			backgroundColor: isSelected
-				? 'var(--primary-600)'
+				? 'var(--orange-600)'
 				: isFocused
 					? 'var(--bg-hover)'
 					: 'var(--bg-input)',
@@ -109,13 +109,13 @@ function ActiveFilters({ filters, companies, departments, onRemove }) {
 				{activeFilters.map((filter, index) => (
 					<span
 						key={`${filter.key}-${filter.value}-${index}`}
-						className="inline-flex items-center gap-x-1 rounded-md bg-primary-50 dark:bg-primary-900 px-2 py-1 text-sm font-medium text-primary-700 dark:text-primary-300"
+						className="inline-flex items-center gap-x-1 rounded-md bg-orange-50 dark:bg-orange-900 px-2 py-1 text-sm font-medium text-orange-700 dark:text-orange-300"
 					>
 						{filter.label}
 						<button
 							type="button"
 							onClick={() => onRemove(filter.key, filter.value)}
-							className="group relative -mr-1 h-3.5 w-3.5 rounded-sm hover:bg-primary-600/20 dark:hover:bg-primary-300/20"
+							className="group relative -mr-1 h-3.5 w-3.5 rounded-sm hover:bg-orange-600/20 dark:hover:bg-orange-300/20"
 						>
 							<span className="sr-only">Remove filter</span>
 							<XMarkIcon className="h-3.5 w-3.5" />

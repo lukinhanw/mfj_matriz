@@ -19,7 +19,7 @@ function ConfirmationModal({
 			case 'success':
 				return 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
 			default:
-				return 'bg-primary-600 hover:bg-primary-700 focus:ring-primary-500'
+				return 'bg-orange-600 hover:bg-orange-700 focus:ring-orange-500'
 		}
 	}
 

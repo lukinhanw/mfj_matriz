@@ -295,8 +295,8 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 								<td className="px-6 py-4 whitespace-nowrap">
 									<span
 										className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${collaborator.status === 'active'
-											? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-											: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+											? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-400'
+											: 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-400'
 											}`}
 									>
 										{collaborator.status === 'active' ? 'Ativo' : 'Inativo'}
@@ -315,7 +315,7 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 									}
 									<button
 										onClick={() => openCourseModal(collaborator)}
-										className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-600 mr-4"
+										className="text-orange-600 dark:text-orange-400 hover:text-orange-900 dark:hover:text-orange-600 mr-4"
 										title="Gerenciar cursos"
 									>
 										<AcademicCapIcon className="h-5 w-5" />
