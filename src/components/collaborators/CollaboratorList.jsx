@@ -307,7 +307,7 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 
 										<button
 											onClick={() => handleEdit(collaborator)}
-											className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-600 mr-4"
+											className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-900 mr-4 transition-colors duration-200"
 											title="Editar"
 										>
 											<PencilIcon className="h-5 w-5" />
@@ -315,7 +315,7 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 									}
 									<button
 										onClick={() => openCourseModal(collaborator)}
-										className="text-orange-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-600 mr-4"
+										className="text-yellow-500 dark:text-yellow-300 hover:text-yellow-900 dark:hover:text-yellow-900 mr-4 transition-colors duration-200"
 										title="Gerenciar cursos"
 									>
 										<AcademicCapIcon className="h-5 w-5" />
@@ -324,11 +324,11 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 									{can('canEditCollaborator') &&
 										<button
 											onClick={() => openConfirmModal('status', collaborator.id, collaborator.status)}
-											className={`${collaborator.status === 'active'
-												? 'text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600'
-												: 'text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-600'
-												} mr-4`}
-											title={collaborator.status === 'active' ? 'Desativar' : 'Ativar'}
+											className={`${collaborator.status === "active"
+												? 'text-red-600 hover:text-red-900'
+												: 'text-green-600 hover:text-green-900'
+												} mr-4 transition-colors duration-200`}
+											title={collaborator.status === "active" ? 'Desativar' : 'Ativar'}
 										>
 											{collaborator.status === 'active' ? (
 												<NoSymbolIcon className="h-5 w-5" />
@@ -340,7 +340,7 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 									{can('canDeleteCollaborator') &&
 										<button
 											onClick={() => openConfirmModal('delete', collaborator.id)}
-											className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600"
+											className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-900 transition-colors duration-200"
 											title="Excluir"
 										>
 											<TrashIcon className="h-5 w-5" />
@@ -357,6 +357,7 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 				isOpen={courseModal.show}
 				onClose={() => setCourseModal({ show: false, collaborator: null })}
 				collaborator={courseModal.collaborator}
+				onSaved={fetchCollaborators} // Adicione esta prop
 			/>
 
 			<CollaboratorModal

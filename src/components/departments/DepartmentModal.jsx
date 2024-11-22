@@ -143,7 +143,7 @@ function DepartmentModal({ isOpen, onClose, department, refreshDepartments }) {
 												<input
 													type="text"
 													{...register('name', { required: 'Nome é obrigatório' })}
-													className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
 													disabled={isSubmitting}
 												/>
 												{errors.name && (

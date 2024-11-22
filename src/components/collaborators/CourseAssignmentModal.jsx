@@ -6,7 +6,7 @@ import axios from 'axios'
 import useAuthStore from '../../store/authStore'
 import { usePermissions } from '../../hooks/usePermissions'
 
-function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
+function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // Adicione onSaved nas props
 	const { user, token } = useAuthStore()
 	const [courses, setCourses] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
@@ -141,6 +141,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 					<span className="text-sm text-green-950">Curso atualizado com sucesso</span>
 				</div>
 			)
+			onSaved?.() // Chama a função de callback se existir
 			onClose()
 		} catch (error) {
 			console.error('Error saving course assignments:', error)
@@ -157,10 +158,20 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator }) {
 
 	const requiredCredits = calculateRequiredCredits(selectedCourses)
 
-	const filteredCourses = courses.filter(course =>
-		course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-		course.description.toLowerCase().includes(searchTerm.toLowerCase())
-	)
+	const filteredCourses = courses
+		.filter(course =>
+			course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			course.description.toLowerCase().includes(searchTerm.toLowerCase())
+		)
+		.sort((a, b) => {
+			// Primeiro ordenar por seleção (selecionados aparecem primeiro)
+			const aSelected = selectedCourses.includes(a.id);
+			const bSelected = selectedCourses.includes(b.id);
+			if (aSelected && !bSelected) return -1;
+			if (!aSelected && bSelected) return 1;
+			// Se ambos estiverem selecionados ou não selecionados, ordenar por título
+			return a.title.localeCompare(b.title);
+		});
 
 	return (
 		<Transition.Root show={isOpen} as={Fragment}>

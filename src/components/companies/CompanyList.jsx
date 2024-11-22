@@ -288,7 +288,7 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
 									<button
 										onClick={() => openCreditsModal(company, 'add')}
-										className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-600 mr-4 transition-colors duration-200"
+										className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-900 mr-4 transition-colors duration-200"
 										title="Adicionar créditos"
 									>
 										<PlusIcon className="h-5 w-5" />
@@ -296,7 +296,7 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 									<button
 										onClick={() => openCreditsModal(company, 'remove')}
 										className={`mr-4 transition-colors duration-200 ${company.credits > 0
-											? 'text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600'
+											? 'text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-900'
 											: 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
 											}`}
 										title="Remover créditos"
@@ -306,7 +306,7 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 									</button>
 									<button
 										onClick={() => onEdit(company)}
-										className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-600 mr-4 transition-colors duration-200"
+										className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-900 mr-4 transition-colors duration-200"
 										title="Editar"
 									>
 										<PencilIcon className="h-5 w-5" />
@@ -315,13 +315,11 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 										onClick={() =>
 											openConfirmModal('status', company.id, company.status)
 										}
-										className={`${company.status === 'active'
-											? 'text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600'
-											: 'text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-600'
+										className={`${company.status === "active"
+											? 'text-red-600 hover:text-red-900'
+											: 'text-green-600 hover:text-green-900'
 											} mr-4 transition-colors duration-200`}
-										title={
-											company.status === 'active' ? 'Desativar' : 'Ativar'
-										}
+										title={company.status === "active" ? 'Desativar' : 'Ativar'}
 									>
 										{company.status === 'active' ? (
 											<NoSymbolIcon className="h-5 w-5" />
@@ -331,7 +329,7 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 									</button>
 									<button
 										onClick={() => openConfirmModal('delete', company.id)}
-										className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-600 transition-colors duration-200"
+										className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-900 transition-colors duration-200"
 										title="Excluir"
 									>
 										<TrashIcon className="h-5 w-5" />

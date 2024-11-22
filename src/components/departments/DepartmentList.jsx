@@ -147,14 +147,14 @@ function DepartmentList({ onEdit, filters, searchTerm, refresh }) {
 								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
 									<button
 										onClick={() => onEdit(department)}
-										className="text-primary-600 hover:text-primary-900 mr-4"
+										className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-900 mr-4 transition-colors duration-200"
 										title="Editar"
 									>
 										<PencilIcon className="h-5 w-5" />
 									</button>
 									<button
 										onClick={() => openConfirmModal(department.id)}
-										className="text-red-600 hover:text-red-900"
+										className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-900 transition-colors duration-200"
 										title="Excluir"
 									>
 										<TrashIcon className="h-5 w-5" />
