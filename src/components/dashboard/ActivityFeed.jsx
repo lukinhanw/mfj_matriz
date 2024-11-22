@@ -15,6 +15,17 @@ const icons = {
 }
 
 function ActivityFeed({ activities }) {
+	if (!Array.isArray(activities) || activities.length === 0) {
+		return (
+			<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 transition-colors p-6">
+				<h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+					Atividades Recentes
+				</h2>
+				<p className="mt-4 text-gray-500 dark:text-gray-400">Nenhuma atividade para exibir.</p>
+			</div>
+		)
+	}
+
 	return (
 		<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 transition-colors">
 			<div className="p-6">
@@ -24,7 +35,7 @@ function ActivityFeed({ activities }) {
 				<div className="mt-4 flow-root">
 					<ul className="-mb-8">
 						{activities.map((activity, index) => {
-							const Icon = icons[activity.type]
+							const Icon = icons[activity.type] || UserIcon // Fallback para UserIcon
 							return (
 								<li key={activity.id}>
 									<div className="relative pb-8">

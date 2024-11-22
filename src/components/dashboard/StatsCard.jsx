@@ -4,7 +4,10 @@ import {
 	UserGroupIcon,
 	UsersIcon,
 	AcademicCapIcon,
-	ClipboardDocumentCheckIcon
+	ClipboardDocumentCheckIcon,
+	// Adicione os ícones abaixo
+	CreditCardIcon,
+	UserPlusIcon
 } from '@heroicons/react/24/outline'
 
 const icons = {
@@ -13,7 +16,10 @@ const icons = {
 	managers: UserGroupIcon,
 	employees: UsersIcon,
 	courses: AcademicCapIcon,
-	evaluations: ClipboardDocumentCheckIcon
+	evaluations: ClipboardDocumentCheckIcon,
+	// Novos mapeamentos de ícones
+	credits: CreditCardIcon,
+	collaborators: UserPlusIcon
 }
 
 function StatsCard({ title, value, icon }) {
