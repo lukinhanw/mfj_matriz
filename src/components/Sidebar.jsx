@@ -18,6 +18,7 @@ import {
 	ChartBarIcon,
 	ClockIcon,
 	ArrowRightOnRectangleIcon,
+	BriefcaseIcon
 } from '@heroicons/react/24/outline'
 import ConfirmationModal from './common/ConfirmationModal'
 
@@ -30,7 +31,8 @@ const icons = {
 	AcademicCapIcon,
 	ChartBarIcon,
 	ClockIcon,
-	ArrowRightOnRectangleIcon
+	ArrowRightOnRectangleIcon,
+	BriefcaseIcon
 }
 
 export default function Sidebar({ sidebarOpen = false, setSidebarOpen }) {
@@ -57,8 +59,6 @@ export default function Sidebar({ sidebarOpen = false, setSidebarOpen }) {
 		navigate('/login')
 	}
 
-	console.log(navigation);
-	
 	const SidebarContent = () => (
 		<div className="flex h-full flex-col bg-white dark:bg-gray-800 transition-colors">
 			<div className="flex h-16 shrink-0 items-center justify-center border-b border-gray-200 dark:border-gray-700">

@@ -11,6 +11,7 @@ export const ROUTE_PERMISSIONS = {
 	'/': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA],
 	'/companies': [ROLES.ADMIN],
 	'/departments': [ROLES.ADMIN],
+	'/positions': [ROLES.ADMIN],
 	'/managers': [ROLES.ADMIN, ROLES.EMPRESA],
 	'/collaborators': [ROLES.ADMIN, ROLES.GESTOR, ROLES.EMPRESA],
 	'/courses': [ROLES.ADMIN],
@@ -29,6 +30,9 @@ export const ACTION_PERMISSIONS = {
 		canCreateDepartment: true,
 		canEditDepartment: true,
 		canDeleteDepartment: true,
+		canCreatePosition: true,
+		canEditPosition: true,
+		canDeletePosition: true,
 		canCreateManager: true,
 		canEditManager: true,
 		canDeleteManager: true,
@@ -102,7 +106,8 @@ export const getNavigationByRole = (userRole) => {
 				title: 'Organizacional',
 				items: [
 					{ name: 'Empresas', href: '/companies', icon: 'BuildingOfficeIcon' },
-					{ name: 'Setores', href: '/departments', icon: 'BuildingOffice2Icon' }
+					{ name: 'Setores', href: '/departments', icon: 'BuildingOffice2Icon' },
+					{ name: 'Cargos', href: '/positions', icon: 'BriefcaseIcon' }
 				]
 			},
 			{

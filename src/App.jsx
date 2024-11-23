@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Companies from './pages/Companies'
 import Departments from './pages/Departments'
+import Positions from './pages/Positions'
 import Managers from './pages/Managers'
 import Collaborators from './pages/Collaborators'
 import Courses from './pages/Courses'
@@ -24,6 +25,7 @@ export default function App() {
 					<Route path="/" element={<Dashboard />} />
 					<Route path="/companies" element={<Companies />} />
 					<Route path="/departments" element={<Departments />} />
+					<Route path="/positions" element={<Positions />} />
 					<Route path="/managers" element={<Managers />} />
 					<Route path="/collaborators" element={<Collaborators />} />
 					<Route path="/courses" element={<Courses />} />
