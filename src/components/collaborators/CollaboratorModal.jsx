@@ -4,6 +4,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
+import Select from 'react-select'
 import useAuthStore from '../../store/authStore'
 import MaskedInput from '../common/MaskedInput'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
@@ -23,24 +24,29 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [departments, setDepartments] = useState([])
 	const [companies, setCompanies] = useState([])
+	const [positions, setPositions] = useState([])
 
 	const selectedCompanyId = watch('companyId')
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				// Fetch companies and departments from API
-				const [companiesResponse, departmentsResponse] = await Promise.all([
+				// Fetch companies, departments, and positions from API
+				const [companiesResponse, departmentsResponse, positionsResponse] = await Promise.all([
 					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarEmpresas', {
 						headers: { Authorization: `Bearer ${token}` }
 					}),
 					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarSetores', {
+						headers: { Authorization: `Bearer ${token}` }
+					}),
+					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarCargos', {
 						headers: { Authorization: `Bearer ${token}` }
 					})
 				])
 
 				setCompanies(companiesResponse.data || [])
 				setDepartments(departmentsResponse.data || [])
+				setPositions(positionsResponse.data || [])
 
 				if (collaborator) {
 					reset({
@@ -49,7 +55,8 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 						cpf: formatCpfCnpj(collaborator.cpf) || '',
 						phone: formatPhoneNumber(collaborator.phone) || '',
 						departmentId: collaborator.department?.id?.toString() || '',
-						companyId: collaborator.company?.id?.toString() || ''
+						companyId: collaborator.company?.id?.toString() || '',
+						positionId: collaborator.position?.id?.toString() || ''
 					})
 				} else {
 					reset({
@@ -58,7 +65,8 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 						cpf: '',
 						phone: '',
 						departmentId: '',
-						companyId: ''
+						companyId: '',
+						positionId: ''
 					})
 				}
 			} catch (error) {
@@ -83,6 +91,7 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 				phone: data.phone.replace(/\D/g, ''), // Remove non-digits
 				companyId: parseInt(data.companyId),
 				departmentId: parseInt(data.departmentId),
+				positionId: parseInt(data.positionId)
 			}
 
 			if (collaborator) {
@@ -133,6 +142,65 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 		} finally {
 			setIsSubmitting(false)
 		}
+	}
+
+	const customStyles = {
+		control: (base, state) => ({
+			...base,
+			fontSize: 14,
+			backgroundColor: 'var(--bg-input)',
+			borderColor: 'var(--border-input)',
+			color: 'var(--text-primary)',
+			boxShadow: state.isFocused ? 'none' : base.boxShadow,
+			'&:hover': {
+				borderColor: 'var(--border-input-hover)'
+			}
+		}),
+		menu: (base) => ({
+			fontSize: 14,
+			...base,
+			backgroundColor: 'var(--bg-input)',
+			zIndex: 100
+		}),
+		option: (base, { isFocused, isSelected }) => ({
+			...base,
+			backgroundColor: isSelected
+				? 'var(--orange-600)'
+				: isFocused
+					? 'var(--bg-hover)'
+					: 'var(--bg-input)',
+			color: isSelected
+				? 'white'
+				: 'var(--text-primary)'
+		}),
+		multiValue: (base) => ({
+			...base,
+			backgroundColor: 'var(--primary-100)',
+		}),
+		multiValueLabel: (base) => ({
+			...base,
+			color: 'var(--primary-700)',
+		}),
+		multiValueRemove: (base) => ({
+			...base,
+			color: 'var(--primary-700)',
+			'&:hover': {
+				backgroundColor: 'var(--primary-200)',
+				color: 'var(--primary-900)',
+			},
+		}),
+		input: (base) => ({
+			...base,
+			color: 'var(--text-primary)',
+		}),
+		placeholder: (base) => ({
+			...base,
+			color: 'var(--text-primary)',
+		}),
+		menuPortal: (base) => ({
+			...base,
+			zIndex: 9999
+		}),
 	}
 
 	return (
@@ -336,6 +404,45 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 												{errors.departmentId && (
 													<p className="mt-1 text-sm text-red-600">
 														{errors.departmentId.message}
+													</p>
+												)}
+											</div>
+
+											<div>
+												<label
+													htmlFor="positionId"
+													className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+												>
+													Cargo
+												</label>
+												<Controller
+													name="positionId"
+													control={control}
+													rules={{ required: 'Cargo é obrigatório' }}
+													render={({ field }) => (
+														<Select
+															{...field}
+															isDisabled={isSubmitting}
+															options={positions.map(pos => ({
+																value: pos.id.toString(),
+																label: pos.name
+															}))}
+															value={positions
+																.map(pos => ({
+																	value: pos.id.toString(),
+																	label: pos.name
+																}))
+																.find(option => option.value === field.value)}
+															onChange={(option) => field.onChange(option.value)}
+															styles={customStyles}
+															placeholder="Selecione um cargo"
+															menuPortalTarget={document.body}
+														/>
+													)}
+												/>
+												{errors.positionId && (
+													<p className="mt-1 text-sm text-red-600">
+														{errors.positionId.message}
 													</p>
 												)}
 											</div>

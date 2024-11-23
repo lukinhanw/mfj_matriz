@@ -76,7 +76,7 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 	)
 }
 
-function ActiveFilters({ filters, companies, departments, onRemove }) {
+function ActiveFilters({ filters, companies, departments, positions, onRemove }) {
 	const activeFilters = []
 
 	if (filters.status.length > 0) {
@@ -97,6 +97,13 @@ function ActiveFilters({ filters, companies, departments, onRemove }) {
 		filters.departments.forEach(departmentId => {
 			const departmentName = departments.find(d => d.id.toString() === departmentId)?.name
 			activeFilters.push({ key: 'departments', value: departmentId, label: `Setor: ${departmentName}` })
+		})
+	}
+
+	if (filters.positions?.length > 0) {
+		filters.positions.forEach(positionId => {
+			const positionName = positions.find(p => p.id.toString() === positionId)?.name
+			activeFilters.push({ key: 'positions', value: positionId, label: `Cargo: ${positionName}` })
 		})
 	}
 
@@ -133,7 +140,7 @@ function ActiveFilters({ filters, companies, departments, onRemove }) {
 	)
 }
 
-function CollaboratorFilters({ filters, onChange, companies = [], departments = [] }) {
+function CollaboratorFilters({ filters, onChange, companies = [], departments = [], positions = [] }) {
 	const handleFilterChange = (key, values) => {
 		onChange({ ...filters, [key]: values })
 	}
@@ -143,7 +150,8 @@ function CollaboratorFilters({ filters, onChange, companies = [], departments = 
 			onChange({
 				status: [],
 				companies: [],
-				departments: []
+				departments: [],
+				positions: []
 			})
 		} else {
 			onChange({
@@ -166,7 +174,7 @@ function CollaboratorFilters({ filters, onChange, companies = [], departments = 
 				<span>Filtros:</span>
 			</div>
 
-			<div className="grid gap-4 md:grid-cols-3">
+			<div className="grid gap-4 md:grid-cols-4">
 				<FilterDropdown
 					label="Status"
 					selectedValues={filters.status}
@@ -197,12 +205,25 @@ function CollaboratorFilters({ filters, onChange, companies = [], departments = 
 						}))}
 					/>
 				)}
+
+				{positions.length > 0 && (
+					<FilterDropdown
+						label="Cargo"
+						selectedValues={filters.positions}
+						onChange={(values) => handleFilterChange('positions', values)}
+						options={positions.map(pos => ({
+							value: pos.id.toString(),
+							label: pos.name
+						}))}
+					/>
+				)}
 			</div>
 
 			<ActiveFilters
 				filters={filters}
 				companies={companies}
 				departments={departments}
+				positions={positions}
 				onRemove={handleRemoveFilter}
 			/>
 		</div>

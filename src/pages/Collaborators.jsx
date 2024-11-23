@@ -17,11 +17,13 @@ function Collaborators() {
 	const [filters, setFilters] = useState({
 		status: [],
 		companies: [],
-		departments: []
+		departments: [],
+		positions: [] // Adicionar positions ao estado inicial
 	})
 	const [searchTerm, setSearchTerm] = useState('')
 	const [companies, setCompanies] = useState([])
 	const [departments, setDepartments] = useState([])
+	const [positions, setPositions] = useState([]) // Adicionar estado para positions
 
 	const collaboratorListRef = useRef()
 
@@ -34,17 +36,21 @@ function Collaborators() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const [companiesRes, departmentsRes] = await Promise.all([
+				const [companiesRes, departmentsRes, positionsRes] = await Promise.all([
 					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarEmpresas', {
 						headers: { Authorization: `Bearer ${token}` }
 					}),
 					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarSetores', {
+						headers: { Authorization: `Bearer ${token}` }
+					}),
+					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarCargos', {
 						headers: { Authorization: `Bearer ${token}` }
 					})
 				])
 
 				setCompanies(companiesRes.data || [])
 				setDepartments(departmentsRes.data || [])
+				setPositions(positionsRes.data || []) // Salvar positions no estado
 			} catch (error) {
 				console.error('Error fetching data:', error)
 				toast.error('Erro ao carregar dados')
@@ -97,6 +103,7 @@ function Collaborators() {
 						onChange={setFilters}
 						companies={companies}
 						departments={departments}
+						positions={positions} // Passar positions como prop
 					/>
 				</div>
 			</div>
