@@ -14,8 +14,8 @@ export const ROUTE_PERMISSIONS = {
 	'/managers': [ROLES.ADMIN, ROLES.EMPRESA],
 	'/collaborators': [ROLES.ADMIN, ROLES.GESTOR, ROLES.EMPRESA],
 	'/courses': [ROLES.ADMIN],
-	'/reports': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA],
-	'/reports_buy': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA],
+	'/reports': [ROLES.ADMIN, ROLES.EMPRESA],
+	'/reports_buy': [ROLES.ADMIN, ROLES.EMPRESA],
 	'/logs': [ROLES.ADMIN],
 	'/profile': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA]
 }
@@ -52,7 +52,7 @@ export const ACTION_PERMISSIONS = {
 		canEditCollaborator: false,
 		canEditCourseCollaborator: false,
 		canDeleteCollaborator: false,
-		canAssignCourses: true,
+		canAssignCourses: false,
 		canViewReports: true,
 		canViewLogs: true,
 		canExportData: true
@@ -67,6 +67,7 @@ export const ACTION_PERMISSIONS = {
 		canViewCollaborators: true,
 		canEditCourseCollaborator: false,
 		canViewReports: true,
+		canAssignCourses: false,
 		canViewLogs: true,
 		canExportData: true,
 	}
@@ -139,14 +140,16 @@ export const getNavigationByRole = (userRole) => {
 		)
 	}
 
-	// Common items for all roles
-	baseNavigation.push({
-		title: 'Relatórios',
-		items: [
-			{ name: 'Relatórios de Uso', href: '/reports', icon: 'ChartBarIcon' },
-			{ name: 'Relatórios de Créditos', href: '/reports_buy', icon: 'ChartBarIcon' },
-		]
-	})
+	if (userRole === ROLES.ADMIN) {
+		// Common items for all roles
+		baseNavigation.push({
+			title: 'Relatórios',
+			items: [
+				{ name: 'Relatórios de Uso', href: '/reports', icon: 'ChartBarIcon' },
+				{ name: 'Relatórios de Créditos', href: '/reports_buy', icon: 'ChartBarIcon' },
+			]
+		})
+	}
 
 	if (userRole === ROLES.ADMIN) {
 		baseNavigation.push({

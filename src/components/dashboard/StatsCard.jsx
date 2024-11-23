@@ -17,7 +17,6 @@ const icons = {
 	employees: UsersIcon,
 	courses: AcademicCapIcon,
 	evaluations: ClipboardDocumentCheckIcon,
-	// Novos mapeamentos de ícones
 	credits: CreditCardIcon,
 	collaborators: UserPlusIcon
 }

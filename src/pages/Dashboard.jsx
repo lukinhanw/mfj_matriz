@@ -109,6 +109,18 @@ function Dashboard() {
 				</div>
 			)}
 
+			{user.role === 'gestor' && (
+				<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+					<>
+						<StatsCard
+							title="Total de Colaboradores"
+							value={dashboardData.totalCollaborators}
+							icon="collaborators"
+						/>
+					</>
+				</div>
+			)}
+
 			{user.role === 'empresa' && (
 				<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 					<>

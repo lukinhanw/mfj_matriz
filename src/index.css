@@ -100,28 +100,33 @@ select:focus {
 }
 
 .loader {
-	width: 48px;
-	height: 48px;
-	display: inline-block;
-	position: relative;
+    width: 48px;
+    height: 48px;
+    display: inline-block;
+    position: relative;
 }
 
 .loader::after,
 .loader::before {
-	content: '';
-	width: 48px;
-	height: 48px;
-	border-radius: 50%;
-	background: #FFF;
-	position: absolute;
-	left: 0;
-	top: 0;
-	box-sizing: border-box;
-	animation: animloader 2s ease-in-out infinite;
+    content: '';
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    box-sizing: border-box;
+    animation: animloader 2s ease-in-out infinite;
+    background: #111827;
+}
+
+.dark .loader::after,
+.dark .loader::before {
+    background: #FFF;
 }
 
 .loader::after {
-	animation-delay: 1s;
+    animation-delay: 1s;
 }
 
 @keyframes animloader {
