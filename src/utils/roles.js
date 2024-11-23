@@ -48,6 +48,7 @@ export const ACTION_PERMISSIONS = {
 		canViewReports: true,
 		canViewLogs: true,
 		canExportData: true,
+		canEditPerfil: true
 	},
 	[ROLES.GESTOR]: {
 		canViewManagers: false,

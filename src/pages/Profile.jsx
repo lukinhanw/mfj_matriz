@@ -1,16 +1,56 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 import useAuthStore from '../store/authStore'
 import MaskedInput from '../components/common/MaskedInput'
 import PasswordChangeModal from '../components/profile/PasswordChangeModal'
 import { formatCpfCnpj, formatPhoneNumber } from '../utils/helpers'
+import { usePermissions } from '../hooks/usePermissions'
+import axios from 'axios'
 
 function Profile() {
-	const { user, setAuth } = useAuthStore()
+	const { user, setAuth, token } = useAuthStore()
 	const [isEditing, setIsEditing] = useState(false)
 	const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
 	const [documentType, setDocumentType] = useState(user?.role === 'empresa' ? 'cnpj' : 'cpf')
+	const [profileData, setProfileData] = useState(null)
+	const { can } = usePermissions()
+
+	const nivel = (() => {
+		switch (user?.role) {
+			case 'empresa':
+				return 'company'
+			case 'gestor':
+				return 'manager'
+			case 'colaborador':
+				return 'collaborator'
+			default:
+				return 'admin'
+		}
+	})()
+
+	useEffect(() => {
+		const fetchProfile = async () => {
+			try {
+				const response = await axios.get(`https://api-matriz-mfj.8bitscompany.com/${nivel}/perfil`, {
+					headers: { Authorization: `Bearer ${token}` }
+				})
+				setProfileData(response.data)
+
+				// Reset form with new data
+				reset({
+					name: response.data.name || '',
+					email: response.data.email || '',
+					document: formatCpfCnpj(response.data.cpf || response.data.documento) || '',
+					phone: formatPhoneNumber(response.data.phone) || ''
+				})
+			} catch (error) {
+				toast.error('Erro ao carregar dados do perfil')
+			}
+		}
+
+		fetchProfile()
+	}, [])
 
 	const {
 		register,
@@ -20,10 +60,10 @@ function Profile() {
 		reset
 	} = useForm({
 		defaultValues: {
-			name: user?.name || '',
-			email: user?.email || '',
-			document: user?.document || '',
-			phone: user?.phone || ''
+			name: '',
+			email: '',
+			document: '',
+			phone: ''
 		}
 	})
 
@@ -225,45 +265,89 @@ function Profile() {
 							</div>
 						)}
 
-						<div className="flex justify-end gap-3">
-							{!isEditing ? (
-								<div className="flex gap-3">
-									<button
-										type="button"
-										onClick={() => setIsPasswordModalOpen(true)}
-										className="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
-									>
-										Alterar Senha
-									</button>
-									<button
-										type="button"
-										onClick={() => setIsEditing(true)}
-										className="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
-									>
-										Editar Perfil
-									</button>
-								</div>
-							) : (
-								<>
-									<button
-										type="button"
-										onClick={() => {
-											setIsEditing(false)
-											reset()
-										}}
-										className="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
-									>
-										Cancelar
-									</button>
-									<button
-										type="submit"
-										className="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
-									>
-										Salvar Alterações
-									</button>
-								</>
-							)}
-						</div>
+						{/* Novos campos baseados no nível */}
+						{user?.role !== 'empresa' && user?.role !== 'admin' && (
+							<div>
+								<label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+									Empresa
+								</label>
+								<input
+									type="text"
+									value={profileData?.company_name || ''}
+									disabled
+									className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+								/>
+							</div>
+						)}
+
+						{['colaborador', 'gestor'].includes(user?.role) && (
+							<div>
+								<label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+									Setor
+								</label>
+								<input
+									type="text"
+									value={profileData?.department_name || ''}
+									disabled
+									className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+								/>
+							</div>
+						)}
+
+						{user?.role === 'colaborador' && (
+							<div>
+								<label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+									Cargo
+								</label>
+								<input
+									type="text"
+									value={profileData?.position_name || ''}
+									disabled
+									className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+								/>
+							</div>
+						)}
+						{can('canEditPerfil') &&
+							<div className="flex justify-end gap-3">
+								{!isEditing ? (
+									<div className="flex gap-3">
+										<button
+											type="button"
+											onClick={() => setIsPasswordModalOpen(true)}
+											className="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
+										>
+											Alterar Senha
+										</button>
+										<button
+											type="button"
+											onClick={() => setIsEditing(true)}
+											className="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
+										>
+											Editar Perfil
+										</button>
+									</div>
+								) : (
+									<>
+										<button
+											type="button"
+											onClick={() => {
+												setIsEditing(false)
+												reset()
+											}}
+											className="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
+										>
+											Cancelar
+										</button>
+										<button
+											type="submit"
+											className="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
+										>
+											Salvar Alterações
+										</button>
+									</>
+								)}
+							</div>
+						}
 					</form>
 				</div>
 			</div>
