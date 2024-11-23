@@ -62,6 +62,11 @@
 	--primary-600: #4f46e5;
 	--primary-700: #4338ca;
 	--primary-900: #312e81;
+	--orange-100: #ffedd5;
+	--orange-200: #fed7aa;
+	--orange-600: #ea580c;
+	--orange-700: #c2410c;
+	--orange-900: #7c2d12;
 }
 
 .dark {
@@ -78,6 +83,11 @@
 	--primary-600: #4f46e5;
 	--primary-700: #3730a3;
 	--primary-900: #312e81;
+	--orange-100: #ffedd5;
+	--orange-200: #fed7aa;
+	--orange-600: #ea580c;
+	--orange-700: #c2410c;
+	--orange-900: #7c2d12;
 }
 
 [type='text']:focus,

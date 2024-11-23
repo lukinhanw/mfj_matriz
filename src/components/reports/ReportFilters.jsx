@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react'
 import Select from 'react-select'
 import { FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import axios from 'axios'
-import { toast } from 'react-hot-toast'
 import useAuthStore from '../../store/authStore'
+import { customSelectStyles } from '../../styles/selectStyles'
 
 const periodOptions = [
 	{ value: '7d', label: 'Últimos 7 dias' },
@@ -15,59 +13,6 @@ const periodOptions = [
 
 function FilterDropdown({ label, options, selectedValues, onChange }) {
 
-	const customStyles = {
-		control: (base, state) => ({
-			...base,
-			backgroundColor: 'var(--bg-input)',
-			borderColor: 'var(--border-input)',
-			color: 'var(--text-primary)',
-			boxShadow: state.isFocused ? 'none' : base.boxShadow,
-			'&:hover': {
-				borderColor: 'var(--border-input-hover)'
-			}
-		}),
-		menu: (base) => ({
-			...base,
-			backgroundColor: 'var(--bg-input)',
-			zIndex: 100
-		}),
-		option: (base, { isFocused, isSelected }) => ({
-			...base,
-			backgroundColor: isSelected
-				? 'var(--orange-600)'
-				: isFocused
-					? 'var(--bg-hover)'
-					: 'var(--bg-input)',
-			color: isSelected
-				? 'white'
-				: 'var(--text-primary)'
-		}),
-		multiValue: (base) => ({
-			...base,
-			backgroundColor: 'var(--primary-100)',
-		}),
-		multiValueLabel: (base) => ({
-			...base,
-			color: 'var(--primary-700)',
-		}),
-		multiValueRemove: (base) => ({
-			...base,
-			color: 'var(--primary-700)',
-			'&:hover': {
-				backgroundColor: 'var(--primary-200)',
-				color: 'var(--primary-900)',
-			},
-		}),
-		input: (base) => ({
-			...base,
-			color: 'var(--text-primary)',
-		}),
-		placeholder: (base) => ({
-			...base,
-			color: 'var(--text-primary)',
-		}),
-	}
-
 	return (
 		<Select
 			isMulti
@@ -77,7 +22,7 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 			placeholder={label}
 			className="w-full"
 			classNamePrefix="select"
-			styles={customStyles}
+			styles={customSelectStyles}
 			noOptionsMessage={() => 'Nenhum item encontrado'}
 		/>
 	)

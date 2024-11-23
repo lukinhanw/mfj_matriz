@@ -8,6 +8,7 @@ import Select from 'react-select'
 import useAuthStore from '../../store/authStore'
 import MaskedInput from '../common/MaskedInput'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
+import { customSelectStyles } from '../../styles/selectStyles'
 
 function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved }) {
 	const { token } = useAuthStore()
@@ -142,65 +143,6 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 		} finally {
 			setIsSubmitting(false)
 		}
-	}
-
-	const customStyles = {
-		control: (base, state) => ({
-			...base,
-			fontSize: 14,
-			backgroundColor: 'var(--bg-input)',
-			borderColor: 'var(--border-input)',
-			color: 'var(--text-primary)',
-			boxShadow: state.isFocused ? 'none' : base.boxShadow,
-			'&:hover': {
-				borderColor: 'var(--border-input-hover)'
-			}
-		}),
-		menu: (base) => ({
-			fontSize: 14,
-			...base,
-			backgroundColor: 'var(--bg-input)',
-			zIndex: 100
-		}),
-		option: (base, { isFocused, isSelected }) => ({
-			...base,
-			backgroundColor: isSelected
-				? 'var(--orange-600)'
-				: isFocused
-					? 'var(--bg-hover)'
-					: 'var(--bg-input)',
-			color: isSelected
-				? 'white'
-				: 'var(--text-primary)'
-		}),
-		multiValue: (base) => ({
-			...base,
-			backgroundColor: 'var(--primary-100)',
-		}),
-		multiValueLabel: (base) => ({
-			...base,
-			color: 'var(--primary-700)',
-		}),
-		multiValueRemove: (base) => ({
-			...base,
-			color: 'var(--primary-700)',
-			'&:hover': {
-				backgroundColor: 'var(--primary-200)',
-				color: 'var(--primary-900)',
-			},
-		}),
-		input: (base) => ({
-			...base,
-			color: 'var(--text-primary)',
-		}),
-		placeholder: (base) => ({
-			...base,
-			color: 'var(--text-primary)',
-		}),
-		menuPortal: (base) => ({
-			...base,
-			zIndex: 9999
-		}),
 	}
 
 	return (
@@ -434,7 +376,7 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 																}))
 																.find(option => option.value === field.value)}
 															onChange={(option) => field.onChange(option.value)}
-															styles={customStyles}
+															styles={customSelectStyles}
 															placeholder="Selecione um cargo"
 															menuPortalTarget={document.body}
 														/>

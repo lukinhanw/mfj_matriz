@@ -258,21 +258,29 @@ function CourseList({ onEdit, refresh, searchTerm, viewMode }) {  // Adicionar v
 				<span className="text-sm text-gray-700 dark:text-gray-300">
 					Exibindo {paginatedCourses.length} de {filteredCourses.length} cursos
 				</span>
-				<div className="flex space-x-2">
+				<div className="flex items-center space-x-3">
 					<button
 						onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
 						disabled={currentPage === 1}
-						className={`px-3 py-1 border rounded-md ${currentPage === 1 ? 'bg-gray-200 dark:bg-gray-700 cursor-not-allowed' : 'bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600'}`}
+						className={`px-2 py-1 text-sm border rounded-md transition-colors
+							${currentPage === 1
+								? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+								: 'bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+							}`}
 					>
 						Anterior
 					</button>
-					<span className="self-center text-sm text-gray-700 dark:text-gray-300">
+					<span className="text-xs text-gray-600 dark:text-gray-400">
 						Página {currentPage} de {totalPages}
 					</span>
 					<button
 						onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
 						disabled={currentPage === totalPages}
-						className={`px-3 py-1 border rounded-md ${currentPage === totalPages ? 'bg-gray-200 dark:bg-gray-700 cursor-not-allowed' : 'bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600'}`}
+						className={`px-2 py-1 text-sm border rounded-md transition-colors
+							${currentPage === totalPages
+								? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+								: 'bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+							}`}
 					>
 						Próxima
 					</button>
