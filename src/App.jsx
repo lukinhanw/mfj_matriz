@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
+import PasswordRecovery from './pages/PasswordRecovery'
 import Dashboard from './pages/Dashboard'
 import Companies from './pages/Companies'
 import Departments from './pages/Departments'
@@ -21,6 +22,7 @@ export default function App() {
 			<Toaster position="top-right" />
 			<Routes>
 				<Route path="/login" element={<Login />} />
+				<Route path="/forgot-password" element={<PasswordRecovery />} />
 				<Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
 					<Route path="/" element={<Dashboard />} />
 					<Route path="/companies" element={<Companies />} />

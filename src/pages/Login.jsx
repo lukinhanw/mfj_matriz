@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 import useAuthStore from '../store/authStore'
 import api from '../utils/api'
 import logo from '../assets/logo.png'
-import logoBlack from '../assets/logo-black.png' // Adiciona a importação do logo escuro
+import logoBlack from '../assets/logo-black.png'
 
 function Login() {
 	const [rememberMe, setRememberMe] = useState(false)
@@ -172,9 +172,12 @@ function Login() {
 							</div>
 
 							<div className="text-sm">
-								<a href="/forgot-password" className="font-medium text-orange-600 hover:text-orange-500">
+								<Link 
+                  to="/forgot-password" 
+                  className="font-medium text-orange-600 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300"
+                >
 									Esqueci minha senha
-								</a>
+								</Link>
 							</div>
 						</div>
 
