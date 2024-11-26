@@ -18,7 +18,8 @@ import {
 	ChartBarIcon,
 	ClockIcon,
 	ArrowRightOnRectangleIcon,
-	BriefcaseIcon
+	BriefcaseIcon,
+	ClipboardDocumentCheckIcon
 } from '@heroicons/react/24/outline'
 import ConfirmationModal from './common/ConfirmationModal'
 
@@ -32,7 +33,8 @@ const icons = {
 	ChartBarIcon,
 	ClockIcon,
 	ArrowRightOnRectangleIcon,
-	BriefcaseIcon
+	BriefcaseIcon,
+	ClipboardDocumentCheckIcon
 }
 
 export default function Sidebar({ sidebarOpen = false, setSidebarOpen }) {

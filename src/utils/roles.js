@@ -18,7 +18,8 @@ export const ROUTE_PERMISSIONS = {
 	'/reports': [ROLES.ADMIN, ROLES.EMPRESA],
 	'/reports_buy': [ROLES.ADMIN, ROLES.EMPRESA],
 	'/logs': [ROLES.ADMIN],
-	'/profile': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA]
+	'/profile': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA],
+	'/assessment': [ROLES.COLABORADOR]
 }
 
 // Action permissions by role
@@ -65,7 +66,8 @@ export const ACTION_PERMISSIONS = {
 	[ROLES.COLABORADOR]: {
 		canViewReports: true,
 		canViewLogs: true,
-		canExportData: false
+		canExportData: false,
+		canTakeAssessment: true
 	},
 	[ROLES.EMPRESA]: {
 		canViewManagers: true,
@@ -141,6 +143,15 @@ export const getNavigationByRole = (userRole) => {
 				title: 'Usuários',
 				items: [
 					{ name: 'Colaboradores', href: '/collaborators', icon: 'UsersIcon' }
+				]
+			}
+		)
+	} else if (userRole === ROLES.COLABORADOR) {
+		baseNavigation.push(
+			{
+				title: 'Avaliações',
+				items: [
+					{ name: 'Avaliação de Competências', href: '/assessment', icon: 'ClipboardDocumentCheckIcon' }
 				]
 			}
 		)

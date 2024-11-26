@@ -15,6 +15,7 @@ import Reports from './pages/Reports'
 import SystemLogs from './pages/SystemLogs'
 import Profile from './pages/Profile'
 import ReportsBuy from './pages/ReportsBuy'
+import Assessment from './pages/Assessment'
 
 export default function App() {
 	return (
@@ -35,6 +36,7 @@ export default function App() {
 					<Route path="/reports_buy" element={<ReportsBuy />} />
 					<Route path="/logs" element={<SystemLogs />} />
 					<Route path="/profile" element={<Profile />} />
+					<Route path="/assessment" element={<Assessment />} />
 				</Route>
 			</Routes>
 		</>
