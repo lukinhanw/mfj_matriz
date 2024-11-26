@@ -4,6 +4,7 @@ import PositionList from '../components/positions/PositionList'
 import PositionModal from '../components/positions/PositionModal'
 import PositionFilters from '../components/positions/PositionFilters'
 import PositionSearch from '../components/positions/PositionSearch'
+import { usePermissions } from '../hooks/usePermissions'
 
 function Positions() {
 	const [isModalOpen, setIsModalOpen] = useState(false)
@@ -14,6 +15,8 @@ function Positions() {
 	const [searchTerm, setSearchTerm] = useState('')
 	const [refresh, setRefresh] = useState(false)
 	const [itemsPerPage, setItemsPerPage] = useState(10)
+
+	const { can } = usePermissions()
 
 	const handleEdit = (position) => {
 		setSelectedPosition(position)
@@ -38,14 +41,16 @@ function Positions() {
 		<div className="space-y-8">
 			<div className="sm:flex sm:items-center sm:justify-between">
 				<h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Cargos</h1>
-				<button
-					type="button"
-					onClick={handleNew}
-					className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all hover:scale-105 transform"
-				>
-					<PlusIcon className="h-5 w-5 mr-2" />
-					Novo Cargo
-				</button>
+				{can('canCreatePosition') && (
+					<button
+						type="button"
+						onClick={handleNew}
+						className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all hover:scale-105 transform"
+					>
+						<PlusIcon className="h-5 w-5 mr-2" />
+						Novo Cargo
+					</button>
+				)}
 			</div>
 
 			<div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 space-y-6">

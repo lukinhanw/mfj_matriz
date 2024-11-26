@@ -7,12 +7,14 @@ import {
 import ConfirmationModal from '../common/ConfirmationModal'
 import useAuthStore from '../../store/authStore'
 import api from '../../utils/api'
+import { usePermissions } from '../../hooks/usePermissions'
 
 function PositionList({ onEdit, filters, searchTerm, refresh, itemsPerPage }) {
 	const [positions, setPositions] = useState([])
 	const [loading, setLoading] = useState(true)
 	const [currentPage, setCurrentPage] = useState(1)
 	const { token } = useAuthStore()
+	const { can } = usePermissions()
 
 	useEffect(() => {
 		const fetchPositions = async () => {
@@ -110,7 +112,7 @@ function PositionList({ onEdit, filters, searchTerm, refresh, itemsPerPage }) {
 						</tr>
 					</thead>
 					<tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-							{currentPositions.map((position) => (
+						{currentPositions.map((position) => (
 							<tr key={position.id}>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<div className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -118,20 +120,24 @@ function PositionList({ onEdit, filters, searchTerm, refresh, itemsPerPage }) {
 									</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-									<button
-										onClick={() => onEdit(position)}
-										className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-900 mr-4 transition-colors duration-200"
-										title="Editar"
-									>
-										<PencilIcon className="h-5 w-5" />
-									</button>
-									<button
-										onClick={() => openConfirmModal(position.id)}
-										className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-900 transition-colors duration-200"
-										title="Excluir"
-									>
-										<TrashIcon className="h-5 w-5" />
-									</button>
+									{can('canEditPosition') && (
+										<button
+											onClick={() => onEdit(position)}
+											className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-900 mr-4 transition-colors duration-200"
+											title="Editar"
+										>
+											<PencilIcon className="h-5 w-5" />
+										</button>
+									)}
+									{can('canDeletePosition') && (
+										<button
+											onClick={() => openConfirmModal(position.id)}
+											className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-900 transition-colors duration-200"
+											title="Excluir"
+										>
+											<TrashIcon className="h-5 w-5" />
+										</button>
+									)}
 								</td>
 							</tr>
 						))}
