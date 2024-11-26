@@ -6,7 +6,7 @@ import {
 } from '@heroicons/react/24/outline'
 import ConfirmationModal from '../common/ConfirmationModal'
 import useAuthStore from '../../store/authStore'
-import axios from 'axios'
+import api from '../../utils/api'
 
 function PositionList({ onEdit, filters, searchTerm, refresh, itemsPerPage }) {
 	const [positions, setPositions] = useState([])
@@ -17,12 +17,9 @@ function PositionList({ onEdit, filters, searchTerm, refresh, itemsPerPage }) {
 	useEffect(() => {
 		const fetchPositions = async () => {
 			try {
-				const response = await axios.get(
-					'https://api-matriz-mfj.8bitscompany.com/admin/listarCargos',
-					{
-						headers: { Authorization: `Bearer ${token}` }
-					}
-				)
+				const response = await api.get('/admin/listarCargos', {
+					headers: { Authorization: `Bearer ${token}` }
+				})
 				setPositions(response.data)
 			} catch (error) {
 				console.error('Erro ao carregar cargos:', error)

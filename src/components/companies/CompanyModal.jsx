@@ -4,9 +4,9 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 import MaskedInput from '../common/MaskedInput'
-import axios from 'axios'
 import useAuthStore from '../../store/authStore'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
+import api from '../../utils/api'
 
 function CompanyModal({ open, onClose, company }) {
 	const { token } = useAuthStore()
@@ -58,16 +58,14 @@ function CompanyModal({ open, onClose, company }) {
 				status: statusValue
 			}
 
+			const headers = {
+				Authorization: `Bearer ${token}`
+			}
+
 			if (company) {
 				// Atualizar empresa existente
 				payload.id = company.id
-				await axios.put(
-					'https://api-matriz-mfj.8bitscompany.com/admin/editarEmpresa',
-					payload,
-					{
-						headers: { Authorization: `Bearer ${token}` }
-					}
-				)
+				await api.put('/admin/editarEmpresa', payload, { headers })
 				toast.success(
 					<div>
 						<span className="font-medium text-green-600">Sucesso!</span>
@@ -77,13 +75,7 @@ function CompanyModal({ open, onClose, company }) {
 				)
 			} else {
 				// Criar nova empresa
-				await axios.post(
-					'https://api-matriz-mfj.8bitscompany.com/admin/cadastrarEmpresa',
-					payload,
-					{
-						headers: { Authorization: `Bearer ${token}` }
-					}
-				)
+				await api.post('/admin/cadastrarEmpresa', payload, { headers })
 				toast.success(
 					<div>
 						<span className="font-medium text-green-600">Sucesso!</span>
@@ -92,17 +84,17 @@ function CompanyModal({ open, onClose, company }) {
 					</div>
 				)
 			}
+			refreshCompanies()
 			onClose()
 		} catch (error) {
-			console.error('Error saving company:', error)
-			const errorMessage = error.response?.data?.error || 'Erro ao salvar empresa: Erro desconhecido'
-			const titleMessage = errorMessage.split(":")[0]
-			const bodyMessage = errorMessage.split(":")[1]
+			console.error('Erro ao salvar empresa:', error)
+			const errorMessage =
+				error.response?.data?.message || 'Erro ao salvar empresa'
 			toast.error(
 				<div>
-					<span className="font-medium text-red-600">{titleMessage}</span>
+					<span className="font-medium text-red-600">Erro!</span>
 					<br />
-					<span className="text-sm text-red-950">{bodyMessage}</span>
+					<span className="text-sm text-red-950">{errorMessage}</span>
 				</div>
 			)
 		} finally {

@@ -2,7 +2,7 @@ import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
-import axios from 'axios'
+import api from '../../utils/api'
 import useAuthStore from '../../store/authStore'
 import { usePermissions } from '../../hooks/usePermissions'
 
@@ -17,29 +17,24 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 
 	useEffect(() => {
 		const fetchCourses = async () => {
-			let url;
+			let endpoint;
 			switch (user.role) {
 				case 'admin':
-					url = 'https://api-matriz-mfj.8bitscompany.com/admin/listarCursos'
+					endpoint = '/admin/listarCursos'
 					break
 				case 'empresa':
-					url = 'https://api-matriz-mfj.8bitscompany.com/company/listarCursos'
+					endpoint = '/company/listarCursos'
 					break
 				case 'gestor':
-					url = 'https://api-matriz-mfj.8bitscompany.com/manager/listarCursos'
+					endpoint = '/manager/listarCursos'
 					break
 				case 'colaborador':
-					url = 'https://api-matriz-mfj.8bitscompany.com/collaborator/listarCursos'
+					endpoint = '/collaborator/listarCursos'
 					break
 			}
 			try {
 				setIsLoading(true)
-				const response = await axios.get(
-					url,
-					{
-						headers: { Authorization: `Bearer ${token}` }
-					}
-				)
+				const response = await api.get(endpoint)
 				setCourses(response.data)
 			} catch (error) {
 				console.error('Error fetching courses:', error)
@@ -62,12 +57,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 
 			const fetchEmpresa = async () => {
 				try {
-					const response = await axios.get(
-						'https://api-matriz-mfj.8bitscompany.com/admin/listarEmpresa/' + collaborator.company.id,
-						{
-							headers: { Authorization: `Bearer ${token}` }
-						}
-					)
+					const response = await api.get('/admin/listarEmpresa/' + collaborator.company.id)
 					setCompanyInfo(response.data)
 				} catch (error) {
 					console.error('Error fetching company info:', error)
@@ -126,13 +116,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 			}
 
 			// Chamada à API para atribuir os cursos
-			await axios.post(
-				'https://api-matriz-mfj.8bitscompany.com/admin/atribuirCursoColaborador',
-				payload,
-				{
-					headers: { Authorization: `Bearer ${token}` }
-				}
-			)
+			await api.post('/admin/atribuirCursoColaborador', payload)
 
 			toast.success(
 				<div>

@@ -3,7 +3,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
-import axios from 'axios'
+import api from '../../utils/api'
 import useAuthStore from '../../store/authStore'
 
 function DepartmentModal({ isOpen, onClose, department, refreshDepartments }) {
@@ -35,16 +35,14 @@ function DepartmentModal({ isOpen, onClose, department, refreshDepartments }) {
 				name: data.name,
 			}
 
+			const headers = {
+				Authorization: `Bearer ${token}`
+			}
+
 			if (department) {
 				// Atualizar setor existente
 				payload.id = department.id
-				await axios.put(
-					'https://api-matriz-mfj.8bitscompany.com/admin/editarSetor',
-					payload,
-					{
-						headers: { Authorization: `Bearer ${token}` }
-					}
-				)
+				await api.put('/admin/editarSetor', payload, { headers })
 				toast.success(
 					<div>
 						<span className="font-medium text-green-600">Sucesso!</span>
@@ -54,13 +52,7 @@ function DepartmentModal({ isOpen, onClose, department, refreshDepartments }) {
 				)
 			} else {
 				// Criar novo setor
-				await axios.post(
-					'https://api-matriz-mfj.8bitscompany.com/admin/cadastrarSetor',
-					payload,
-					{
-						headers: { Authorization: `Bearer ${token}` }
-					}
-				)
+				await api.post('/admin/cadastrarSetor', payload, { headers })
 				toast.success(
 					<div>
 						<span className="font-medium text-green-600">Sucesso!</span>
@@ -77,7 +69,7 @@ function DepartmentModal({ isOpen, onClose, department, refreshDepartments }) {
 				error.response?.data?.message || 'Erro ao salvar setor'
 			toast.error(
 				<div>
-					<span className="font-medium text-red-600">Erro ao salvar setor</span>
+					<span className="font-medium text-red-600">Erro!</span>
 					<br />
 					<span className="text-sm text-red-950">{errorMessage}</span>
 				</div>

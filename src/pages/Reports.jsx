@@ -3,7 +3,7 @@ import CreditUsageTable from '../components/reports/CreditUsageTable'
 import CreditAllocationChart from '../components/reports/CreditAllocationChart'
 import ReportFilters from '../components/reports/ReportFilters'
 import useAuthStore from '../store/authStore'
-import axios from 'axios'
+import api from '../utils/api'
 import { toast } from 'react-hot-toast'
 
 export default function Reports() {
@@ -39,7 +39,7 @@ export default function Reports() {
 					break
 			}
 			try {
-				const response = await axios.get(url, {
+				const response = await api.get(url, {
 					headers: { Authorization: `Bearer ${token}` }
 				})
 				setTransitions(response.data)

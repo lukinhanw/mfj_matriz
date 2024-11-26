@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import StatsCard from '../components/dashboard/StatsCard'
 import ActivityFeed from '../components/dashboard/ActivityFeed'
-import axios from 'axios'
+import api from '../utils/api'
 import useAuthStore from '../store/authStore'
 import { toast } from 'react-hot-toast'
 
@@ -16,21 +16,21 @@ function Dashboard() {
 			let url;
 			switch (user.role) {
 				case 'admin':
-					url = 'https://api-matriz-mfj.8bitscompany.com/admin/dashboard'
+					url = '/admin/dashboard'
 					break
 				case 'empresa':
-					url = 'https://api-matriz-mfj.8bitscompany.com/company/dashboard'
+					url = '/company/dashboard'
 					break
 				case 'gestor':
-					url = 'https://api-matriz-mfj.8bitscompany.com/manager/dashboard'
+					url = '/manager/dashboard'
 					break
 				case 'colaborador':
-					url = 'https://api-matriz-mfj.8bitscompany.com/collaborator/dashboard'
+					url = '/collaborator/dashboard'
 					break
 			}
 			try {
 				setIsLoading(true)
-				const response = await axios.get(
+				const response = await api.get(
 					url,
 					{
 						headers: { Authorization: `Bearer ${token}` }

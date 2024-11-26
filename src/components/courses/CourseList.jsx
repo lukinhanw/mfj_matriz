@@ -7,6 +7,7 @@ import {
 import ConfirmationModal from '../common/ConfirmationModal'
 import axios from 'axios'
 import useAuthStore from '../../store/authStore'
+import api from '../../utils/api'
 
 function CourseList({ onEdit, refresh, searchTerm, viewMode }) {  // Adicionar viewMode nas props
 	const { token } = useAuthStore()
@@ -24,12 +25,11 @@ function CourseList({ onEdit, refresh, searchTerm, viewMode }) {  // Adicionar v
 		const fetchCourses = async () => {
 			try {
 				setIsLoading(true)
-				const response = await axios.get(
-					'https://api-matriz-mfj.8bitscompany.com/admin/listarCursos',
-					{
-						headers: { Authorization: `Bearer ${token}` }
+				const response = await api.get('/admin/listarCursos', {
+					headers: {
+						Authorization: `Bearer ${token}`
 					}
-				)
+				})
 				setCourses(response.data)
 			} catch (error) {
 				console.error('Erro ao buscar cursos:', error)
@@ -74,13 +74,9 @@ function CourseList({ onEdit, refresh, searchTerm, viewMode }) {  // Adicionar v
 
 	const handleDelete = async () => {
 		try {
-			await axios.delete(
-				'https://api-matriz-mfj.8bitscompany.com/admin/excluirCurso',
-				{
-					data: { courseId: confirmModal.courseId },
-					headers: { Authorization: `Bearer ${token}` }
-				}
-			)
+			await api.delete('/admin/excluirCurso', {
+				data: { courseId: confirmModal.courseId }
+			})
 			toast.success(
 				<div>
 					<span className="font-medium text-green-600">Sucesso!</span>

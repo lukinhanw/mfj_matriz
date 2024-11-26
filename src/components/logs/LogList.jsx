@@ -4,6 +4,7 @@ import { ptBR } from 'date-fns/locale'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import useAuthStore from '../../store/authStore'
+import api from '../../utils/api'
 
 function LogList({ filters, searchTerm, itemsPerPage = 10 }) {
 	const { token } = useAuthStore()
@@ -16,12 +17,9 @@ function LogList({ filters, searchTerm, itemsPerPage = 10 }) {
 		const fetchLogs = async () => {
 			setIsLoading(true)
 			try {
-				const response = await axios.get(
-					`https://api-matriz-mfj.8bitscompany.com/admin/logs?page=${currentPage}&limit=${itemsPerPage}`,
-					{
-						headers: { Authorization: `Bearer ${token}` }
-					}
-				)
+				const response = await api.get(`/admin/logs?page=${currentPage}&limit=${itemsPerPage}`, {
+					headers: { Authorization: `Bearer ${token}` }
+				})
 				setLogs(response.data.logs)
 				setTotalPages(Math.ceil(response.data.total / itemsPerPage))
 			} catch (error) {

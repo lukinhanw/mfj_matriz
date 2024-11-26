@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline'
 import ConfirmationModal from '../common/ConfirmationModal'
 import CourseAssignmentModal from './CourseAssignmentModal'
-import axios from 'axios'
+import api from '../../utils/api'
 import useAuthStore from '../../store/authStore'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
 import CollaboratorModal from './CollaboratorModal'
@@ -34,29 +34,26 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 	const [selectedCollaborator, setSelectedCollaborator] = useState(null);
 
 	const fetchCollaborators = async () => {
-		let url;
+		let endpoint;
 		switch (user.role) {
 			case 'admin':
-				url = 'https://api-matriz-mfj.8bitscompany.com/admin/listarColaboradores'
+				endpoint = '/admin/listarColaboradores'
 				break
 			case 'empresa':
-				url = 'https://api-matriz-mfj.8bitscompany.com/company/listarColaboradores'
+				endpoint = '/company/listarColaboradores'
 				break
 			case 'gestor':
-				url = 'https://api-matriz-mfj.8bitscompany.com/manager/listarColaboradores'
+				endpoint = '/manager/listarColaboradores'
 				break
 			case 'colaborador':
-				url = 'https://api-matriz-mfj.8bitscompany.com/collaborator/listarColaboradores'
+				endpoint = '/collaborator/listarColaboradores'
 				break
 		}
 		try {
 			setIsLoading(true)
-			const response = await axios.get(
-				url,
-				{
-					headers: { Authorization: `Bearer ${token}` }
-				}
-			)
+			const response = await api.get(endpoint, {
+				headers: { Authorization: `Bearer ${token}` }
+			})
 			setCollaborators(response.data)
 		} catch (error) {
 			console.error('Error fetching collaborators:', error.response.data.error)
@@ -82,13 +79,10 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 
 	const handleDelete = async () => {
 		try {
-			await axios.delete(
-				'https://api-matriz-mfj.8bitscompany.com/admin/deletarColaborador',
-				{
-					headers: { Authorization: `Bearer ${token}` },
-					data: { collaboratorId: confirmModal.collaboratorId }
-				}
-			)
+			await api.delete('/admin/deletarColaborador', {
+				headers: { Authorization: `Bearer ${token}` },
+				data: { collaboratorId: confirmModal.collaboratorId }
+			})
 
 			setCollaborators((prev) =>
 				prev.filter((collab) => collab.id !== confirmModal.collaboratorId)
@@ -132,16 +126,12 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 		try {
 			const { collaboratorId, currentStatus } = confirmModal
 			const endpoint = currentStatus === 'active'
-				? 'desativarColaborador'
-				: 'ativarColaborador'
+					? '/admin/desativarColaborador'
+					: '/admin/ativarColaborador'
 
-			await axios.put(
-				`https://api-matriz-mfj.8bitscompany.com/admin/${endpoint}`,
-				{ collaboratorId: collaboratorId },
-				{
-					headers: { Authorization: `Bearer ${token}` }
-				}
-			)
+			await api.put(endpoint, { collaboratorId: collaboratorId }, {
+				headers: { Authorization: `Bearer ${token}` }
+			})
 
 			const newStatus = currentStatus === 'active' ? 'inactive' : 'active'
 			setCollaborators((prev) =>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import axios from 'axios'
+import api from '../../utils/api'
 import { toast } from 'react-hot-toast'
 import useAuthStore from '../../store/authStore'
 
@@ -29,20 +29,20 @@ export default function CreditAllocationChart() {
 			let url;
 			switch (user.role) {
 				case 'admin':
-					url = 'https://api-matriz-mfj.8bitscompany.com/admin/relatoriosInscricoes'
+					url = '/admin/relatoriosInscricoes'
 					break
 				case 'empresa':
-					url = 'https://api-matriz-mfj.8bitscompany.com/company/relatoriosInscricoes'
+					url = '/company/relatoriosInscricoes'
 					break
 				case 'gestor':
-					url = 'https://api-matriz-mfj.8bitscompany.com/manager/relatoriosInscricoes'
+					url = '/manager/relatoriosInscricoes'
 					break
 				case 'colaborador':
-					url = 'https://api-matriz-mfj.8bitscompany.com/collaborator/relatoriosInscricoes'
+					url = '/collaborator/relatoriosInscricoes'
 					break
 			}
 			try {
-				const response = await axios.get(
+				const response = await api.get(
 					url,
 					{
 						headers: { Authorization: `Bearer ${token}` }

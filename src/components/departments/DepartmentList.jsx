@@ -5,7 +5,7 @@ import {
 	TrashIcon,
 } from '@heroicons/react/24/outline'
 import ConfirmationModal from '../common/ConfirmationModal'
-import axios from 'axios'
+import api from '../../utils/api'
 import useAuthStore from '../../store/authStore'
 
 function DepartmentList({ onEdit, filters, searchTerm, refresh }) {
@@ -21,12 +21,9 @@ function DepartmentList({ onEdit, filters, searchTerm, refresh }) {
 		const fetchDepartments = async () => {
 			try {
 				setIsLoading(true)
-				const response = await axios.get(
-					'https://api-matriz-mfj.8bitscompany.com/admin/listarSetores',
-					{
-						headers: { Authorization: `Bearer ${token}` }
-					}
-				)
+				const response = await api.get('/admin/listarSetores', {
+					headers: { Authorization: `Bearer ${token}` }
+				})
 				setDepartments(response.data)
 			} catch (error) {
 				console.error('Erro ao buscar setores:', error)
@@ -43,13 +40,10 @@ function DepartmentList({ onEdit, filters, searchTerm, refresh }) {
 
 	const handleDelete = async () => {
 		try {
-			await axios.delete(
-				`https://api-matriz-mfj.8bitscompany.com/admin/deletarSetor`,
-				{
-					data: { id: confirmModal.departmentId },
-					headers: { Authorization: `Bearer ${token}` }
-				}
-			)
+			await api.delete('/admin/deletarSetor', {
+				headers: { Authorization: `Bearer ${token}` },
+				data: { id: confirmModal.departmentId }
+			})
 			toast.success(
 				<div>
 					<span className="font-medium text-green-600">Sucesso!</span>

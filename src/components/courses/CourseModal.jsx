@@ -2,10 +2,10 @@ import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
-import axios from 'axios'
 import useAuthStore from '../../store/authStore'
+import api from '../../utils/api'
 
-function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adicionar refreshCourses nas props
+function CourseModal({ isOpen, onClose, course, refreshCourses }) {
 	const { token } = useAuthStore()
 	const [formData, setFormData] = useState({
 		title: '',
@@ -24,7 +24,7 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 				description: course.description || '',
 				thumbnail: null
 			})
-			setPreviewUrl(course.thumbnail ? `https://api-matriz-mfj.8bitscompany.com/imagem/${course.thumbnail}` : '')
+			setPreviewUrl(course.thumbnail ? `${import.meta.env.VITE_API_BASE_URL}/imagem/${course.thumbnail}` : '')
 		} else {
 			setFormData({
 				title: '',
@@ -40,63 +40,34 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 		e.preventDefault()
 		setIsSubmitting(true)
 
+		const payload = new FormData()
+		payload.append('title', formData.title)
+		payload.append('category', formData.category)
+		payload.append('description', formData.description)
+		if (formData.thumbnail) {
+			payload.append('thumbnail', formData.thumbnail)
+		}
+
+		const headers = {
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'multipart/form-data'
+		}
+
 		try {
-			const formPayload = new FormData()
-			formPayload.append('title', formData.title)
-			formPayload.append('category', formData.category)
-			formPayload.append('description', formData.description)
-
-			if (formData.thumbnail) {
-				formPayload.append('thumbnail', formData.thumbnail)
-			}
-
-			let response
-
-			if (course?.id) {
-				formPayload.append('id', course.id)
-				response = await axios.put(
-					'https://api-matriz-mfj.8bitscompany.com/admin/editarCurso',
-					formPayload,
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-							'Content-Type': 'multipart/form-data'
-						}
-					}
-				)
-				toast.success(
-					<div>
-						<span className="font-medium text-green-600">Sucesso!</span>
-						<br />
-						<span className="text-sm text-green-950">Curso atualizado com sucesso</span>
-					</div>
-				)
+			if (course) {
+				// Atualizar curso existente
+				await api.put(`/admin/editarCurso/${course.id}`, payload, { headers })
+				toast.success('Curso atualizado com sucesso')
 			} else {
-				response = await axios.post(
-					'https://api-matriz-mfj.8bitscompany.com/admin/cadastrarCurso',
-					formPayload,
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-							'Content-Type': 'multipart/form-data'
-						}
-					}
-				)
-				toast.success('Curso criado com sucesso!')
+				// Criar novo curso
+				await api.post('/admin/cadastrarCurso', payload, { headers })
+				toast.success('Curso cadastrado com sucesso')
 			}
-
-			refreshCourses()  // Adicionar chamada para atualizar lista
+			refreshCourses()
 			onClose()
 		} catch (error) {
 			console.error('Erro ao salvar curso:', error)
-			const errorMessage = error.response?.data?.message || 'Erro ao salvar curso'
-			toast.error(
-				<div>
-					<span className="font-medium text-red-600">Erro ao salvar curso</span>
-					<br />
-					<span className="text-sm text-red-950">{errorMessage}</span>
-				</div>
-			)
+			toast.error('Erro ao salvar curso')
 		} finally {
 			setIsSubmitting(false)
 		}
@@ -120,7 +91,7 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {  // Adiciona
 
 	return (
 		<Transition.Root show={isOpen} as={Fragment}>
-			<Dialog as="div" className="relative z-10" onClose={onClose}>
+			<Dialog as="div" className="relative z-50" onClose={onClose}>
 				{/* Fundo escurecido */}
 				<Transition.Child
 					as={Fragment}

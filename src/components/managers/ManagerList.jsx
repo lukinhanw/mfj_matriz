@@ -7,7 +7,7 @@ import {
 	CheckCircleIcon
 } from '@heroicons/react/24/outline'
 import ConfirmationModal from '../common/ConfirmationModal'
-import axios from 'axios'
+import api from '../../utils/api'  // Adicionar esta importação
 import useAuthStore from '../../store/authStore'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
 import { usePermissions } from '../../hooks/usePermissions'
@@ -32,24 +32,21 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 				let url;
 				switch (user.role) {
 					case 'admin':
-						url = 'https://api-matriz-mfj.8bitscompany.com/admin/listarGestores'
+						url = '/admin/listarGestores'
 						break
 					case 'empresa':
-						url = 'https://api-matriz-mfj.8bitscompany.com/company/listarGestores'
+						url = '/company/listarGestores'
 						break
 					case 'gestor':
-						url = 'https://api-matriz-mfj.8bitscompany.com/manager/listarGestores'
+						url = '/manager/listarGestores'
 						break
 					case 'colaborador':
-						url = 'https://api-matriz-mfj.8bitscompany.com/collaborator/listarGestores'
+						url = '/collaborator/listarGestores'
 						break
 				}
-				const response = await axios.get(
-					url,
-					{
-						headers: { Authorization: `Bearer ${token}` }
-					}
-				)
+				const response = await api.get(url, {
+					headers: { Authorization: `Bearer ${token}` }
+				})
 				setManagers(response.data)
 			} catch (error) {
 				console.error('Error fetching managers:', error)
@@ -72,11 +69,11 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 
 	const handleDelete = async () => {
 		try {
-			await axios.delete(
-				'https://api-matriz-mfj.8bitscompany.com/admin/deletarGestor',
+			await api.delete(
+				'/admin/deletarGestor',
 				{
-					data: { managerId: confirmModal.managerId },
-					headers: { Authorization: `Bearer ${token}` }
+					headers: { Authorization: `Bearer ${token}` },
+					data: { managerId: confirmModal.managerId }
 				}
 			)
 			toast.success(
@@ -113,12 +110,10 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 					? 'ativarGestor'
 					: 'desativarGestor'
 
-			await axios.put(
-				`https://api-matriz-mfj.8bitscompany.com/admin/${endpoint}`,
+			await api.put(
+				`/admin/${endpoint}`,
 				{ managerId: managerId },
-				{
-					headers: { Authorization: `Bearer ${token}` }
-				}
+				{ headers: { Authorization: `Bearer ${token}` } }
 			)
 
 			toast.success(`Status alterado com sucesso!`)

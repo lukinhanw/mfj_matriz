@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 import useAuthStore from '../store/authStore'
-import axios from 'axios'
+import api from '../utils/api'
 import logo from '../assets/logo.png'
 import logoBlack from '../assets/logo-black.png' // Adiciona a importação do logo escuro
 
@@ -39,7 +39,7 @@ function Login() {
 				senha: data.password
 			}
 
-			const response = await axios.post('https://api-matriz-mfj.8bitscompany.com/login', payload)
+			const response = await api.post('/login', payload)
 
 			setAuth({
 				user: {

@@ -11,9 +11,9 @@ import {
 } from '@heroicons/react/24/outline'
 import ConfirmationModal from '../common/ConfirmationModal'
 import CompanyCreditsModal from './CompanyCreditsModal'
-import axios from 'axios'
 import useAuthStore from '../../store/authStore'
 import { formatPhoneNumber, formatCpfCnpj } from '../../utils/helpers'
+import api from '../../utils/api'
 
 function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 	const { token } = useAuthStore()
@@ -35,12 +35,11 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 		const fetchCompanies = async () => {
 			try {
 				setIsLoading(true)
-				const response = await axios.get(
-					'https://api-matriz-mfj.8bitscompany.com/admin/listarEmpresas',
-					{
-						headers: { Authorization: `Bearer ${token}` }
+				const response = await api.get('/admin/listarEmpresas', {
+					headers: {
+						Authorization: `Bearer ${token}`
 					}
-				)
+				})
 				setCompanies(response.data)
 			} catch (error) {
 				console.error('Error fetching companies:', error)
@@ -64,11 +63,8 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 
 	const handleDelete = async () => {
 		try {
-			await axios({
-				method: 'delete',
-				url: `https://api-matriz-mfj.8bitscompany.com/admin/deletarEmpresa`,
-				data: { companyId: confirmModal.companyId },
-				headers: { Authorization: `Bearer ${token}` }
+			await api.delete('/admin/deletarEmpresa', {
+				data: { companyId: confirmModal.companyId }
 			})
 			toast.success(
 				<div>
@@ -119,12 +115,9 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 					? 'ativarEmpresa'
 					: 'desativarEmpresa'
 
-			await axios.put(
-				`https://api-matriz-mfj.8bitscompany.com/admin/${endpoint}`,
-				{ companyId: companyId },
-				{
-					headers: { Authorization: `Bearer ${token}` }
-				}
+			await api.put(
+				`/admin/${endpoint}`,
+				{ companyId: companyId }
 			)
 
 			toast.success(

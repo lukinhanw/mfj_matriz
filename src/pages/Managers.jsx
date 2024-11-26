@@ -8,6 +8,7 @@ import axios from 'axios'
 import useAuthStore from '../store/authStore'
 import { toast } from 'react-hot-toast'
 import { usePermissions } from '../hooks/usePermissions'
+import api from '../utils/api'
 
 function Managers() {
 	const { can } = usePermissions()
@@ -28,11 +29,15 @@ function Managers() {
 		const fetchFiltersData = async () => {
 			try {
 				const [companiesResponse, departmentsResponse] = await Promise.all([
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarEmpresas', {
-						headers: { Authorization: `Bearer ${token}` }
+					api.get('/admin/listarEmpresas', {
+						headers: {
+							Authorization: `Bearer ${token}`
+						}
 					}),
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarSetores', {
-						headers: { Authorization: `Bearer ${token}` }
+					api.get('/admin/listarSetores', {
+						headers: {
+							Authorization: `Bearer ${token}`
+						}
 					})
 				])
 

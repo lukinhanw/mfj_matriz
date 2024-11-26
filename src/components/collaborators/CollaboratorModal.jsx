@@ -3,7 +3,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
-import axios from 'axios'
+import api from '../../utils/api'
 import Select from 'react-select'
 import useAuthStore from '../../store/authStore'
 import MaskedInput from '../common/MaskedInput'
@@ -34,13 +34,13 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 			try {
 				// Fetch companies, departments, and positions from API
 				const [companiesResponse, departmentsResponse, positionsResponse] = await Promise.all([
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarEmpresas', {
+					api.get('/admin/listarEmpresas', {
 						headers: { Authorization: `Bearer ${token}` }
 					}),
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarSetores', {
+					api.get('/admin/listarSetores', {
 						headers: { Authorization: `Bearer ${token}` }
 					}),
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarCargos', {
+					api.get('/admin/listarCargos', {
 						headers: { Authorization: `Bearer ${token}` }
 					})
 				])
@@ -98,11 +98,9 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 			if (collaborator) {
 				payload.id = collaborator.id
 				// Update existing collaborator
-				await axios.put(
-					`https://api-matriz-mfj.8bitscompany.com/admin/editarColaborador`,
-					payload,
-					{ headers: { Authorization: `Bearer ${token}` } }
-				)
+				await api.put('/admin/editarColaborador', payload, {
+					headers: { Authorization: `Bearer ${token}` }
+				})
 				toast.success(
 					<div>
 						<span className="font-medium text-green-600">Sucesso!</span>
@@ -112,11 +110,9 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 				)
 			} else {
 				// Create new collaborator
-				await axios.post(
-					'https://api-matriz-mfj.8bitscompany.com/admin/cadastrarColaborador',
-					payload,
-					{ headers: { Authorization: `Bearer ${token}` } }
-				)
+				await api.post('/admin/cadastrarColaborador', payload, {
+					headers: { Authorization: `Bearer ${token}` }
+				})
 				toast.success(
 					<div>
 						<span className="font-medium text-green-600">Sucesso!</span>

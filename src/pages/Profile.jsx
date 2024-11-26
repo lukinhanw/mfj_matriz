@@ -7,6 +7,7 @@ import PasswordChangeModal from '../components/profile/PasswordChangeModal'
 import { formatCpfCnpj, formatPhoneNumber } from '../utils/helpers'
 import { usePermissions } from '../hooks/usePermissions'
 import axios from 'axios'
+import api from '../utils/api'
 
 function Profile() {
 	const { user, setAuth, token } = useAuthStore()
@@ -32,7 +33,7 @@ function Profile() {
 	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
-				const response = await axios.get(`https://api-matriz-mfj.8bitscompany.com/${nivel}/perfil`, {
+				const response = await api.get(`/${nivel}/perfil`, {
 					headers: { Authorization: `Bearer ${token}` }
 				})
 				setProfileData(response.data)

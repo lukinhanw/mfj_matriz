@@ -4,7 +4,7 @@ import CollaboratorList from '../components/collaborators/CollaboratorList'
 import CollaboratorModal from '../components/collaborators/CollaboratorModal'
 import CollaboratorFilters from '../components/collaborators/CollaboratorFilters'
 import CollaboratorSearch from '../components/collaborators/CollaboratorSearch'
-import axios from 'axios'
+import api from '../utils/api'
 import useAuthStore from '../store/authStore'
 import { usePermissions } from '../hooks/usePermissions'
 import { toast } from 'react-hot-toast'
@@ -37,13 +37,13 @@ function Collaborators() {
 		const fetchData = async () => {
 			try {
 				const [companiesRes, departmentsRes, positionsRes] = await Promise.all([
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarEmpresas', {
+					api.get('/admin/listarEmpresas', {
 						headers: { Authorization: `Bearer ${token}` }
 					}),
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarSetores', {
+					api.get('/admin/listarSetores', {
 						headers: { Authorization: `Bearer ${token}` }
 					}),
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarCargos', {
+					api.get('/admin/listarCargos', {
 						headers: { Authorization: `Bearer ${token}` }
 					})
 				])

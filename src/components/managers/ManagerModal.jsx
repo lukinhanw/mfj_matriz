@@ -7,6 +7,7 @@ import axios from 'axios'
 import useAuthStore from '../../store/authStore'
 import MaskedInput from '../common/MaskedInput'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
+import api from '../../utils/api'
 
 function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 	const { token } = useAuthStore()
@@ -40,10 +41,10 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 
 			try {
 				const [companiesResponse, departmentsResponse] = await Promise.all([
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarEmpresas', {
+					api.get('/admin/listarEmpresas', {
 						headers: { Authorization: `Bearer ${token}` }
 					}),
-					axios.get('https://api-matriz-mfj.8bitscompany.com/admin/listarSetores', {
+					api.get('/admin/listarSetores', {
 						headers: { Authorization: `Bearer ${token}` }
 					})
 				]);
@@ -114,11 +115,9 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 			if (manager) {
 				// Update existing manager
 				payload.id = manager.id
-				await axios.put(
-					'https://api-matriz-mfj.8bitscompany.com/admin/editarGestor',
-					payload,
-					{ headers: { Authorization: `Bearer ${token}` } }
-				)
+				await api.put('/admin/editarGestor', payload, {
+					headers: { Authorization: `Bearer ${token}` }
+				})
 				toast.success(
 					<div>
 						<span className="font-medium text-green-600">Sucesso!</span>
@@ -128,11 +127,9 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 				)
 			} else {
 				// Create new manager
-				await axios.post(
-					'https://api-matriz-mfj.8bitscompany.com/admin/novoGestor',
-					payload,
-					{ headers: { Authorization: `Bearer ${token}` } }
-				)
+				await api.post('/admin/novoGestor', payload, {
+					headers: { Authorization: `Bearer ${token}` }
+				})
 				toast.success(
 					<div>
 						<span className="font-medium text-green-600">Sucesso!</span>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import CreditUsageTable from '../components/reports_buy/CreditUsageTable'
 import ReportFilters from '../components/reports_buy/ReportFilters'
 import useAuthStore from '../store/authStore'
-import axios from 'axios'
+import api from '../utils/api'
 import { toast } from 'react-hot-toast'
 
 export default function ReportsBuy() {
@@ -36,7 +36,7 @@ export default function ReportsBuy() {
 					break
 			}
 			try {
-				const response = await axios.get(url, {
+				const response = await api.get(url, {
 					headers: { Authorization: `Bearer ${token}` }
 				})
 				setTransitions(response.data)
