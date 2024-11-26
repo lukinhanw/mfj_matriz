@@ -151,7 +151,7 @@ export const getNavigationByRole = (userRole) => {
 			{
 				title: 'Avaliações',
 				items: [
-					{ name: 'Avaliação de Competências', href: '/assessment', icon: 'ClipboardDocumentCheckIcon' }
+					{ name: 'Avaliação', href: '/assessment', icon: 'ClipboardDocumentCheckIcon' }
 				]
 			}
 		)

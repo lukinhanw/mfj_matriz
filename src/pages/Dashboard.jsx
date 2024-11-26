@@ -9,6 +9,7 @@ import { toast } from 'react-hot-toast'
 function Dashboard() {
 	const [dashboardData, setDashboardData] = useState(null)
 	const [isLoading, setIsLoading] = useState(true)
+	const [resultados, setResultados] = useState(null)
 	const { user, token } = useAuthStore()
 
 	useEffect(() => {
@@ -45,8 +46,22 @@ function Dashboard() {
 			}
 		}
 
+		const fetchResultados = async () => {
+			if (user.role === 'colaborador') {
+				try {
+					const response = await api.get('/collaborator/meusResultados', {
+						headers: { Authorization: `Bearer ${token}` }
+					})
+					setResultados(response.data[0])
+				} catch (error) {
+					console.error('Erro ao buscar resultados:', error)
+				}
+			}
+		}
+
 		if (token) {
 			fetchDashboardData()
+			fetchResultados()
 		}
 	}, [token, user.role])
 
@@ -81,7 +96,6 @@ function Dashboard() {
 
 	return (
 		<div className="space-y-6">
-
 			{user.role === 'admin' && (
 				<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 					<>
@@ -141,6 +155,92 @@ function Dashboard() {
 						/>
 					</>
 				</div>
+			)}
+
+			{user.role === 'colaborador' && (
+				<>
+					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+						<StatsCard
+							title="Cargo"
+							value={dashboardData.cargo}
+							icon="role"
+						/>
+						<StatsCard
+							title="Setor"
+							value={dashboardData.setor}
+							icon="department"
+						/>
+						<StatsCard
+							title="Inscrições"
+							value={dashboardData.inscricoes}
+							icon="subscriptions"
+						/>
+						<StatsCard
+							title="Avaliação"
+							value={dashboardData.avaliacaoConcluida ? "Concluída ✅" : "Pendente"}
+							icon="assessment"
+						/>
+					</div>
+
+					{resultados && (
+						<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
+							<h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+								Resultados da Avaliação
+							</h2>
+							<div className="space-y-4">
+								<div className="flex items-center">
+									<span className="text-sm text-gray-500 dark:text-gray-400">Data da Avaliação:</span>
+									<span className="ml-2 text-gray-900 dark:text-gray-100">
+										{new Date(resultados.data).toLocaleDateString('pt-BR', {
+											day: '2-digit',
+											month: '2-digit',
+											year: 'numeric',
+											hour: '2-digit',
+											minute: '2-digit'
+										})}
+									</span>
+								</div>
+
+								{resultados.cursos && resultados.cursos.length > 0 && (
+									<div>
+										<h3 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">
+											Cursos Recomendados
+										</h3>
+										<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 ">
+											{resultados.cursos.map(curso => (
+												<div
+													key={curso.id}
+													className="group bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden hover:scale-105 transition duration-500"
+												>
+													<div className="relative h-32 overflow-hidden">
+														<img 
+															src={curso.imagem 
+																? `${import.meta.env.VITE_API_BASE_URL}/imagem/${curso.imagem}` 
+																: `${import.meta.env.VITE_API_BASE_URL}/imagem/sem-foto.jpg`}
+															alt={curso.titulo}
+															className="w-full h-full object-cover transition-transform duration-300"
+														/>
+														<div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+													</div>
+													<div className="p-4">
+														<h4 className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2 mb-1">
+															{curso.titulo}
+														</h4>
+														{curso.categoria && (
+															<span className="inline-block px-2 py-1 text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full">
+																{curso.categoria}
+															</span>
+														)}
+													</div>
+												</div>
+											))}
+										</div>
+									</div>
+								)}
+							</div>
+						</div>
+					)}
+				</>
 			)}
 
 			{user.role === 'admin' && (

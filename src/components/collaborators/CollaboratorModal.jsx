@@ -4,11 +4,9 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 import api from '../../utils/api'
-import Select from 'react-select'
 import useAuthStore from '../../store/authStore'
 import MaskedInput from '../common/MaskedInput'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
-import { customSelectStyles } from '../../styles/selectStyles'
 
 function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved }) {
 	const { token } = useAuthStore()
@@ -353,31 +351,20 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 												>
 													Cargo
 												</label>
-												<Controller
-													name="positionId"
-													control={control}
-													rules={{ required: 'Cargo é obrigatório' }}
-													render={({ field }) => (
-														<Select
-															{...field}
-															isDisabled={isSubmitting}
-															options={positions.map(pos => ({
-																value: pos.id.toString(),
-																label: pos.name
-															}))}
-															value={positions
-																.map(pos => ({
-																	value: pos.id.toString(),
-																	label: pos.name
-																}))
-																.find(option => option.value === field.value)}
-															onChange={(option) => field.onChange(option.value)}
-															styles={customSelectStyles}
-															placeholder="Selecione um cargo"
-															menuPortalTarget={document.body}
-														/>
-													)}
-												/>
+												<select
+													{...register('positionId', {
+														required: 'Cargo é obrigatório'
+													})}
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+													disabled={isSubmitting}
+												>
+													<option value="">Selecione um cargo</option>
+													{positions.map((position) => (
+														<option key={position.id} value={position.id}>
+															{position.name}
+														</option>
+													))}
+												</select>
 												{errors.positionId && (
 													<p className="mt-1 text-sm text-red-600">
 														{errors.positionId.message}
