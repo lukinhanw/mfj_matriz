@@ -33,7 +33,7 @@ export default function App() {
 					<Route path="/collaborators" element={<Collaborators />} />
 					<Route path="/courses" element={<Courses />} />
 					<Route path="/reports" element={<Reports />} />
-					<Route path="/reports_buy" element={<ReportsBuy />} />
+					<Route path="/reports-buy" element={<ReportsBuy />} />
 					<Route path="/logs" element={<SystemLogs />} />
 					<Route path="/profile" element={<Profile />} />
 					<Route path="/assessment" element={<Assessment />} />

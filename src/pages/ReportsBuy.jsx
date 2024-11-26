@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import CreditUsageTable from '../components/reports_buy/CreditUsageTable'
-import ReportFilters from '../components/reports_buy/ReportFilters'
+import CreditUsageTable from '../components/reports-buy/CreditUsageTable'
+import ReportFilters from '../components/reports-buy/ReportFilters'
 import useAuthStore from '../store/authStore'
 import api from '../utils/api'
 import { toast } from 'react-hot-toast'

@@ -16,7 +16,7 @@ export const ROUTE_PERMISSIONS = {
 	'/collaborators': [ROLES.ADMIN, ROLES.GESTOR, ROLES.EMPRESA],
 	'/courses': [ROLES.ADMIN],
 	'/reports': [ROLES.ADMIN, ROLES.EMPRESA],
-	'/reports_buy': [ROLES.ADMIN, ROLES.EMPRESA],
+	'/reports-buy': [ROLES.ADMIN, ROLES.EMPRESA],
 	'/logs': [ROLES.ADMIN],
 	'/profile': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA],
 	'/assessment': [ROLES.COLABORADOR]
@@ -163,7 +163,7 @@ export const getNavigationByRole = (userRole) => {
 			title: 'Relatórios',
 			items: [
 				{ name: 'Relatórios de Uso', href: '/reports', icon: 'ChartBarIcon' },
-				{ name: 'Relatórios de Créditos', href: '/reports_buy', icon: 'ChartBarIcon' },
+				{ name: 'Relatórios de Créditos', href: '/reports-buy', icon: 'ChartBarIcon' },
 			]
 		})
 	}

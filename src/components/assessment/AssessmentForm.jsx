@@ -29,24 +29,26 @@ export default function AssessmentForm({
 	return (
 		<div className="space-y-8">
 			{/* Progress bar */}
-			<div className="relative pt-1">
-				<div className="flex mb-2 items-center justify-between">
-					<div>
-						<span className="text-xs font-semibold inline-block text-gray-600 dark:text-gray-400">
+			<div className="sticky top-[88px] bg-white dark:bg-gray-800 rounded-md z-10 py-4 px-4 -mx-4 shadow-sm">
+				<div className="relative">
+					<div className="flex mb-2 items-center justify-between">
+						<div>
+							<span className="text-xs font-semibold inline-block text-gray-600 dark:text-gray-400">
 							Progresso
-						</span>
-					</div>
-					<div className="text-right">
-						<span className="text-xs font-semibold inline-block text-gray-600 dark:text-gray-400">
+							</span>
+						</div>
+						<div className="text-right">
+							<span className="text-xs font-semibold inline-block text-gray-600 dark:text-gray-400">
 							{progress}%
-						</span>
+							</span>
+						</div>
 					</div>
-				</div>
-				<div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200 dark:bg-gray-700">
-					<div
-						style={{ width: `${progress}%` }}
-						className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-orange-500 dark:bg-orange-600 transition-all duration-500"
-					/>
+					<div className="overflow-hidden h-2 mb-0 text-xs flex rounded bg-gray-200 dark:bg-gray-700">
+						<div
+							style={{ width: `${progress}%` }}
+							className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-orange-500 dark:bg-orange-600 transition-all duration-500"
+						/>
+					</div>
 				</div>
 			</div>
 

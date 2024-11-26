@@ -159,7 +159,7 @@ function Dashboard() {
 
 			{user.role === 'colaborador' && (
 				<>
-					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+					<div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4">
 						<StatsCard
 							title="Cargo"
 							value={dashboardData.cargo}
@@ -206,11 +206,11 @@ function Dashboard() {
 										<h3 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">
 											Cursos Recomendados
 										</h3>
-										<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 ">
+										<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
 											{resultados.cursos.map(curso => (
 												<div
 													key={curso.id}
-													className="group bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden hover:scale-105 transition duration-500"
+													className="group bg-gray-50 dark:bg-gray-700 shadow rounded-lg overflow-hidden hover:scale-105 transition duration-500"
 												>
 													<div className="relative h-32 overflow-hidden">
 														<img 

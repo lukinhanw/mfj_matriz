@@ -108,8 +108,13 @@ export default function Assessment() {
 		return <CompletedState />
 	}
 
-	console.log(isCompleted);
-	
+	if (!assessment) {
+		return (
+			<div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+				<p className="text-center text-lg text-gray-600">Nenhuma avaliação disponível</p>
+			</div>
+		)
+	}
 
 	return (
 		<div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">

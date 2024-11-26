@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 import RecoveryStepEmail from '../components/password-recovery/RecoveryStepEmail'
 import RecoveryStepCode from '../components/password-recovery/RecoveryStepCode'
@@ -8,6 +7,7 @@ import RecoveryStepPassword from '../components/password-recovery/RecoveryStepPa
 import SuccessModal from '../components/password-recovery/SuccessModal'
 import logo from '../assets/logo.png'
 import logoBlack from '../assets/logo-black.png'
+import api from '../utils/api' // Importar a instancia da API
 
 const STEPS = {
 	EMAIL: 'email',
@@ -18,6 +18,7 @@ const STEPS = {
 export default function PasswordRecovery() {
 	const [currentStep, setCurrentStep] = useState(STEPS.EMAIL)
 	const [email, setEmail] = useState('')
+	const [code, setCode] = useState('') // Adicionar estado para o código
 	const [isLoading, setIsLoading] = useState(false)
 	const [showSuccessModal, setShowSuccessModal] = useState(false)
 	const [isDarkMode, setIsDarkMode] = useState(document.documentElement.classList.contains('dark'))
@@ -26,8 +27,7 @@ export default function PasswordRecovery() {
 	const handleEmailSubmit = async (email) => {
 		setIsLoading(true)
 		try {
-			// API integration point: sendRecoveryEmail(email)
-			await new Promise(resolve => setTimeout(resolve, 1000)) // Simulated API call
+			await api.post('/esquecisenha', { usuario: email }) // Chamada para POST /esquecisenha
 			setEmail(email)
 			setCurrentStep(STEPS.CODE)
 			toast.success('Código de recuperação enviado com sucesso!')
@@ -41,11 +41,26 @@ export default function PasswordRecovery() {
 	const handleCodeSubmit = async (code) => {
 		setIsLoading(true)
 		try {
-			// API integration point: validateRecoveryCode(code)
-			await new Promise(resolve => setTimeout(resolve, 1000)) // Simulated API call
-			setCurrentStep(STEPS.PASSWORD)
+			const payload = {
+				usuario: email,
+				codigo: code
+			}
+
+			const response = await api.post('/confirmarCodigo', payload)
+
+			if (response.data) {
+				setCode(code)
+				setCurrentStep(STEPS.PASSWORD)
+				toast.success('Código verificado com sucesso!')
+			} else {
+				throw new Error('Resposta inválida da API')
+			}
 		} catch (error) {
-			toast.error('Código inválido')
+			toast.error(
+				error.response?.data?.message || 
+				error.response?.data?.error || 
+				'Código inválido'
+			)
 		} finally {
 			setIsLoading(false)
 		}
@@ -54,9 +69,13 @@ export default function PasswordRecovery() {
 	const handlePasswordSubmit = async (passwords) => {
 		setIsLoading(true)
 		try {
-			// API integration point: updatePassword(passwords.newPassword)
-			await new Promise(resolve => setTimeout(resolve, 1000)) // Simulated API call
+			await api.put('/trocarSenha', { // Chamada para PUT /trocarSenha
+				usuario: email,
+				codigo: code,
+				senha: passwords.newPassword
+			})
 			setShowSuccessModal(true)
+			toast.success('Senha atualizada com sucesso!')
 		} catch (error) {
 			toast.error('Erro ao atualizar senha')
 		} finally {
