@@ -27,7 +27,6 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 			name: '',
 			email: '',
 			cpf: '',
-			phone: '',
 			departmentId: '',
 			companyId: '',
 		}
@@ -59,7 +58,6 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 							name: manager.name || '',
 							email: manager.email || '',
 							cpf: formatCpfCnpj(manager.cpf) || '',
-							phone: formatPhoneNumber(manager.phone) || '',
 							departmentId: manager.department?.id?.toString() || '',
 							companyId: manager.company?.id?.toString() || ''
 						});
@@ -68,7 +66,6 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 							name: '',
 							email: '',
 							cpf: '',
-							phone: '',
 							departmentId: '',
 							companyId: ''
 						});
@@ -91,14 +88,6 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 		return true
 	}
 
-	const validatePhone = (phone) => {
-		const numbers = phone.replace(/\D/g, '')
-		if (numbers.length < 10 || numbers.length > 11) {
-			return 'Telefone deve ter 10 ou 11 dígitos'
-		}
-		return true
-	}
-
 	const onSubmit = async (data) => {
 		try {
 			setIsSubmitting(true)
@@ -107,7 +96,6 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 				name: data.name,
 				email: data.email,
 				cpf: data.cpf.replace(/\D/g, ''),
-				phone: data.phone.replace(/\D/g, ''),
 				departmentId: parseInt(data.departmentId),
 				companyId: parseInt(data.companyId)
 			}
@@ -263,32 +251,6 @@ function ManagerModal({ isOpen, onClose, manager = null, onSave }) {
 												/>
 												{errors.cpf && (
 													<p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.cpf.message}</p>
-												)}
-											</div>
-
-											<div>
-												<label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-													Telefone
-												</label>
-												<Controller
-													name="phone"
-													control={control}
-													rules={{
-														required: 'Telefone é obrigatório',
-														validate: validatePhone
-													}}
-													render={({ field }) => (
-														<MaskedInput
-															{...field}
-															mask="phone"
-															placeholder="(99) 99999-9999"
-															className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm"
-															disabled={isSubmitting}
-														/>
-													)}
-												/>
-												{errors.phone && (
-													<p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.phone.message}</p>
 												)}
 											</div>
 

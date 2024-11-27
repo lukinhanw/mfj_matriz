@@ -29,14 +29,12 @@ function CompanyModal({ open, onClose, company }) {
 			reset({
 				name: company.name,
 				document: formatCpfCnpj(company.document) || '',
-				phone: formatPhoneNumber(company.phone) || '',
 				email: company.email,
 			})
 		} else {
 			reset({
 				name: '',
 				document: '',
-				phone: '',
 				email: '',
 			})
 		}
@@ -53,7 +51,6 @@ function CompanyModal({ open, onClose, company }) {
 			const payload = {
 				name: data.name,
 				document: data.document.replace(/\D/g, ''),
-				phone: data.phone.replace(/\D/g, ''),
 				email: data.email,
 				status: statusValue
 			}
@@ -247,34 +244,6 @@ function CompanyModal({ open, onClose, company }) {
 												{errors.document && (
 													<p className="mt-1 text-sm text-red-600 dark:text-red-400">
 														{errors.document.message}
-													</p>
-												)}
-											</div>
-
-											<div>
-												<label
-													htmlFor="phone"
-													className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-												>
-													Telefone
-												</label>
-												<Controller
-													name="phone"
-													control={control}
-													rules={{ required: 'Telefone é obrigatório' }}
-													render={({ field }) => (
-														<MaskedInput
-															{...field}
-															mask="phone"
-															placeholder="(99) 99999-9999"
-															className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
-															disabled={isSubmitting}
-														/>
-													)}
-												/>
-												{errors.phone && (
-													<p className="mt-1 text-sm text-red-600 dark:text-red-400">
-														{errors.phone.message}
 													</p>
 												)}
 											</div>

@@ -52,7 +52,6 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 						name: collaborator.name || '',
 						email: collaborator.email || '',
 						cpf: formatCpfCnpj(collaborator.cpf) || '',
-						phone: formatPhoneNumber(collaborator.phone) || '',
 						departmentId: collaborator.department?.id?.toString() || '',
 						companyId: collaborator.company?.id?.toString() || '',
 						positionId: collaborator.position?.id?.toString() || ''
@@ -62,7 +61,6 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 						name: '',
 						email: '',
 						cpf: '',
-						phone: '',
 						departmentId: '',
 						companyId: '',
 						positionId: ''
@@ -87,7 +85,6 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 				name: data.name,
 				email: data.email,
 				cpf: data.cpf.replace(/\D/g, ''), // Remove non-digits
-				phone: data.phone.replace(/\D/g, ''), // Remove non-digits
 				companyId: parseInt(data.companyId),
 				departmentId: parseInt(data.departmentId),
 				positionId: parseInt(data.positionId)
@@ -256,34 +253,6 @@ function CollaboratorModal({ open, onClose, collaborator, onCollaboratorSaved })
 												{errors.cpf && (
 													<p className="mt-1 text-sm text-red-600">
 														{errors.cpf.message}
-													</p>
-												)}
-											</div>
-
-											<div>
-												<label
-													htmlFor="phone"
-													className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-												>
-													Telefone
-												</label>
-												<Controller
-													name="phone"
-													control={control}
-													rules={{ required: 'Telefone é obrigatório' }}
-													render={({ field }) => (
-														<MaskedInput
-															{...field}
-															mask="phone"
-															placeholder="(99) 99999-9999"
-															className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-															disabled={isSubmitting}
-														/>
-													)}
-												/>
-												{errors.phone && (
-													<p className="mt-1 text-sm text-red-600">
-														{errors.phone.message}
 													</p>
 												)}
 											</div>

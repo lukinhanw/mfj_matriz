@@ -205,9 +205,6 @@ export default function ManagerList({ onEdit, filters, searchTerm, refreshKey, o
 								CPF
 							</th>
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-								Telefone
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Setor
 							</th>
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -234,9 +231,6 @@ export default function ManagerList({ onEdit, filters, searchTerm, refreshKey, o
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<div className="text-sm text-gray-500 dark:text-gray-400">{formatCpfCnpj(manager.cpf)}</div>
-								</td>
-								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500 dark:text-gray-400">{formatPhoneNumber(manager.phone)}</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<div className="text-sm text-gray-500 dark:text-gray-400">{manager.department.name || 'N/A'}</div>
