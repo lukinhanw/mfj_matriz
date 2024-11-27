@@ -34,7 +34,9 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 			}
 			try {
 				setIsLoading(true)
-				const response = await api.get(endpoint)
+				const response = await api.get(endpoint, {
+					headers: { Authorization: `Bearer ${token}` }
+				})
 				setCourses(response.data)
 			} catch (error) {
 				console.error('Error fetching courses:', error)
@@ -57,7 +59,9 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 
 			const fetchEmpresa = async () => {
 				try {
-					const response = await api.get('/admin/listarEmpresa/' + collaborator.company.id)
+					const response = await api.get('/admin/listarEmpresa/' + collaborator.company.id, {
+						headers: { Authorization: `Bearer ${token}` }
+					})
 					setCompanyInfo(response.data)
 				} catch (error) {
 					console.error('Error fetching company info:', error)
@@ -90,6 +94,11 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 		return total
 	}
 
+	const headers = {
+		Authorization: `Bearer ${token}`,
+		'Content-Type': 'multipart/form-data'
+	}
+
 	const handleSave = async () => {
 		try {
 			const requiredCredits = calculateRequiredCredits(selectedCourses)
@@ -116,7 +125,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 			}
 
 			// Chamada à API para atribuir os cursos
-			await api.post('/admin/atribuirCursoColaborador', payload)
+			await api.post('/admin/atribuirCursoColaborador', payload, { headers })
 
 			toast.success(
 				<div>
@@ -155,7 +164,11 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 			if (!aSelected && bSelected) return 1;
 			// Se ambos estiverem selecionados ou não selecionados, ordenar por título
 			return a.title.localeCompare(b.title);
-		});
+		})
+		.map(course => ({
+			...course,
+			thumbnail: course.thumbnail ? `${import.meta.env.VITE_API_BASE_URL}/imagem/${course.thumbnail}?token=${token}` : `https://api-matriz-mfj.8bitscompany.com/imagem/sem-foto.jpg`
+		}));
 
 	return (
 		<Transition.Root show={isOpen} as={Fragment}>

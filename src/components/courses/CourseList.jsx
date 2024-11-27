@@ -178,7 +178,7 @@ function CourseList({ onEdit, refresh, searchTerm, viewMode }) {  // Adicionar v
 							className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden hover:scale-105 transition duration-500"
 						>
 							<img
-								src={course.thumbnail ? `https://api-matriz-mfj.8bitscompany.com/imagem/${course.thumbnail}` : `https://api-matriz-mfj.8bitscompany.com/imagem/sem-foto.jpg`}
+								src={course.thumbnail ? `https://api-matriz-mfj.8bitscompany.com/imagem/${course.thumbnail}?token=${token}` : `https://api-matriz-mfj.8bitscompany.com/imagem/sem-foto.jpg`}
 								alt={course.title}
 								className="w-full h-48 object-cover"
 							/>
@@ -220,7 +220,7 @@ function CourseList({ onEdit, refresh, searchTerm, viewMode }) {  // Adicionar v
 							className="flex items-center bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-500"
 						>
 							<img
-								src={course.thumbnail ? `https://api-matriz-mfj.8bitscompany.com/imagem/${course.thumbnail}` : `https://api-matriz-mfj.8bitscompany.com/imagem/sem-foto.jpg`}
+								src={course.thumbnail ? `https://api-matriz-mfj.8bitscompany.com/imagem/${course.thumbnail}?token=${token}` : `https://api-matriz-mfj.8bitscompany.com/imagem/sem-foto.jpg`}
 								alt={course.title}
 								className="w-24 h-24 object-cover rounded-lg mr-4"
 							/>

@@ -24,7 +24,7 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {
 				description: course.description || '',
 				thumbnail: null
 			})
-			setPreviewUrl(course.thumbnail ? `${import.meta.env.VITE_API_BASE_URL}/imagem/${course.thumbnail}` : '')
+			setPreviewUrl(course.thumbnail ? `${import.meta.env.VITE_API_BASE_URL}/imagem/${course.thumbnail}?token=${token}` : '')
 		} else {
 			setFormData({
 				title: '',
@@ -34,7 +34,7 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {
 			})
 			setPreviewUrl('')
 		}
-	}, [course])
+	}, [course, token])
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()

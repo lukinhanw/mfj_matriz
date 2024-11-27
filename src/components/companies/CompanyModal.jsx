@@ -40,7 +40,7 @@ function CompanyModal({ open, onClose, company }) {
 				email: '',
 			})
 		}
-	}, [company, reset])
+	}, [company, reset, token])
 
 	const onSubmit = async (data) => {
 		try {
