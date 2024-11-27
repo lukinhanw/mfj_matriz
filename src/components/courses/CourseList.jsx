@@ -55,8 +55,8 @@ function CourseList({ onEdit, refresh, searchTerm, viewMode }) {  // Adicionar v
 		if (!searchTerm) return courses;
 
 		return courses.filter(course =>
-			course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			course.category.toLowerCase().includes(searchTerm.toLowerCase())
+			(course.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+			(course.category?.toLowerCase() || '').includes(searchTerm.toLowerCase())
 		);
 	}, [courses, searchTerm]);
 
@@ -75,7 +75,10 @@ function CourseList({ onEdit, refresh, searchTerm, viewMode }) {  // Adicionar v
 	const handleDelete = async () => {
 		try {
 			await api.delete('/admin/excluirCurso', {
-				data: { courseId: confirmModal.courseId }
+				data: { courseId: confirmModal.courseId },
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
 			})
 			toast.success(
 				<div>

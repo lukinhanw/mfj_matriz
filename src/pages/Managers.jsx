@@ -21,7 +21,7 @@ function Managers() {
 		departments: []
 	})
 	const [searchTerm, setSearchTerm] = useState('')
-	const [refresh, setRefresh] = useState(false)
+	const [refreshKey, setRefreshKey] = useState(0)
 	const [companies, setCompanies] = useState([])
 	const [departments, setDepartments] = useState([])
 
@@ -71,7 +71,7 @@ function Managers() {
 
 	const handleSave = () => {
 		setIsModalOpen(false);
-		setRefresh(!refresh); // Trigger refresh
+		setRefreshKey(prev => prev + 1); // Alterado para incrementar a chave
 	}
 
 	return (
@@ -117,7 +117,8 @@ function Managers() {
 					onEdit={handleEdit}
 					filters={filters}
 					searchTerm={searchTerm}
-					refresh={refresh} // Passamos 'refresh' para o componente ManagerList
+					refreshKey={refreshKey} // Alterado de refresh para refreshKey
+					onRefresh={() => setRefreshKey(prev => prev + 1)} // Nova prop para forçar atualização
 				/>
 			</div>
 

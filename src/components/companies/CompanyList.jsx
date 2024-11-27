@@ -31,15 +31,15 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 		company: null
 	})
 
+	const headers = {
+		Authorization: `Bearer ${token}`
+	}
+
 	useEffect(() => {
 		const fetchCompanies = async () => {
 			try {
 				setIsLoading(true)
-				const response = await api.get('/admin/listarEmpresas', {
-					headers: {
-						Authorization: `Bearer ${token}`
-					}
-				})
+				const response = await api.get('/admin/listarEmpresas', { headers })
 				setCompanies(response.data)
 			} catch (error) {
 				console.error('Error fetching companies:', error)
@@ -64,7 +64,8 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 	const handleDelete = async () => {
 		try {
 			await api.delete('/admin/deletarEmpresa', {
-				data: { companyId: confirmModal.companyId }
+				data: { companyId: confirmModal.companyId },
+				headers
 			})
 			toast.success(
 				<div>
@@ -117,7 +118,8 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 
 			await api.put(
 				`/admin/${endpoint}`,
-				{ companyId: companyId }
+				{ companyId: companyId },
+				{ headers }
 			)
 
 			toast.success(

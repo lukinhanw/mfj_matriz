@@ -12,7 +12,7 @@ import useAuthStore from '../../store/authStore'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
 import { usePermissions } from '../../hooks/usePermissions'
 
-export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
+export default function ManagerList({ onEdit, filters, searchTerm, refreshKey, onRefresh }) {
 
 	const { user, token } = useAuthStore()
 	const { can } = usePermissions()
@@ -65,7 +65,7 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 		if (token) {
 			fetchManagers()
 		}
-	}, [token, refresh]) // Incluímos 'refresh' para recarregar a lista após uma alteração
+	}, [token, refreshKey]) // Incluímos 'refresh' para recarregar a lista após uma alteração
 
 	const handleDelete = async () => {
 		try {
@@ -84,7 +84,7 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 				</div>
 			)
 			// Atualiza a lista após deletar
-			refresh()
+			onRefresh() // Alterado de refresh() para onRefresh()
 			setConfirmModal({ show: false, type: null, managerId: null, currentStatus: null })
 		} catch (error) {
 			console.error('Error remover gestor:', error)
@@ -116,9 +116,15 @@ export default function ManagerList({ onEdit, filters, searchTerm, refresh }) {
 				{ headers: { Authorization: `Bearer ${token}` } }
 			)
 
-			toast.success(`Status alterado com sucesso!`)
+			toast.success(
+				<div>
+					<span className="font-medium text-green-600">Sucesso!</span>
+					<br />
+					<span className="text-sm text-green-950">Status alterado com sucesso</span>
+				</div>
+			)
 			// Atualiza a lista após alterar o status
-			refresh()
+			onRefresh() // Alterado de refresh() para onRefresh()
 			setConfirmModal({ show: false, type: null, managerId: null, currentStatus: null })
 		} catch (error) {
 			console.error('Error toggling manager status:', error)

@@ -42,6 +42,7 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {
 
 		const payload = new FormData()
 		payload.append('title', formData.title)
+		payload.append('id', course.id)
 		payload.append('category', formData.category)
 		payload.append('description', formData.description)
 		if (formData.thumbnail) {
@@ -56,7 +57,7 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {
 		try {
 			if (course) {
 				// Atualizar curso existente
-				await api.put(`/admin/editarCurso/${course.id}`, payload, { headers })
+				await api.put(`/admin/editarCurso`, payload, { headers })
 				toast.success('Curso atualizado com sucesso')
 			} else {
 				// Criar novo curso

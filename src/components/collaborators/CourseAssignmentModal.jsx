@@ -15,6 +15,10 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 	const [companyInfo, setCompanyInfo] = useState({})
 	const { can } = usePermissions()
 
+	const headers = {
+		Authorization: `Bearer ${token}`
+	}
+
 	useEffect(() => {
 		const fetchCourses = async () => {
 			let endpoint;
@@ -34,9 +38,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 			}
 			try {
 				setIsLoading(true)
-				const response = await api.get(endpoint, {
-					headers: { Authorization: `Bearer ${token}` }
-				})
+				const response = await api.get(endpoint, { headers })
 				setCourses(response.data)
 			} catch (error) {
 				console.error('Error fetching courses:', error)
@@ -59,9 +61,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 
 			const fetchEmpresa = async () => {
 				try {
-					const response = await api.get('/admin/listarEmpresa/' + collaborator.company.id, {
-						headers: { Authorization: `Bearer ${token}` }
-					})
+					const response = await api.get('/admin/listarEmpresa/' + collaborator.company.id, { headers })
 					setCompanyInfo(response.data)
 				} catch (error) {
 					console.error('Error fetching company info:', error)
@@ -92,11 +92,6 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 		}, 0)
 
 		return total
-	}
-
-	const headers = {
-		Authorization: `Bearer ${token}`,
-		'Content-Type': 'multipart/form-data'
 	}
 
 	const handleSave = async () => {

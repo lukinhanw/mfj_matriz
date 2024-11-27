@@ -50,9 +50,6 @@ function Departments() {
 
 			<div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 space-y-6">
 				<DepartmentSearch value={searchTerm} onChange={setSearchTerm} />
-				<div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-					<DepartmentFilters filters={filters} onChange={setFilters} />
-				</div>
 			</div>
 
 			<div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">

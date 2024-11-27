@@ -84,17 +84,17 @@ function CompanyModal({ open, onClose, company }) {
 					</div>
 				)
 			}
-			refreshCompanies()
-			onClose()
+			onClose() // O refreshKey no componente pai já cuidará da atualização
 		} catch (error) {
 			console.error('Erro ao salvar empresa:', error)
-			const errorMessage =
-				error.response?.data?.message || 'Erro ao salvar empresa'
+			const errorMessage = error.response?.data?.error || 'Erro ao salvar empresa: Erro desconhecido'
+			const titleMessage = errorMessage.split(":")[0]
+			const bodyMessage = errorMessage.split(":")[1]
 			toast.error(
 				<div>
-					<span className="font-medium text-red-600">Erro!</span>
+					<span className="font-medium text-red-600">{titleMessage}</span>
 					<br />
-					<span className="text-sm text-red-950">{errorMessage}</span>
+					<span className="text-sm text-red-950">{bodyMessage}</span>
 				</div>
 			)
 		} finally {
@@ -196,7 +196,7 @@ function CompanyModal({ open, onClose, company }) {
 															type="radio"
 															value="cpf"
 															checked={documentType === 'cpf'}
-															onChange={(e) => setDocumentType(e.target.value)}
+															onChange={(e) => {setDocumentType(e.target.value); reset({document: ''})}}
 															className="form-radio h-4 w-4 text-orange-600 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600"
 															disabled={isSubmitting}
 														/>
