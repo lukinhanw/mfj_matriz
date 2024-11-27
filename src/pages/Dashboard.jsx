@@ -11,6 +11,7 @@ function Dashboard() {
 	const [isLoading, setIsLoading] = useState(true)
 	const [resultados, setResultados] = useState(null)
 	const { user, token } = useAuthStore()
+	const [viewType, setViewType] = useState('grid') // Adicione este estado
 
 	useEffect(() => {
 		const fetchDashboardData = async () => {
@@ -87,12 +88,10 @@ function Dashboard() {
 		return null
 	}
 
-	const formattedCreditsByCompany = user.role === 'admin' && dashboardData.creditsByCompany
-		? dashboardData.creditsByCompany.map(company => ({
-			...company,
-			value: parseInt(company.value, 10) // Converte string para número
-		}))
-		: [];
+	const formattedCreditsByCompany = user.role === 'admin' && dashboardData.creditsByCompany ? dashboardData.creditsByCompany.map(company => ({
+		...company,
+		value: parseInt(company.value, 10) // Converte string para número
+	})) : [];
 
 	return (
 		<div className="space-y-6">
@@ -183,14 +182,30 @@ function Dashboard() {
 					</div>
 
 					{resultados && (
-						<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
-							<h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-								Resultados da Avaliação
-							</h2>
-							<div className="space-y-4">
-								<div className="flex items-center">
-									<span className="text-sm text-gray-500 dark:text-gray-400">Data da Avaliação:</span>
-									<span className="ml-2 text-gray-900 dark:text-gray-100">
+						<>
+							<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
+								<div className="flex items-center justify-between mb-4">
+									<h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+										Resultados da Avaliação
+									</h2>
+									<button
+										onClick={() => setViewType(viewType === 'grid' ? 'list' : 'grid')}
+										className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+										title={viewType === 'grid' ? 'Visualizar em lista' : 'Visualizar em grid'}
+									>
+										{viewType === 'grid' ? (
+											<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" strokeWidth={1.5} viewBox="0 0 24 24" stroke="currentColor">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+											</svg>
+										) : (
+											<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+												<path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+											</svg>
+										)}
+									</button>
+								</div>
+								<div className="text-sm text-gray-500 dark:text-gray-400">
+									Data da Avaliação: <span className="text-gray-900 dark:text-gray-100">
 										{new Date(resultados.data).toLocaleDateString('pt-BR', {
 											day: '2-digit',
 											month: '2-digit',
@@ -200,22 +215,94 @@ function Dashboard() {
 										})}
 									</span>
 								</div>
+							</div>
 
-								{resultados.cursos && resultados.cursos.length > 0 && (
-									<div>
-										<h3 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">
-											Cursos Recomendados
-										</h3>
-										<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-											{resultados.cursos.map(curso => (
+							{resultados.cursosObrigatorios && resultados.cursosObrigatorios.length > 0 && (
+								<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
+									<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+										Cursos Obrigatórios
+									</h3>
+									<div className={viewType === 'grid'
+										? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+										: "space-y-4"
+									}>
+										{resultados.cursosObrigatorios.map(curso => (
+											viewType === 'grid' ? (
+												<div
+													key={curso.id}
+													className="group bg-orange-600 shadow rounded-lg overflow-hidden hover:scale-105 transition duration-500"
+												>
+													<div className="relative h-32 overflow-hidden">
+														<img
+															src={curso.imagem
+																? `${import.meta.env.VITE_API_BASE_URL}/imagem/${curso.imagem}`
+																: `${import.meta.env.VITE_API_BASE_URL}/imagem/sem-foto.jpg`}
+															alt={curso.titulo}
+															className="w-full h-full object-cover transition-transform duration-300"
+														/>
+														<div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+													</div>
+													<div className="p-4">
+														<h4 className="font-medium text-white dark:text-gray-100 line-clamp-2 mb-1">
+															{curso.titulo}
+														</h4>
+														{curso.categoria && (
+															<span className="inline-block px-2 py-1 text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full">
+																{curso.categoria}
+															</span>
+														)}
+													</div>
+												</div>
+											) : (
+												<div
+													key={curso.id}
+													className="group bg-gray-100 shadow rounded-lg overflow-hidden flex hover:bg-gray-200 dark:hover:bg-gray-300 transition-colors"
+												>
+													<div className="w-24 h-24 relative flex-shrink-0">
+														<img
+															src={curso.imagem
+																? `${import.meta.env.VITE_API_BASE_URL}/imagem/${curso.imagem}`
+																: `${import.meta.env.VITE_API_BASE_URL}/imagem/sem-foto.jpg`}
+															alt={curso.titulo}
+															className="w-full h-full object-cover"
+														/>
+													</div>
+													<div className="p-4 flex-grow">
+														<h4 className="font-medium text-orange-600 dark:text-orange-600 line-clamp-1">
+															{curso.titulo}
+														</h4>
+														{curso.categoria && (
+															<span className="inline-block px-2 py-1 text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full mt-2">
+																{curso.categoria}
+															</span>
+														)}
+													</div>
+												</div>
+											)
+										))}
+									</div>
+								</div>
+							)}
+
+							{resultados.cursosRecomendados && resultados.cursosRecomendados.length > 0 && (
+								<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
+									<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+										Cursos Recomendados
+									</h3>
+									<div className={viewType === 'grid'
+										? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+										: "space-y-4"
+									}>
+										{resultados.cursosRecomendados.map(curso => (
+											viewType === 'grid' ? (
 												<div
 													key={curso.id}
 													className="group bg-gray-50 dark:bg-gray-700 shadow rounded-lg overflow-hidden hover:scale-105 transition duration-500"
 												>
 													<div className="relative h-32 overflow-hidden">
-														<img 
-															src={curso.imagem 
-																? `${import.meta.env.VITE_API_BASE_URL}/imagem/${curso.imagem}` 
+														<img
+															src={curso.imagem
+																? `${import.meta.env.VITE_API_BASE_URL}/imagem/${curso.imagem}`
 																: `${import.meta.env.VITE_API_BASE_URL}/imagem/sem-foto.jpg`}
 															alt={curso.titulo}
 															className="w-full h-full object-cover transition-transform duration-300"
@@ -233,12 +320,37 @@ function Dashboard() {
 														)}
 													</div>
 												</div>
-											))}
-										</div>
+											) : (
+												<div
+													key={curso.id}
+													className="group bg-gray-50 dark:bg-gray-700 shadow rounded-lg overflow-hidden flex hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+												>
+													<div className="w-24 h-24 relative flex-shrink-0">
+														<img
+															src={curso.imagem
+																? `${import.meta.env.VITE_API_BASE_URL}/imagem/${curso.imagem}`
+																: `${import.meta.env.VITE_API_BASE_URL}/imagem/sem-foto.jpg`}
+															alt={curso.titulo}
+															className="w-full h-full object-cover"
+														/>
+													</div>
+													<div className="p-4 flex-grow">
+														<h4 className="font-medium text-gray-900 dark:text-gray-100 line-clamp-1">
+															{curso.titulo}
+														</h4>
+														{curso.categoria && (
+															<span className="inline-block px-2 py-1 text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full mt-2">
+																{curso.categoria}
+															</span>
+														)}
+													</div>
+												</div>
+											)
+										))}
 									</div>
-								)}
-							</div>
-						</div>
+								</div>
+							)}
+						</>
 					)}
 				</>
 			)}
