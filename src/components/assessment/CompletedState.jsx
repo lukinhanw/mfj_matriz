@@ -3,7 +3,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid'
 
 export default function CompletedState() {
     return (
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center justify-center mt-56">
             <div className="text-center">
                 <CheckCircleIcon className="mx-auto h-16 w-16 text-green-500" />
                 <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-gray-100">

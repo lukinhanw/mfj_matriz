@@ -5,7 +5,8 @@ import {
 	TrashIcon,
 	NoSymbolIcon,
 	CheckCircleIcon,
-	AcademicCapIcon
+	AcademicCapIcon,
+	LightBulbIcon
 } from '@heroicons/react/24/outline'
 import ConfirmationModal from '../common/ConfirmationModal'
 import CourseAssignmentModal from './CourseAssignmentModal'
@@ -14,6 +15,7 @@ import useAuthStore from '../../store/authStore'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
 import CollaboratorModal from './CollaboratorModal'
 import { usePermissions } from '../../hooks/usePermissions'
+import RecommendedCoursesModal from './RecommendedCoursesModal'
 
 const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 	const { user, token } = useAuthStore()
@@ -32,6 +34,10 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 	})
 	const [modalOpen, setModalOpen] = useState(false);
 	const [selectedCollaborator, setSelectedCollaborator] = useState(null);
+	const [recommendedModal, setRecommendedModal] = useState({
+		show: false,
+		collaborator: null
+	})
 
 	const fetchCollaborators = async () => {
 		let endpoint;
@@ -181,6 +187,13 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 		setModalOpen(true);
 	}
 
+	const openRecommendedModal = (collaborator) => {
+		setRecommendedModal({
+			show: true,
+			collaborator
+		})
+	}
+
 	const filteredCollaborators = collaborators.filter(collaborator => {
 		// Search filter
 		if (searchTerm) {
@@ -298,8 +311,14 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 									</span>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+									<button
+										onClick={() => openRecommendedModal(collaborator)}
+										className="text-blue-500 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 mr-4 transition-colors duration-200"
+										title="Cursos Recomendados"
+									>
+										<LightBulbIcon className="h-5 w-5" />
+									</button>
 									{can('canEditCollaborator') &&
-
 										<button
 											onClick={() => handleEdit(collaborator)}
 											className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-900 mr-4 transition-colors duration-200"
@@ -332,6 +351,7 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 											)}
 										</button>
 									}
+									
 									{can('canDeleteCollaborator') &&
 										<button
 											onClick={() => openConfirmModal('delete', collaborator.id)}
@@ -360,6 +380,12 @@ const CollaboratorList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 				onClose={() => setModalOpen(false)}
 				collaborator={selectedCollaborator}
 				onCollaboratorSaved={handleCollaboratorSaved}
+			/>
+
+			<RecommendedCoursesModal
+				isOpen={recommendedModal.show}
+				onClose={() => setRecommendedModal({ show: false, collaborator: null })}
+				collaborator={recommendedModal.collaborator}
 			/>
 
 			<ConfirmationModal
