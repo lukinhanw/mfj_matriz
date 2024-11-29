@@ -5,6 +5,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import useAuthStore from '../../store/authStore'
+import api from '../../utils/api'
 
 function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated }) {
 	const { token } = useAuthStore()
@@ -24,9 +25,9 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 				credits
 			}
 
-			await axios({
+			await api({
 				method: type === 'add' ? 'post' : 'put',
-				url: `https://api-matriz-mfj.8bitscompany.com/admin/${endpoint}`,
+				url: `/admin/${endpoint}`,
 				data: payload,
 				headers: { Authorization: `Bearer ${token}` }
 			})

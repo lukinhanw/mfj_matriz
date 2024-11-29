@@ -53,7 +53,6 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 		}
 	}, [isOpen, token])
 
-
 	useEffect(() => {
 		if (collaborator) {
 			// Definir os cursos selecionados inicialmente
@@ -162,7 +161,7 @@ function CourseAssignmentModal({ isOpen, onClose, collaborator, onSaved }) { // 
 		})
 		.map(course => ({
 			...course,
-			thumbnail: course.thumbnail ? `${import.meta.env.VITE_API_BASE_URL}/imagem/${course.thumbnail}?token=${token}` : `https://api-matriz-mfj.8bitscompany.com/imagem/sem-foto.jpg`
+			thumbnail: course.thumbnail ? `${import.meta.env.VITE_API_BASE_URL}/imagem/${course.thumbnail}?token=${token}` : `${import.meta.env.VITE_API_BASE_URL}/imagem/sem-foto.jpg`
 		}));
 
 	return (

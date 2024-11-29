@@ -26,23 +26,23 @@ export default function Reports() {
 
 	useEffect(() => {
 		const fetchData = async () => {
-			let url;
+			let endpoint;
 			switch (user.role) {
 				case 'admin':
-					url = 'https://api-matriz-mfj.8bitscompany.com/admin/relatorios'
+					endpoint = '/admin/relatorios'
 					break
 				case 'empresa':
-					url = 'https://api-matriz-mfj.8bitscompany.com/company/relatorios'
+					endpoint = '/company/relatorios'
 					break
 				case 'gestor':
-					url = 'https://api-matriz-mfj.8bitscompany.com/manager/relatorios'
+					endpoint = '/manager/relatorios'
 					break
 				case 'colaborador':
-					url = 'https://api-matriz-mfj.8bitscompany.com/collaborator/relatorios'
+					endpoint = '/collaborator/relatorios'
 					break
 			}
 			try {
-				const response = await api.get(url, {
+				const response = await api.get(endpoint, {
 					headers: { Authorization: `Bearer ${token}` }
 				})
 				setTransitions(response.data)

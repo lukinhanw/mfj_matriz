@@ -23,23 +23,23 @@ export default function ReportsBuy() {
 
 	useEffect(() => {
 		const fetchData = async () => {
-			let url;
+			let endpoint;
 			switch (user.role) {
 				case 'admin':
-					url = 'https://api-matriz-mfj.8bitscompany.com/admin/relatoriosCreditos'
+					endpoint = '/admin/relatoriosCreditos'
 					break
 				case 'empresa':
-					url = 'https://api-matriz-mfj.8bitscompany.com/company/relatoriosCreditos'
+					endpoint = '/company/relatoriosCreditos'
 					break
 				case 'gestor':
-					url = 'https://api-matriz-mfj.8bitscompany.com/manager/relatoriosCreditos'
+					endpoint = '/manager/relatoriosCreditos'
 					break
 				case 'colaborador':
-					url = 'https://api-matriz-mfj.8bitscompany.com/collaborator/relatoriosCreditos'
+					endpoint = '/collaborator/relatoriosCreditos'
 					break
 			}
 			try {
-				const response = await api.get(url, {
+				const response = await api.get(endpoint, {
 					headers: { Authorization: `Bearer ${token}` }
 				})
 				setTransitions(response.data)
