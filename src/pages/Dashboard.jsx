@@ -126,6 +126,11 @@ function Dashboard() {
 				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 					<>
 						<StatsCard
+							title="Setor"
+							value={dashboardData.department?.name}
+							icon="department"
+						/>
+						<StatsCard
 							title="Total de Colaboradores"
 							value={dashboardData.totalCollaborators}
 							icon="collaborators"
@@ -140,25 +145,54 @@ function Dashboard() {
 			)}
 
 			{user.role === 'empresa' && (
-				<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-					<>
-						<StatsCard
-							title="Créditos Disponíveis"
-							value={dashboardData.availableCredits}
-							icon="credits"
-						/>
-						<StatsCard
-							title="Total de Gestores"
-							value={dashboardData.totalManagers}
-							icon="managers"
-						/>
-						<StatsCard
-							title="Total de Colaboradores"
-							value={dashboardData.totalCollaborators}
-							icon="collaborators"
-						/>
-					</>
-				</div>
+				<>
+					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+						<>
+							<StatsCard
+								title="Créditos Disponíveis"
+								value={dashboardData.availableCredits}
+								icon="credits"
+							/>
+							<StatsCard
+								title="Total de Gestores"
+								value={dashboardData.totalManagers}
+								icon="managers"
+							/>
+							<StatsCard
+								title="Total de Colaboradores"
+								value={dashboardData.totalCollaborators}
+								icon="collaborators"
+							/>
+						</>
+					</div>
+
+					{/* Seção de Créditos por Setor */}
+					{dashboardData.creditsByDepartment && dashboardData.creditsByDepartment.length > 0 && (
+						<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
+							<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+								Créditos por Setor
+							</h3>
+							<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+								{dashboardData.creditsByDepartment.map(department => (
+									<div 
+										key={department.id}
+										className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4"
+									>
+										<h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+											{department.name}
+										</h4>
+										<p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+											{department.credits}
+										</p>
+										<p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+											créditos disponíveis
+										</p>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
+				</>
 			)}
 
 			{user.role === 'colaborador' && (

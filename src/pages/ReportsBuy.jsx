@@ -69,6 +69,7 @@ export default function ReportsBuy() {
 		const exportData = transitions.map(t => ({
 			Data: format(new Date(t.timestamp), "dd/MM/yyyy HH:mm", { locale: ptBR }),
 			Empresa: t.company?.name,
+			Setor: t.department?.name || '-',
 			Créditos: t.creditos
 		}))
 

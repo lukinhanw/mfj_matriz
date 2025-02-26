@@ -96,6 +96,9 @@ function CreditUsageTable({ transitions, filters }) {
                             Empresa
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Setor
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Créditos
                         </th>
                     </tr>
@@ -108,6 +111,9 @@ function CreditUsageTable({ transitions, filters }) {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                 {transaction.company.name}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                {transaction.department?.name || '-'}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                 {transaction.creditos}
