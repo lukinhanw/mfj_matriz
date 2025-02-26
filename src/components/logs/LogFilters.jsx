@@ -106,36 +106,37 @@ export default function LogFilters({ filters, onChange }) {
 			</div>
 
 			<div className="space-y-4">
-				<div>
-					<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
-						Período
-					</label>
-					<select
-						value={filters.period}
-						onChange={(e) => handleFilterChange('period', e.target.value)}
-						className="mt-1 block w-full md:w-80 justify-center gap-x-1.5 rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
-					>
-						{periodOptions.map(option => (
-							<option key={option.value} value={option.value}>
-								{option.label}
-							</option>
-						))}
-					</select>
-				</div>
+				<div className="flex flex-col md:flex-row md:items-start md:gap-8">
+					<div className="mb-4 md:mb-0">
+						<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
+							Período
+						</label>
+						<select
+							value={filters.period}
+							onChange={(e) => handleFilterChange('period', e.target.value)}
+							className="mt-1 block w-full md:w-60 justify-center gap-x-1.5 rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
+						>
+							{periodOptions.map(option => (
+								<option key={option.value} value={option.value}>
+									{option.label}
+								</option>
+							))}
+						</select>
+					</div>
 
-				<div className="grid gap-4 md:grid-cols-3">
 					<div>
 						<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
 							Tipo
 						</label>
-						<FilterDropdown
-							label="Selecionar tipos"
-							selectedValues={filters.type}
-							onChange={(values) => handleFilterChange('type', values)}
-							options={typeOptions}
-						/>
+						<div className="mt-1">
+							<FilterDropdown
+								label="Selecionar tipos"
+								selectedValues={filters.type}
+								onChange={(values) => handleFilterChange('type', values)}
+								options={typeOptions}
+							/>
+						</div>
 					</div>
-
 				</div>
 			</div>
 

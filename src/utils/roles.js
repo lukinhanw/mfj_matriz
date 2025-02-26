@@ -18,6 +18,7 @@ export const ROUTE_PERMISSIONS = {
 	'/reports': [ROLES.ADMIN, ROLES.EMPRESA],
 	'/reports-buy': [ROLES.ADMIN, ROLES.EMPRESA],
 	'/logs': [ROLES.ADMIN],
+	'/email-logs': [ROLES.ADMIN],
 	'/profile': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA],
 	'/assessment': [ROLES.COLABORADOR]
 }
@@ -172,7 +173,8 @@ export const getNavigationByRole = (userRole) => {
 		baseNavigation.push({
 			title: 'Sistema',
 			items: [
-				{ name: 'Logs', href: '/logs', icon: 'ClockIcon' }
+				{ name: 'Logs', href: '/logs', icon: 'ClockIcon' },
+				{ name: 'Logs de Email', href: '/email-logs', icon: 'EnvelopeIcon' }
 			]
 		})
 	}

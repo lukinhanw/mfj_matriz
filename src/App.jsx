@@ -16,6 +16,7 @@ import SystemLogs from './pages/SystemLogs'
 import Profile from './pages/Profile'
 import ReportsBuy from './pages/ReportsBuy'
 import Assessment from './pages/Assessment'
+import EmailLogs from './components/email/EmailLogs'
 
 export default function App() {
 	return (
@@ -37,6 +38,7 @@ export default function App() {
 					<Route path="/logs" element={<SystemLogs />} />
 					<Route path="/profile" element={<Profile />} />
 					<Route path="/assessment" element={<Assessment />} />
+					<Route path="/email-logs" element={<EmailLogs />} />
 				</Route>
 			</Routes>
 		</>
