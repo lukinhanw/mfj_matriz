@@ -1,0 +1,95 @@
+---
+description: acessar o backend
+globs: 
+---
+
+# Regras e Padrões do Projeto - API Matriz MFJ
+
+O backend se encontra na pasta api-matriz-MFJ
+
+## Estrutura do Projeto
+
+### Arquitetura
+- Projeto Node.js com Express
+- Arquitetura em camadas (Routes -> Services)
+- Autenticação JWT
+- MySQL como banco de dados
+- Sistema de permissões baseado em roles (Admin, Company, Manager, Collaborator)
+
+### Diretórios Principais
+- `/Routes`: Rotas da API separadas por nível de acesso
+- `/Services`: Lógica de negócio e interação com banco de dados
+- `/Config`: Configurações do projeto (auth, database, etc)
+- `/Images`: Armazenamento de imagens
+
+## Padrões de Código
+
+### Rotas
+- Nomenclatura: `[role]Routes.js`
+- Todas as rotas autenticadas usam o middleware `authenticateToken`
+- Rotas públicas em `publicRoutes.js`
+- Padrão REST para endpoints
+
+### Serviços
+- Nomenclatura: `[role]Service.js`
+- Separação clara de responsabilidades por tipo de usuário
+- `sharedService.js` para funções compartilhadas
+- Tratamento de erros consistente
+
+### Autenticação e Segurança
+- JWT para autenticação
+- Bcrypt para hash de senhas
+- CORS configurado para controle de acesso
+- Validação de permissões por role
+
+### Manipulação de Arquivos
+- Multer para upload de arquivos
+- Sharp para processamento de imagens
+- Sanitize-filename para segurança
+
+### Dependências Principais
+- express: Framework web
+- mysql2: Conexão com banco de dados
+- jsonwebtoken: Autenticação
+- bcrypt: Criptografia
+- multer: Upload de arquivos
+- sharp: Processamento de imagens
+- nodemailer: Envio de emails
+
+## Padrões de API
+
+### Endpoints
+- `/admin/*`: Rotas administrativas
+- `/company/*`: Rotas para empresas
+- `/manager/*`: Rotas para gestores
+- `/collaborator/*`: Rotas para colaboradores
+- `/`: Rotas públicas
+
+### Respostas
+- Status codes HTTP apropriados
+- Formato JSON padronizado
+- Mensagens de erro consistentes
+
+## Configurações
+- Variáveis de ambiente via `.env`
+- PM2 para gerenciamento de processos
+- Limite de payload configurado (1000mb)
+
+## Boas Práticas
+- Separação clara de responsabilidades
+- Middleware de autenticação centralizado
+- Tratamento de erros consistente
+- Logs apropriados
+- Validação de dados de entrada
+
+## Desenvolvimento
+- Nodemon para desenvolvimento
+- TypeScript definitions para melhor IDE support
+- ESLint para padronização de código
+
+## Observações para o Cursor AI
+1. Manter a estrutura de diretórios existente
+2. Seguir os padrões de nomenclatura estabelecidos
+3. Implementar validações de segurança
+4. Respeitar a hierarquia de permissões
+5. Utilizar os serviços compartilhados quando apropriado

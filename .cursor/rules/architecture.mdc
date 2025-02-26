@@ -1,0 +1,106 @@
+---
+description: arquitetura do projeto e visão geral do projeto
+globs: 
+---
+# Arquitetura do Projeto MFJ Matriz
+
+## Visão Geral
+Sistema de gerenciamento de cursos desenvolvido em React com Vite, utilizando tecnologias modernas para frontend.
+
+## Stack Tecnológica
+- **Framework**: React 18
+- **Build Tool**: Vite
+- **Estilização**: TailwindCSS + HeadlessUI
+- **Gerenciamento de Estado**: Zustand
+- **Roteamento**: React Router DOM
+- **Formulários**: React Hook Form
+- **Requisições HTTP**: Axios
+- **Gráficos**: Recharts
+- **Manipulação de Planilhas**: XLSX
+- **Formatação de Datas**: date-fns
+
+## Estrutura de Diretórios
+
+```
+src/
+├── assets/         # Recursos estáticos (imagens, fontes, etc)
+├── components/     # Componentes React reutilizáveis
+├── hooks/         # Custom hooks React
+├── pages/         # Componentes de página/rotas
+├── store/         # Gerenciamento de estado global (Zustand)
+├── styles/        # Estilos globais e configurações CSS
+├── utils/         # Funções utilitárias
+├── App.jsx        # Componente raiz
+└── main.jsx       # Ponto de entrada da aplicação
+```
+
+## Padrões de Projeto
+
+### Componentes
+- Utilização de componentes funcionais com hooks
+- Componentização modular para reusabilidade
+- Uso de props typing para melhor manutenibilidade
+
+### Estado
+- Zustand para gerenciamento de estado global
+- React Hook Form para gerenciamento de formulários
+- Estado local com useState quando apropriado
+
+### Estilização
+- TailwindCSS para estilização utility-first
+- HeadlessUI para componentes acessíveis e customizáveis
+- Design system consistente
+
+### Roteamento
+- React Router DOM para navegação
+- Estrutura de rotas organizada e protegida
+- Lazy loading de componentes
+
+### API
+- Axios para requisições HTTP
+- Interceptors para tratamento global de erros
+- Endpoints organizados por domínio
+
+## Boas Práticas
+1. **Código Limpo**
+   - ESLint para padronização
+   - Prettier para formatação consistente
+   - Nomenclatura clara e descritiva
+
+2. **Performance**
+   - Code splitting
+   - Lazy loading
+   - Memoização quando necessário
+   - Otimização de re-renders
+
+3. **Segurança**
+   - Validação de inputs
+   - Sanitização de dados
+   - Proteção de rotas
+   - Variáveis de ambiente para dados sensíveis
+
+4. **Manutenibilidade**
+   - Documentação clara
+   - Código modular
+   - Separação de responsabilidades
+   - Testes (quando implementados)
+
+## Convenções de Commits
+- feat: Nova funcionalidade
+- fix: Correção de bug
+- docs: Documentação
+- style: Formatação
+- refactor: Refatoração
+- test: Testes
+- chore: Manutenção
+
+## Configuração do Ambiente
+1. Clone o repositório
+2. Copie `.env_example` para `.env`
+3. Instale as dependências: `npm install`
+4. Execute: `npm run dev`
+
+## Deployment
+- Build: `npm run build`
+- Preview: `npm run preview`
+- Lint: `npm run lint` 
