@@ -130,6 +130,11 @@ function Dashboard() {
 							value={dashboardData.totalCollaborators}
 							icon="collaborators"
 						/>
+						<StatsCard
+							title="Créditos do Setor"
+							value={dashboardData.sectorCredits || 0}
+							icon="credits"
+						/>
 					</>
 				</div>
 			)}

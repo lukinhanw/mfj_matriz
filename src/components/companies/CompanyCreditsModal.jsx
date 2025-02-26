@@ -1,5 +1,5 @@
 // CompanyCreditsModal.jsx
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
@@ -11,9 +11,32 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 	const { token } = useAuthStore()
 	const [credits, setCredits] = useState(1)
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [selectedSector, setSelectedSector] = useState('')
+
+	useEffect(() => {
+		// Resetar o setor selecionado quando o modal é aberto
+		if (open && company && company.setores && company.setores.length > 0) {
+			setSelectedSector(company.setores[0].id)
+		} else {
+			setSelectedSector('')
+		}
+	}, [open, company])
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
+
+		if (!selectedSector) {
+			toast.error(
+				<div>
+					<span className="font-medium text-red-600">Erro!</span>
+					<br />
+					<span className="text-sm text-red-950">
+						Selecione um setor para continuar
+					</span>
+				</div>
+			)
+			return
+		}
 
 		try {
 			setIsSubmitting(true)
@@ -22,7 +45,8 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 
 			const payload = {
 				companyId: company.id,
-				credits
+				credits,
+				sectorId: selectedSector
 			}
 
 			await api({
@@ -32,10 +56,46 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 				headers: { Authorization: `Bearer ${token}` }
 			})
 
-			const newCredits =
-			  type === 'add'
-				? Number(company.credits) + Number(credits)
-				: Number(company.credits) - Number(credits)
+			// Atualizar os créditos no componente pai
+			// Agora a API retornará a empresa atualizada com os setores e seus créditos
+			try {
+				const response = await api.get(`/admin/listarEmpresa/${company.id}`, {
+					headers: { Authorization: `Bearer ${token}` }
+				})
+				onCreditsUpdated(response.data)
+			} catch (error) {
+				console.error('Erro ao buscar empresa atualizada:', error)
+				// Fallback para atualização manual (menos precisa)
+				// Atualizar apenas o setor específico
+				const updatedCompany = { ...company };
+				
+				if (updatedCompany.setores && updatedCompany.setores.length > 0) {
+					// Atualiza os créditos do setor específico
+					updatedCompany.setores = updatedCompany.setores.map(setor => {
+						if (setor.id.toString() === selectedSector.toString()) {
+							const newSectorCredits = type === 'add'
+								? Number(setor.credits) + Number(credits)
+								: Number(setor.credits) - Number(credits);
+							return { ...setor, credits: newSectorCredits };
+						}
+						return setor;
+					});
+					
+					// Recalcula o total de créditos da empresa
+					const totalCredits = updatedCompany.setores.reduce(
+						(sum, setor) => sum + Number(setor.credits), 0
+					);
+					updatedCompany.credits = totalCredits;
+				} else {
+					// Fallback caso não haja informações de setores
+					const newCredits = type === 'add'
+						? Number(company.credits) + Number(credits)
+						: Number(company.credits) - Number(credits);
+					updatedCompany.credits = newCredits;
+				}
+				
+				onCreditsUpdated(updatedCompany);
+			}
 
 			toast.success(
 				<div>
@@ -46,9 +106,6 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 					</span>
 				</div>
 			)
-
-			// Atualiza os créditos no componente pai
-			onCreditsUpdated({ ...company, credits: newCredits })
 
 			handleClose()
 		} catch (error) {
@@ -72,6 +129,7 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 
 	const handleClose = () => {
 		setCredits(1) // Reseta o valor para 1
+		setSelectedSector('') // Reseta o setor selecionado
 		onClose()
 	}
 
@@ -121,6 +179,35 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 											{type === 'add' ? 'Adicionar Créditos' : 'Remover Créditos'}
 										</Dialog.Title>
 										<form onSubmit={handleSubmit} className="mt-6">
+											<div className="mb-4">
+												<label
+													htmlFor="sector"
+													className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+												>
+													Setor
+												</label>
+												<select
+													id="sector"
+													value={selectedSector}
+													onChange={(e) => setSelectedSector(e.target.value)}
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
+													required
+													disabled={isSubmitting}
+												>
+													<option value="">Selecione um setor</option>
+													{company?.setores?.map(setor => (
+														<option key={setor.id} value={setor.id}>
+															{setor.name}
+														</option>
+													))}
+												</select>
+												{(!company?.setores || company.setores.length === 0) && (
+													<p className="mt-1 text-sm text-red-600 dark:text-red-400">
+														Esta empresa não possui setores vinculados. Edite a empresa para adicionar setores.
+													</p>
+												)}
+											</div>
+
 											<div>
 												<label
 													htmlFor="credits"
@@ -131,19 +218,22 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 												<input
 													type="number"
 													min="1"
-													max={type === 'remove' ? company?.credits : undefined}
+													max={type === 'remove' && selectedSector ? 
+														company?.setores?.find(s => s.id.toString() === selectedSector.toString())?.credits || 0 
+														: undefined}
 													value={credits}
 													onChange={(e) => setCredits(Number(e.target.value))}
 													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
 													required
-													disabled={isSubmitting}
+													disabled={isSubmitting || !selectedSector}
 												/>
 											</div>
 
 											<div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
 												<button
 													type="submit"
-													disabled={isSubmitting}
+													disabled={isSubmitting || !selectedSector || (type === 'remove' && selectedSector && 
+														(company?.setores?.find(s => s.id.toString() === selectedSector.toString())?.credits || 0) < credits)}
 													className={`w-full sm:ml-3 sm:w-auto px-4 py-2 rounded-md text-white ${type === 'add'
 															? 'bg-green-600 hover:bg-green-700 disabled:bg-green-400 dark:bg-green-700 dark:hover:bg-green-600 dark:disabled:bg-green-500'
 															: 'bg-red-600 hover:bg-red-700 disabled:bg-red-400 dark:bg-red-700 dark:hover:bg-red-600 dark:disabled:bg-red-500'

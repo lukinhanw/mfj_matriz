@@ -101,7 +101,7 @@ export default function ReportsBuy() {
 			{/* Credit Usage Table */}
 			<div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
 				<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-					Histórico de Consumo de Créditos
+					Histórico de Compra de Créditos
 				</h3>
 				<CreditUsageTable transitions={transitions} filters={filters} />
 			</div>

@@ -12,6 +12,8 @@ function CompanyModal({ open, onClose, company }) {
 	const { token } = useAuthStore()
 	const [documentType, setDocumentType] = useState('cpf')
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [departments, setDepartments] = useState([])
+	const [selectedDepartments, setSelectedDepartments] = useState([])
 	const {
 		register,
 		handleSubmit,
@@ -21,10 +23,36 @@ function CompanyModal({ open, onClose, company }) {
 	} = useForm()
 
 	useEffect(() => {
+		// Carregar setores
+		const fetchDepartments = async () => {
+			try {
+				const response = await api.get('/admin/listarSetores', {
+					headers: { Authorization: `Bearer ${token}` }
+				})
+				setDepartments(response.data)
+			} catch (error) {
+				console.error('Erro ao buscar setores:', error)
+				toast.error('Erro ao carregar setores')
+			}
+		}
+
+		if (token) {
+			fetchDepartments()
+		}
+	}, [token])
+
+	useEffect(() => {
 		if (company) {
 			// Determine o tipo de documento com base no comprimento
 			const docType = company.document?.replace(/\D/g, '').length > 11 ? 'cnpj' : 'cpf'
 			setDocumentType(docType)
+
+			// Definir os setores selecionados
+			if (company.setores) {
+				setSelectedDepartments(company.setores.map(setor => setor.id || setor))
+			} else {
+				setSelectedDepartments([])
+			}
 
 			reset({
 				name: company.name,
@@ -37,6 +65,7 @@ function CompanyModal({ open, onClose, company }) {
 				document: '',
 				email: '',
 			})
+			setSelectedDepartments([])
 		}
 	}, [company, reset, token])
 
@@ -52,7 +81,8 @@ function CompanyModal({ open, onClose, company }) {
 				name: data.name,
 				document: data.document.replace(/\D/g, ''),
 				email: data.email,
-				status: statusValue
+				status: statusValue,
+				setores: selectedDepartments
 			}
 
 			const headers = {
@@ -115,6 +145,16 @@ function CompanyModal({ open, onClose, company }) {
 		}
 
 		return true
+	}
+
+	const handleDepartmentChange = (departmentId) => {
+		setSelectedDepartments(prev => {
+			if (prev.includes(departmentId)) {
+				return prev.filter(id => id !== departmentId)
+			} else {
+				return [...prev, departmentId]
+			}
+		})
 	}
 
 	return (
@@ -270,6 +310,37 @@ function CompanyModal({ open, onClose, company }) {
 												{errors.email && (
 													<p className="mt-1 text-sm text-red-600 dark:text-red-400">
 														{errors.email.message}
+													</p>
+												)}
+											</div>
+
+											<div>
+												<label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+													Setores
+												</label>
+												<div className="mt-1 grid grid-cols-2 gap-2">
+													{departments.map(department => (
+														<div key={department.id} className="flex items-center">
+															<input
+																type="checkbox"
+																id={`department-${department.id}`}
+																checked={selectedDepartments.includes(department.id)}
+																onChange={() => handleDepartmentChange(department.id)}
+																className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
+																disabled={isSubmitting}
+															/>
+															<label 
+																htmlFor={`department-${department.id}`}
+																className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+															>
+																{department.name}
+															</label>
+														</div>
+													))}
+												</div>
+												{departments.length === 0 && (
+													<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+														Nenhum setor disponível. Cadastre setores primeiro.
 													</p>
 												)}
 											</div>
