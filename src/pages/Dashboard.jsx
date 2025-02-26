@@ -265,7 +265,7 @@ function Dashboard() {
 											) : (
 												<div
 													key={curso.id}
-													className="group bg-gray-100 shadow rounded-lg overflow-hidden flex hover:bg-gray-200 dark:hover:bg-gray-300 transition-colors"
+													className="group bg-gray-50 dark:bg-gray-700 shadow rounded-lg overflow-hidden flex hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
 												>
 													<div className="w-24 h-24 relative flex-shrink-0">
 														<img
