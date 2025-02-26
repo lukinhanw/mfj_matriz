@@ -328,25 +328,27 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 									</td>
 								</tr>
 								{/* Linhas de setores */}
-								{company.setores && company.setores.length > 0 && company.setores.map(setor => (
-									<tr key={`${company.id}-${setor.id}`} className="bg-gray-50 dark:bg-gray-700">
-										<td className="pl-10 pr-6 py-2 whitespace-nowrap">
-											<div className="text-xs text-gray-600 dark:text-gray-300 flex items-center">
-												<svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-												</svg>
-												{setor.name}
-											</div>
-										</td>
-										<td colSpan={2} className="px-6 py-2"></td>
-										<td className="px-6 py-2 whitespace-nowrap">
-											<div className="text-xs font-medium text-gray-700 dark:text-gray-300">
-												{setor.credits}
-											</div>
-										</td>
-										<td colSpan={2} className="px-6 py-2"></td>
-									</tr>
-								))}
+								{company.setores && company.setores.length > 0 && (
+									company.setores.map(setor => (
+										<tr key={`${company.id}-${setor.id}`} className="bg-gray-50 dark:bg-gray-700">
+											<td className="pl-10 pr-6 py-2 whitespace-nowrap">
+												<div className="text-xs text-gray-600 dark:text-gray-300 flex items-center">
+													<svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+													</svg>
+													{setor.name}
+												</div>
+											</td>
+											<td colSpan={2} className="px-6 py-2"></td>
+											<td className="px-6 py-2 whitespace-nowrap">
+												<div className="text-xs font-medium text-gray-700 dark:text-gray-300">
+													{setor.credits}
+												</div>
+											</td>
+											<td colSpan={2} className="px-6 py-2"></td>
+										</tr>
+									))
+								)}
 							</>
 						))}
 					</tbody>
@@ -403,11 +405,23 @@ function CompanyList({ onEdit, filters, searchTerm, refreshKey }) {
 				company={creditsModal.company}
 				type={creditsModal.type}
 				onCreditsUpdated={(updatedCompany) => {
+					// Garantir que a empresa atualizada tenha os setores
+					if (!updatedCompany.setores || updatedCompany.setores.length === 0) {
+						updatedCompany.setores = creditsModal.company?.setores || [];
+					}
+					
 					setCompanies((prevCompanies) =>
-						prevCompanies.map((company) =>
-							company.id === updatedCompany.id ? updatedCompany : company
-						)
-					)
+						prevCompanies.map((company) => {
+							if (company.id === updatedCompany.id) {
+								// Garantir que os setores sejam preservados se não estiverem na empresa atualizada
+								if (!updatedCompany.setores || updatedCompany.setores.length === 0) {
+									return { ...updatedCompany, setores: company.setores || [] };
+								}
+								return updatedCompany;
+							}
+							return company;
+						})
+					);
 				}}
 			/>
 		</>

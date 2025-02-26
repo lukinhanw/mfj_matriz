@@ -61,10 +61,43 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 			try {
 				const response = await api.get(`/admin/listarEmpresa/${company.id}`, {
 					headers: { Authorization: `Bearer ${token}` }
-				})
-				onCreditsUpdated(response.data)
+				});
+				
+				// Verificar se a resposta contém os setores
+				if (!response.data.setores || response.data.setores.length === 0) {
+					// Se a API não retornou os setores, mas temos os setores no objeto company
+					// Vamos atualizar apenas o setor específico
+					const updatedCompany = { 
+						...response.data, 
+						setores: company.setores ? [...company.setores] : [] 
+					};
+					
+					// Atualiza os créditos do setor específico
+					if (updatedCompany.setores && updatedCompany.setores.length > 0) {
+						updatedCompany.setores = updatedCompany.setores.map(setor => {
+							if (setor.id.toString() === selectedSector.toString()) {
+								const newSectorCredits = type === 'add'
+									? Number(setor.credits || 0) + Number(credits)
+									: Number(setor.credits || 0) - Number(credits);
+								return { ...setor, credits: newSectorCredits };
+							}
+							return setor;
+						});
+						
+						// Recalcula o total de créditos da empresa
+						const totalCredits = updatedCompany.setores.reduce(
+							(sum, setor) => sum + Number(setor.credits || 0), 0
+						);
+						updatedCompany.credits = totalCredits;
+					}
+					
+					onCreditsUpdated(updatedCompany);
+				} else {
+					// Se a API retornou os setores, usamos a resposta diretamente
+					onCreditsUpdated(response.data);
+				}
 			} catch (error) {
-				console.error('Erro ao buscar empresa atualizada:', error)
+				console.error('Erro ao buscar empresa atualizada:', error);
 				// Fallback para atualização manual (menos precisa)
 				// Atualizar apenas o setor específico
 				const updatedCompany = { ...company };
@@ -74,8 +107,8 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 					updatedCompany.setores = updatedCompany.setores.map(setor => {
 						if (setor.id.toString() === selectedSector.toString()) {
 							const newSectorCredits = type === 'add'
-								? Number(setor.credits) + Number(credits)
-								: Number(setor.credits) - Number(credits);
+								? Number(setor.credits || 0) + Number(credits)
+								: Number(setor.credits || 0) - Number(credits);
 							return { ...setor, credits: newSectorCredits };
 						}
 						return setor;
@@ -83,7 +116,7 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 					
 					// Recalcula o total de créditos da empresa
 					const totalCredits = updatedCompany.setores.reduce(
-						(sum, setor) => sum + Number(setor.credits), 0
+						(sum, setor) => sum + Number(setor.credits || 0), 0
 					);
 					updatedCompany.credits = totalCredits;
 				} else {
