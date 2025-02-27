@@ -46,14 +46,50 @@ export default function EmailLogs() {
     const fetchLogs = async (page = 1) => {
         try {
             setLoading(true)
-            const response = await api.get(`/admin/email-logs?page=${page}&limit=${itemsPerPage}`, {
+            
+            // Construir os parâmetros de consulta com os filtros
+            const params = new URLSearchParams({
+                page: page,
+                limit: itemsPerPage
+            })
+            
+            // Adicionar filtros de status se existirem
+            if (filters.status.length > 0) {
+                filters.status.forEach(status => {
+                    params.append('status', status)
+                })
+            }
+            
+            // Adicionar filtro de período
+            if (filters.period !== 'all') {
+                params.append('period', filters.period)
+            }
+            
+            // Adicionar termo de busca
+            if (filters.search) {
+                params.append('search', filters.search)
+            }
+            
+            const response = await api.get(`/admin/email-logs?${params.toString()}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             
-            // Processar logs para remover sucessos que depois tiveram retorno
-            const processedLogs = processLogs(response.data.logs)
+            // Verificar se a resposta contém os dados esperados
+            if (!response.data || !response.data.logs) {
+                console.error('Resposta da API inválida:', response.data)
+                toast.error('Formato de resposta inválido do servidor')
+                setLogs([])
+                setPagination({
+                    page: 1,
+                    limit: itemsPerPage,
+                    total: 0,
+                    totalPages: 0
+                })
+                return
+            }
             
-            setLogs(processedLogs)
+            // Não precisamos mais processar os logs, pois o backend já faz a filtragem
+            setLogs(response.data.logs)
             setPagination({
                 ...pagination,
                 page,
@@ -63,52 +99,23 @@ export default function EmailLogs() {
         } catch (error) {
             console.error('Erro ao buscar logs:', error)
             toast.error('Erro ao buscar logs de email')
+            setLogs([])
+            setPagination({
+                page: 1,
+                limit: itemsPerPage,
+                total: 0,
+                totalPages: 0
+            })
         } finally {
             setLoading(false)
         }
     }
 
-    // Função para processar logs e remover sucessos que depois tiveram retorno
-    const processLogs = (logs) => {
-        // Agrupar logs por email
-        const emailGroups = {}
-        
-        // Primeiro, agrupar todos os logs por email
-        logs.forEach(log => {
-            if (!emailGroups[log.email]) {
-                emailGroups[log.email] = []
-            }
-            emailGroups[log.email].push(log)
-        })
-        
-        // Filtrar logs de sucesso que têm um retorno posterior
-        const filteredLogs = []
-        
-        Object.values(emailGroups).forEach(group => {
-            // Verificar se existe algum log de retorno neste grupo
-            const hasBounce = group.some(log => log.status === 'bounce')
-            
-            if (hasBounce) {
-                // Se tem retorno, adicionar apenas os logs que não são de sucesso
-                group.forEach(log => {
-                    if (log.status !== 'success') {
-                        filteredLogs.push(log)
-                    }
-                })
-            } else {
-                // Se não tem retorno, adicionar todos os logs
-                filteredLogs.push(...group)
-            }
-        })
-        
-        return filteredLogs
-    }
-
     useEffect(() => {
         if (token) {
-            fetchLogs(pagination.page)
+            fetchLogs(1) // Resetar para a primeira página ao mudar os filtros
         }
-    }, [token, itemsPerPage])
+    }, [token, itemsPerPage, filters])
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= pagination.totalPages) {
@@ -118,7 +125,8 @@ export default function EmailLogs() {
     }
 
     const handleFilterChange = (key, value) => {
-        setFilters({ ...filters, [key]: value })
+        setFilters(prev => ({ ...prev, [key]: value }))
+        // Não precisamos chamar fetchLogs aqui, pois o useEffect vai cuidar disso
     }
 
     const handleRemoveFilter = (key, value) => {
@@ -129,84 +137,18 @@ export default function EmailLogs() {
                 search: ''
             })
         } else if (key === 'status') {
-            setFilters({
-                ...filters,
-                status: filters.status.filter(v => v !== value)
-            })
+            setFilters(prev => ({
+                ...prev,
+                status: prev.status.filter(v => v !== value)
+            }))
         } else {
-            setFilters({
-                ...filters,
+            setFilters(prev => ({
+                ...prev,
                 [key]: ''
-            })
+            }))
         }
+        // Não precisamos chamar fetchLogs aqui, pois o useEffect vai cuidar disso
     }
-
-    const getDateRange = () => {
-        const now = new Date()
-        const cutoffDate = new Date(now)
-
-        // Ajusta as horas do momento atual
-        now.setHours(23, 59, 59, 999)
-
-        switch (filters.period) {
-            case '7d':
-                cutoffDate.setDate(now.getDate() - 7)
-                break
-            case '30d':
-                cutoffDate.setDate(now.getDate() - 30)
-                break
-            case '90d':
-                cutoffDate.setDate(now.getDate() - 90)
-                break
-            case '365d':
-                cutoffDate.setDate(now.getDate() - 365)
-                break
-            case 'all':
-                cutoffDate.setFullYear(2000) // Data bem antiga para pegar tudo
-                break
-            default:
-                cutoffDate.setDate(now.getDate() - 7)
-        }
-
-        // Ajusta as horas da data inicial
-        cutoffDate.setHours(0, 0, 0, 0)
-
-        return {
-            start: cutoffDate,
-            end: now
-        }
-    }
-
-    const filteredLogs = logs.filter(log => {
-        // Se não tiver data formatada, não filtra por data
-        if (!log.data_envio && !log.data_formatada) return true;
-
-        // Filtra por período
-        if (filters.period !== 'all') {
-            const logDate = new Date(log.data_envio || log.data_formatada);
-            const { start, end } = getDateRange();
-            if (logDate < start || logDate > end) {
-                return false;
-            }
-        }
-
-        // Filtra por status
-        if (filters.status.length > 0 && !filters.status.includes(log.status)) {
-            return false;
-        }
-
-        // Filtra por termo de busca
-        if (filters.search) {
-            const search = filters.search.toLowerCase();
-            const searchMatch =
-                (log.nome_colaborador && log.nome_colaborador.toLowerCase().includes(search)) ||
-                (log.email && log.email.toLowerCase().includes(search)) ||
-                (log.mensagem && log.mensagem.toLowerCase().includes(search));
-            if (!searchMatch) return false;
-        }
-
-        return true;
-    });
 
     // Componente para mostrar filtros ativos
     const ActiveFilters = () => {
@@ -261,7 +203,7 @@ export default function EmailLogs() {
                 <div>
                     <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Logs de Email</h1>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Logs de emails enviados pela plataforma. Emails com status de sucesso que posteriormente retornaram são exibidos apenas como retorno.
+                        Logs de emails enviados pela plataforma.
                     </p>
                 </div>
             </div>
@@ -346,9 +288,6 @@ export default function EmailLogs() {
                         <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                             Histórico de Emails
                         </h2>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            Mostrando apenas o status final de cada email (sucessos que depois retornaram são exibidos como retorno)
-                        </p>
                     </div>
                     <select
                         value={itemsPerPage}
@@ -369,14 +308,14 @@ export default function EmailLogs() {
                     <div className="text-center py-12">
                         <p className="text-gray-500 dark:text-gray-400">Carregando logs...</p>
                     </div>
-                ) : filteredLogs.length === 0 ? (
+                ) : logs.length === 0 ? (
                     <div className="text-center py-12">
                         <p className="text-gray-500 dark:text-gray-400">Nenhum log encontrado com os filtros aplicados.</p>
                     </div>
                 ) : (
                     <div className="overflow-hidden">
                         <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                            {filteredLogs.map((log) => (
+                            {logs.map((log) => (
                                 <li key={log.id} className="p-6">
                                     <div className="flex items-center justify-between">
                                         <div className="flex-1">
@@ -394,18 +333,20 @@ export default function EmailLogs() {
                                             <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                 {log.data_formatada ? (
                                                     log.data_formatada
-                                                ) : (
-                                                    log.data_envio && format(new Date(log.data_envio), "d 'de' MMMM 'às' HH:mm", {
+                                                ) : log.data_envio ? (
+                                                    format(new Date(log.data_envio), "d 'de' MMMM 'às' HH:mm", {
                                                         locale: ptBR
                                                     })
+                                                ) : (
+                                                    'Data não disponível'
                                                 )}
                                             </div>
                                         </div>
                                         <div>
                                             <span
-                                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[log.status]}`}
+                                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[log.status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'}`}
                                             >
-                                                {statusLabels[log.status]}
+                                                {statusLabels[log.status] || 'Desconhecido'}
                                             </span>
                                         </div>
                                     </div>
