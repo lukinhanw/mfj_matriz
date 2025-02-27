@@ -1,6 +1,7 @@
 ---
-description: arquitetura do projeto e visão geral do projeto
+description: architecture frontend and goods pratices
 globs: 
+alwaysApply: true
 ---
 # Arquitetura do Projeto MFJ Matriz
 

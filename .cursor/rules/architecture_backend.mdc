@@ -1,6 +1,7 @@
 ---
-description: acessar o backend
+description: architecture for backend and good pratices
 globs: 
+alwaysApply: true
 ---
 
 # Regras e Padrões do Projeto - API Matriz MFJ
