@@ -8,7 +8,6 @@ export default function RecoveryStepCode({ onSubmit, isLoading, email, onResend 
 	} = useForm()
 
 	const onFormSubmit = (data) => {
-		console.log('Código sendo enviado:', data.code) // Log para debug
 		onSubmit(data.code.toString()) // Garantir que o código é uma string
 	}
 
