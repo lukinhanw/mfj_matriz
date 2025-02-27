@@ -12,6 +12,7 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 	const [credits, setCredits] = useState(1)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [selectedSector, setSelectedSector] = useState('')
+	const [description, setDescription] = useState('')
 
 	useEffect(() => {
 		// Resetar o setor selecionado quando o modal é aberto
@@ -46,7 +47,8 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 			const payload = {
 				companyId: company.id,
 				credits,
-				sectorId: selectedSector
+				sectorId: selectedSector,
+				description: description
 			}
 
 			await api({
@@ -163,6 +165,7 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 	const handleClose = () => {
 		setCredits(1) // Reseta o valor para 1
 		setSelectedSector('') // Reseta o setor selecionado
+		setDescription('') // Reseta a descrição
 		onClose()
 	}
 
@@ -241,7 +244,7 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 												)}
 											</div>
 
-											<div>
+											<div className="mb-4">
 												<label
 													htmlFor="credits"
 													className="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -261,6 +264,26 @@ function CompanyCreditsModal({ open, onClose, company, type, onCreditsUpdated })
 													disabled={isSubmitting || !selectedSector}
 												/>
 											</div>
+
+											{type === 'add' && (
+												<div className="mb-4">
+													<label
+														htmlFor="description"
+														className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+													>
+														Descrição
+													</label>
+													<textarea
+														id="description"
+														value={description}
+														onChange={(e) => setDescription(e.target.value)}
+														className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-100"
+														rows="3"
+														placeholder="Descreva o motivo da adição de créditos"
+														disabled={isSubmitting}
+													/>
+												</div>
+											)}
 
 											<div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
 												<button

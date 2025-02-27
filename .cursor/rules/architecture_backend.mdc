@@ -1,12 +1,12 @@
 ---
-description: architecture for backend and good pratices
-globs: 
+description: quando for verificar alguma coisa no backend
+globs: *
 alwaysApply: true
 ---
 
 # Regras e Padrões do Projeto - API Matriz MFJ
 
-O backend se encontra na pasta api-matriz-MFJ
+O backend se encontra na pasta ./api-matriz-MFJ
 
 ## Estrutura do Projeto
 

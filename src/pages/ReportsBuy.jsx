@@ -70,7 +70,8 @@ export default function ReportsBuy() {
 			Data: format(new Date(t.timestamp), "dd/MM/yyyy HH:mm", { locale: ptBR }),
 			Empresa: t.company?.name,
 			Setor: t.department?.name || '-',
-			Créditos: t.creditos
+			Créditos: t.creditos,
+			Descrição: t.descricao || '-'
 		}))
 
 		const ws = XLSX.utils.json_to_sheet(exportData)
