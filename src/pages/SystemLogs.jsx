@@ -1,7 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import LogList from '../components/logs/LogList'
 import LogFilters from '../components/logs/LogFilters'
-import LogSearch from '../components/logs/LogSearch'
 
 export default function SystemLogs() {
 	const [filters, setFilters] = useState({
@@ -9,8 +8,33 @@ export default function SystemLogs() {
 		user: [],
 		period: '7d'
 	})
-	const [searchTerm, setSearchTerm] = useState('')
 	const [itemsPerPage, setItemsPerPage] = useState(10)
+
+	useEffect(() => {
+		if (!filters || typeof filters !== 'object') {
+			setFilters({
+				type: [],
+				user: [],
+				period: '7d'
+			});
+			return;
+		}
+		
+		const updatedFilters = { ...filters };
+		if (!Array.isArray(updatedFilters.type)) {
+			updatedFilters.type = [];
+		}
+		if (!Array.isArray(updatedFilters.user)) {
+			updatedFilters.user = [];
+		}
+		if (!updatedFilters.period) {
+			updatedFilters.period = '7d';
+		}
+		
+		if (JSON.stringify(updatedFilters) !== JSON.stringify(filters)) {
+			setFilters(updatedFilters);
+		}
+	}, [filters]);
 
 	return (
 		<div className="space-y-8">
@@ -19,8 +43,7 @@ export default function SystemLogs() {
 			</div>
 
 			<div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 space-y-6">
-				<LogSearch value={searchTerm} onChange={setSearchTerm} />
-				<div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+				<div>
 					<LogFilters filters={filters} onChange={setFilters} />
 				</div>
 			</div>
@@ -51,7 +74,6 @@ export default function SystemLogs() {
 				</div>
 				<LogList 
 					filters={filters} 
-					searchTerm={searchTerm} 
 					itemsPerPage={itemsPerPage}
 				/>
 			</div>

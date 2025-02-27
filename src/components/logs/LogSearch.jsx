@@ -1,6 +1,16 @@
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 
 function LogSearch({ value, onChange }) {
+	// Garantir que value seja sempre uma string
+	const safeValue = value !== null && value !== undefined ? String(value) : '';
+	
+	// Função segura para lidar com mudanças
+	const handleChange = (e) => {
+		if (typeof onChange === 'function') {
+			onChange(e.target.value);
+		}
+	};
+	
 	return (
 		<div>
 			<label htmlFor="search" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -14,8 +24,8 @@ function LogSearch({ value, onChange }) {
 					type="text"
 					name="search"
 					id="search"
-					value={value}
-					onChange={(e) => onChange(e.target.value)}
+					value={safeValue}
+					onChange={handleChange}
 					className="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 pl-10 focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
 					placeholder="Buscar por descrição ou usuário..."
 				/>

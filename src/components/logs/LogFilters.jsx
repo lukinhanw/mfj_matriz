@@ -1,6 +1,10 @@
+import { useState, useEffect } from 'react'
 import Select from 'react-select'
 import { FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { customSelectStyles } from '../../styles/selectStyles'
+import api from '../../utils/api'
+import useAuthStore from '../../store/authStore'
+import { toast } from 'react-hot-toast'
 
 const typeOptions = [
 	{ value: 'system', label: 'Sistema' },
@@ -16,14 +20,34 @@ const periodOptions = [
 ]
 
 function FilterDropdown({ label, options, selectedValues, onChange }) {
+	// Garantir que options e selectedValues sejam sempre arrays válidos
+	const safeOptions = Array.isArray(options) ? options.filter(option => option && typeof option === 'object') : [];
+	const safeSelectedValues = Array.isArray(selectedValues) ? selectedValues.filter(value => value != null) : [];
+	
+	// Função segura para lidar com mudanças
+	const handleChange = (selected) => {
+		if (typeof onChange === 'function') {
+			const values = selected && Array.isArray(selected) 
+				? selected
+					.filter(item => item && typeof item === 'object' && item.value != null)
+					.map(item => item.value) 
+				: [];
+			onChange(values);
+		}
+	};
 	
 	return (
 		<Select
 			isMulti
-			options={options}
-			value={options.filter(option => selectedValues.includes(option.value))}
-			onChange={(selected) => onChange(selected ? selected.map(item => item.value) : [])}
-			placeholder={label}
+			options={safeOptions}
+			value={safeOptions.filter(option => 
+				option && 
+				typeof option === 'object' && 
+				option.value != null && 
+				safeSelectedValues.includes(option.value)
+			)}
+			onChange={handleChange}
+			placeholder={label || 'Selecionar'}
 			className="w-full"
 			classNamePrefix="select"
 			styles={customSelectStyles}
@@ -33,17 +57,49 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 }
 
 // Atualizar o componente ActiveFilters para receber users como prop
-function ActiveFilters({ filters, onRemove }) {
-	const activeFilters = []
+function ActiveFilters({ filters, onRemove, userOptions }) {
+	// Verificar se filters é um objeto válido
+	if (!filters || typeof filters !== 'object') {
+		return null;
+	}
+	
+	const activeFilters = [];
+	
+	// Garantir que filters.type e filters.user sejam sempre arrays
+	const typeFilters = Array.isArray(filters.type) ? filters.type : [];
+	const userFilters = Array.isArray(filters.user) ? filters.user : [];
+	
+	// Garantir que userOptions seja sempre um array
+	const safeUserOptions = Array.isArray(userOptions) ? userOptions : [];
 
-	if (filters.type.length > 0) {
-		filters.type.forEach(type => {
-			const typeLabel = typeOptions.find(t => t.value === type)?.label
-			activeFilters.push({ key: 'type', value: type, label: `Tipo: ${typeLabel}` })
-		})
+	if (typeFilters.length > 0) {
+		typeFilters.forEach(type => {
+			if (type) { // Verificar se o tipo não é nulo
+				const typeOption = typeOptions.find(t => t && t.value === type);
+				const typeLabel = typeOption && typeOption.label ? typeOption.label : type;
+				activeFilters.push({ key: 'type', value: type, label: `Tipo: ${typeLabel}` });
+			}
+		});
+	}
+	
+	if (userFilters.length > 0) {
+		userFilters.forEach(userId => {
+			if (userId) { // Verificar se o userId não é nulo
+				const userOption = safeUserOptions.find(u => u && u.value === userId);
+				const userLabel = userOption && userOption.label ? userOption.label : userId;
+				activeFilters.push({ key: 'user', value: userId, label: `Usuário: ${userLabel}` });
+			}
+		});
 	}
 
-	if (activeFilters.length === 0) return null
+	if (activeFilters.length === 0) return null;
+	
+	// Função segura para lidar com remoção de filtros
+	const handleRemove = (key, value) => {
+		if (typeof onRemove === 'function') {
+			onRemove(key, value);
+		}
+	};
 
 	return (
 		<div className="mt-4">
@@ -57,7 +113,7 @@ function ActiveFilters({ filters, onRemove }) {
 						{filter.label}
 						<button
 							type="button"
-							onClick={() => onRemove(filter.key, filter.value)}
+							onClick={() => handleRemove(filter.key, filter.value)}
 							className="group relative -mr-1 h-3.5 w-3.5 rounded-sm hover:bg-orange-600/20 dark:hover:bg-orange-600/30"
 						>
 							<span className="sr-only">Remove filter</span>
@@ -66,7 +122,7 @@ function ActiveFilters({ filters, onRemove }) {
 					</span>
 				))}
 				<button
-					onClick={() => onRemove('all')}
+					onClick={() => handleRemove('all')}
 					className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
 				>
 					Limpar todos
@@ -78,6 +134,37 @@ function ActiveFilters({ filters, onRemove }) {
 
 // Atualizar a renderização do ActiveFilters no componente LogFilters
 export default function LogFilters({ filters, onChange }) {
+	const { token } = useAuthStore()
+	const [userOptions, setUserOptions] = useState([])
+	const [isLoadingUsers, setIsLoadingUsers] = useState(false)
+
+	useEffect(() => {
+		const fetchUsers = async () => {
+			setIsLoadingUsers(true)
+			try {
+				const response = await api.get('/admin/pessoasLogs', {
+					headers: { Authorization: `Bearer ${token}` }
+				})
+				
+				if (response.data && Array.isArray(response.data)) {
+					const options = response.data.map(user => ({
+						value: user.id.toString(),
+						label: user.name
+					}))
+					setUserOptions(options)
+				}
+			} catch (error) {
+				console.error('Erro ao carregar usuários:', error)
+				toast.error('Erro ao carregar lista de usuários')
+			} finally {
+				setIsLoadingUsers(false)
+			}
+		}
+
+		if (token) {
+			fetchUsers()
+		}
+	}, [token])
 
 	const handleFilterChange = (key, value) => {
 		onChange({ ...filters, [key]: value })
@@ -91,9 +178,11 @@ export default function LogFilters({ filters, onChange }) {
 				period: '7d'
 			})
 		} else {
+			// Garantir que filters[key] seja um array
+			const currentFilters = Array.isArray(filters[key]) ? filters[key] : [];
 			onChange({
 				...filters,
-				[key]: filters[key].filter(v => v !== value)
+				[key]: currentFilters.filter(v => v !== value)
 			})
 		}
 	}
@@ -124,7 +213,7 @@ export default function LogFilters({ filters, onChange }) {
 						</select>
 					</div>
 
-					<div>
+					<div className="mb-4 md:mb-0">
 						<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
 							Tipo
 						</label>
@@ -137,10 +226,24 @@ export default function LogFilters({ filters, onChange }) {
 							/>
 						</div>
 					</div>
+					
+					<div>
+						<label className="block text-sm font-medium text-gray-700 dark:text-gray-500">
+							Usuário
+						</label>
+						<div className="mt-1">
+							<FilterDropdown
+								label={isLoadingUsers ? "Carregando usuários..." : "Selecionar usuários"}
+								selectedValues={filters.user}
+								onChange={(values) => handleFilterChange('user', values)}
+								options={userOptions}
+							/>
+						</div>
+					</div>
 				</div>
 			</div>
 
-			<ActiveFilters filters={filters} onRemove={handleRemoveFilter} />
+			<ActiveFilters filters={filters} onRemove={handleRemoveFilter} userOptions={userOptions} />
 		</div>
 	)
 }

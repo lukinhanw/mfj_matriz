@@ -219,7 +219,7 @@ export default function EmailLogs() {
                         type="text"
                         value={filters.search}
                         onChange={(e) => handleFilterChange('search', e.target.value)}
-                        className="block w-full rounded-md border-0 py-2 pl-10 text-gray-900 dark:text-white dark:bg-gray-700 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 pl-10 focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
                         placeholder="Buscar por nome, email ou mensagem..."
                     />
                 </div>
