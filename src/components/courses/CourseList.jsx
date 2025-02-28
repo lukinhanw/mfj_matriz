@@ -107,7 +107,7 @@ function CourseList({ onEdit, refresh, searchTerm, viewMode }) {  // Adicionar v
 		setConfirmModal({
 			show: true,
 			courseId: course.id,
-			courseTitle: course.titulo
+			courseTitle: course.title // Changed from course.titulo to course.title
 		})
 	}
 

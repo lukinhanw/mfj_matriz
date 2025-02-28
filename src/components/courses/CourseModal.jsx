@@ -42,11 +42,14 @@ function CourseModal({ isOpen, onClose, course, refreshCourses }) {
 
 		const payload = new FormData()
 		payload.append('title', formData.title)
-		payload.append('id', course.id)
 		payload.append('category', formData.category)
 		payload.append('description', formData.description)
 		if (formData.thumbnail) {
 			payload.append('thumbnail', formData.thumbnail)
+		}
+		// Only append id if we're editing an existing course
+		if (course?.id) {
+			payload.append('id', course.id)
 		}
 
 		const headers = {
