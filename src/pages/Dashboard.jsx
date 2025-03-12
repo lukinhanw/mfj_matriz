@@ -174,7 +174,7 @@ function Dashboard() {
 							</h3>
 							<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 								{dashboardData.creditsByDepartment.map(department => (
-									<div 
+									<div
 										key={department.id}
 										className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4"
 									>
@@ -222,6 +222,15 @@ function Dashboard() {
 
 					{resultados && (
 						<>
+
+							<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors mb-6">
+								<div className="text-gray-700 dark:text-gray-300">
+									<p className="mb-2 text-lg font-medium font-bold">Agradecemos pelo preenchimento do formulário.</p>
+									<p className="mb-2">Com base em suas respostas, o sistema identificou os treinamentos obrigatórios e recomendados para os próximos 12 meses.</p>
+									<p>Para informações sobre a disponibilidade e o cronograma dos treinamentos, consulte o diretor responsável pelo seu setor.</p>
+								</div>
+							</div>
+
 							<div className="flex items-center gap-2 mb-4 justify-end">
 								<span className="text-gray-700 dark:text-gray-300">Visualização:</span>
 								<button
@@ -240,7 +249,7 @@ function Dashboard() {
 									)}
 								</button>
 							</div>
-							
+
 							<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
 								<div className="flex items-center justify-between mb-4">
 									<h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
