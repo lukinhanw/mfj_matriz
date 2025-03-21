@@ -1,5 +1,5 @@
 // Role definitions
-export const ROLES = {
+const ROLES = {
 	ADMIN: 'admin',
 	GESTOR: 'gestor',
 	COLABORADOR: 'colaborador',
@@ -7,7 +7,7 @@ export const ROLES = {
 }
 
 // Role-based route permissions
-export const ROUTE_PERMISSIONS = {
+const ROUTE_PERMISSIONS = {
 	'/': [ROLES.ADMIN, ROLES.GESTOR, ROLES.COLABORADOR, ROLES.EMPRESA],
 	'/companies': [ROLES.ADMIN],
 	'/departments': [ROLES.ADMIN],
@@ -15,6 +15,7 @@ export const ROUTE_PERMISSIONS = {
 	'/managers': [ROLES.ADMIN, ROLES.EMPRESA],
 	'/collaborators': [ROLES.ADMIN, ROLES.GESTOR, ROLES.EMPRESA],
 	'/courses': [ROLES.ADMIN],
+	'/assessments': [ROLES.ADMIN], // Added new route
 	'/reports': [ROLES.ADMIN, ROLES.EMPRESA],
 	'/reports-buy': [ROLES.ADMIN, ROLES.EMPRESA],
 	'/logs': [ROLES.ADMIN],
@@ -24,7 +25,7 @@ export const ROUTE_PERMISSIONS = {
 }
 
 // Action permissions by role
-export const ACTION_PERMISSIONS = {
+const ACTION_PERMISSIONS = {
 	[ROLES.ADMIN]: {
 		canCreateCompany: true,
 		canEditCompany: true,
@@ -50,7 +51,8 @@ export const ACTION_PERMISSIONS = {
 		canViewReports: true,
 		canViewLogs: true,
 		canExportData: true,
-		canEditPerfil: true
+		canEditPerfil: true,
+		canManageAssessments: true // Added new permission
 	},
 	[ROLES.GESTOR]: {
 		canViewManagers: false,
@@ -124,7 +126,8 @@ export const getNavigationByRole = (userRole) => {
 			{
 				title: 'Treinamentos',
 				items: [
-					{ name: 'Cursos', href: '/courses', icon: 'AcademicCapIcon' }
+					{ name: 'Cursos', href: '/courses', icon: 'AcademicCapIcon' },
+					{ name: 'Avaliações', href: '/assessments', icon: 'ClipboardDocumentCheckIcon' }
 				]
 			}
 		)
@@ -159,7 +162,6 @@ export const getNavigationByRole = (userRole) => {
 	}
 
 	if (userRole === ROLES.ADMIN) {
-		// Common items for all roles
 		baseNavigation.push({
 			title: 'Relatórios',
 			items: [

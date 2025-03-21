@@ -1,11 +1,28 @@
 import { FunnelIcon, ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import Select from 'react-select'
 import { customSelectStyles } from '../../styles/selectStyles'
+import { useState, useEffect } from 'react'
+import { toast } from 'react-hot-toast'
+import api from '../../utils/api'
+import useAuthStore from '../../store/authStore'
 
 const statusOptions = [
 	{ value: 'active', label: 'Ativos' },
 	{ value: 'inactive', label: 'Inativos' }
 ]
+
+const evaluatedOptions = [
+	{ value: 'yes', label: 'Avaliados' },
+	{ value: 'no', label: 'Não avaliados' }
+]
+
+const initialFilters = {
+	status: [],
+	companies: [],
+	departments: [],
+	positions: [],
+	evaluated: []
+}
 
 function FilterDropdown({ label, options, selectedValues, onChange }) {
 	return (
@@ -24,95 +41,176 @@ function FilterDropdown({ label, options, selectedValues, onChange }) {
 }
 
 function ActiveFilters({ filters, companies, departments, positions, onRemove }) {
-	const activeFilters = []
+	const hasActiveFilters = Object.values(filters).some(filterArray => filterArray.length > 0)
 
-	if (filters.status.length > 0) {
-		filters.status.forEach(status => {
-			const statusLabel = statusOptions.find(s => s.value === status)?.label
-			activeFilters.push({ key: 'status', value: status, label: `Status: ${statusLabel}` })
-		})
+	if (!hasActiveFilters) {
+		return null
 	}
 
-	if (filters.companies.length > 0) {
-		filters.companies.forEach(companyId => {
-			const companyName = companies.find(c => c.id.toString() === companyId)?.name
-			activeFilters.push({ key: 'companies', value: companyId, label: `Empresa: ${companyName}` })
-		})
+	const filterLabels = {
+		status: {
+			active: 'Ativo',
+			inactive: 'Inativo'
+		},
+		evaluated: {
+			yes: 'Avaliado',
+			no: 'Não avaliado'
+		}
 	}
 
-	if (filters.departments.length > 0) {
-		filters.departments.forEach(departmentId => {
-			const departmentName = departments.find(d => d.id.toString() === departmentId)?.name
-			activeFilters.push({ key: 'departments', value: departmentId, label: `Setor: ${departmentName}` })
-		})
+	const getFilterLabel = (type, value) => {
+		if (type === 'status' || type === 'evaluated') {
+			return filterLabels[type][value]
+		} else if (type === 'companies') {
+			const company = companies.find(c => c.id.toString() === value)
+			return company ? company.name : value
+		} else if (type === 'departments') {
+			const department = departments.find(d => d.id.toString() === value)
+			return department ? department.name : value
+		} else if (type === 'positions') {
+			const position = positions.find(p => p.id.toString() === value)
+			return position ? position.name : value
+		}
+		return value
 	}
-
-	if (filters.positions?.length > 0) {
-		filters.positions.forEach(positionId => {
-			const positionName = positions.find(p => p.id.toString() === positionId)?.name
-			activeFilters.push({ key: 'positions', value: positionId, label: `Cargo: ${positionName}` })
-		})
-	}
-
-	if (activeFilters.length === 0) return null
 
 	return (
 		<div className="mt-4">
-			<h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Filtros ativos:</h4>
-			<div className="mt-2 flex flex-wrap gap-2">
-				{activeFilters.map((filter, index) => (
-					<span
-						key={`${filter.key}-${filter.value}-${index}`}
-						className="inline-flex items-center gap-x-1 rounded-md bg-orange-50 dark:bg-orange-900 px-2 py-1 text-sm font-medium text-orange-700 dark:text-orange-300"
-					>
-						{filter.label}
-						<button
-							type="button"
-							onClick={() => onRemove(filter.key, filter.value)}
-							className="group relative -mr-1 h-3.5 w-3.5 rounded-sm hover:bg-orange-600/20 dark:hover:bg-orange-300/20"
+			<div className="flex flex-wrap gap-2">
+				{Object.entries(filters).map(([key, values]) =>
+					values.map(value => (
+						<span
+							key={`${key}-${value}`}
+							className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
 						>
-							<span className="sr-only">Remove filter</span>
-							<XMarkIcon className="h-3.5 w-3.5" />
-						</button>
-					</span>
-				))}
-				<button
-					onClick={() => onRemove('all')}
-					className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-				>
-					Limpar todos
-				</button>
+							{key === 'status' && 'Status: '}
+							{key === 'companies' && 'Empresa: '}
+							{key === 'departments' && 'Setor: '}
+							{key === 'positions' && 'Cargo: '}
+							{key === 'evaluated' && 'Avaliação: '}
+							{getFilterLabel(key, value)}
+							<button
+								type="button"
+								onClick={() => onRemove(key, value)}
+								className="ml-1.5 inline-flex items-center justify-center flex-shrink-0 h-4 w-4 rounded-full text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:text-gray-500 dark:focus:text-gray-400 transition-colors"
+							>
+								<XMarkIcon className="h-3 w-3" />
+							</button>
+						</span>
+					))
+				)}
+				{hasActiveFilters && (
+					<button
+						type="button"
+						onClick={() => onRemove('all')}
+						className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 dark:text-red-300 hover:text-red-500 dark:hover:text-red-200"
+					>
+						Limpar todos
+					</button>
+				)}
 			</div>
 		</div>
 	)
 }
 
-function CollaboratorFilters({ filters, onChange, companies = [], departments = [], positions = [] }) {
-	const handleFilterChange = (key, values) => {
-		onChange({ ...filters, [key]: values })
-	}
+function CollaboratorFilters({ onFilterChange }) {
+	const { token } = useAuthStore()
+	const [filters, setFilters] = useState(initialFilters)
+	const [companies, setCompanies] = useState([])
+	const [departments, setDepartments] = useState([])
+	const [positions, setPositions] = useState([])
+	const [isLoading, setIsLoading] = useState(false)
+	const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 
-	const handleRemoveFilter = (key, value) => {
-		if (key === 'all') {
-			onChange({
-				status: [],
-				companies: [],
-				departments: [],
-				positions: []
-			})
-		} else {
-			onChange({
-				...filters,
-				[key]: filters[key].filter(v => v !== value)
-			})
+	useEffect(() => {
+		const fetchFilterData = async () => {
+			setIsLoading(true)
+			try {
+				const [companiesRes, departmentsRes, positionsRes] = await Promise.all([
+					api.get('/admin/listarEmpresas', {
+						headers: { Authorization: `Bearer ${token}` }
+					}),
+					api.get('/admin/listarSetores', {
+						headers: { Authorization: `Bearer ${token}` }
+					}),
+					api.get('/admin/listarCargos', {
+						headers: { Authorization: `Bearer ${token}` }
+					})
+				])
+
+				setCompanies(companiesRes.data)
+				setDepartments(departmentsRes.data)
+				setPositions(positionsRes.data)
+			} catch (error) {
+				console.error('Error fetching filter data:', error)
+				toast.error('Erro ao carregar dados de filtro')
+			} finally {
+				setIsLoading(false)
+			}
 		}
+
+		if (token) {
+			fetchFilterData()
+		}
+	}, [token])
+
+	const handleFilterChange = (filterType, value) => {
+		// Se for para limpar todos os filtros
+		if (filterType === 'all') {
+			setFilters(initialFilters);
+			onFilterChange(initialFilters);
+			return;
+		}
+		
+		setFilters(prevFilters => {
+			const newFilters = { ...prevFilters };
+
+			if (newFilters[filterType].includes(value)) {
+				newFilters[filterType] = newFilters[filterType].filter(item => item !== value);
+			} else {
+				newFilters[filterType] = [...newFilters[filterType], value];
+			}
+
+			onFilterChange(newFilters);
+			return newFilters;
+		});
 	}
 
-	// Filter departments based on selected companies
-	const filteredDepartments = departments.filter(dept =>
-		filters.companies.length === 0 ||
-		filters.companies.includes(dept.empresa_id?.toString())
+	const handleSelectChange = (filterType, values) => {
+		setFilters(prevFilters => {
+			const newFilters = { 
+				...prevFilters,
+				[filterType]: values
+			}
+			onFilterChange(newFilters)
+			return newFilters
+		})
+	}
+
+	const clearFilters = () => {
+		setFilters(initialFilters)
+		onFilterChange(initialFilters)
+	}
+
+	const hasActiveFilters = Object.values(filters).some(filterArray => filterArray.length > 0)
+
+	const renderFilterToggle = () => (
+		<button
+			onClick={() => setIsFiltersOpen(prev => !prev)}
+			className="flex items-center text-sm text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium"
+		>
+			<span className="mr-1">{isFiltersOpen ? 'Ocultar' : 'Mostrar'} filtros</span>
+			{hasActiveFilters && (
+				<span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-800 text-primary-600 dark:text-primary-400">
+					{Object.values(filters).reduce((acc, curr) => acc + curr.length, 0)}
+				</span>
+			)}
+		</button>
 	)
+
+	if (isLoading) {
+		return <div className="text-sm text-gray-500 dark:text-gray-400">Carregando filtros...</div>
+	}
 
 	return (
 		<div className="space-y-6">
@@ -121,57 +219,88 @@ function CollaboratorFilters({ filters, onChange, companies = [], departments = 
 				<span>Filtros:</span>
 			</div>
 
-			<div className="grid gap-4 md:grid-cols-4">
-				<FilterDropdown
-					label="Status"
-					selectedValues={filters.status}
-					onChange={(values) => handleFilterChange('status', values)}
-					options={statusOptions}
-				/>
-
-				{companies.length > 0 && (
-					<FilterDropdown
-						label="Empresa"
-						selectedValues={filters.companies}
-						onChange={(values) => handleFilterChange('companies', values)}
-						options={companies.map(company => ({
-							value: company.id.toString(),
-							label: company.name
-						}))}
-					/>
-				)}
-
-				{departments.length > 0 && (
-					<FilterDropdown
-						label="Setor"
-						selectedValues={filters.departments}
-						onChange={(values) => handleFilterChange('departments', values)}
-						options={departments.map(dept => ({
-							value: dept.id.toString(),
-							label: dept.name
-						}))}
-					/>
-				)}
-
-				{positions.length > 0 && (
-					<FilterDropdown
-						label="Cargo"
-						selectedValues={filters.positions}
-						onChange={(values) => handleFilterChange('positions', values)}
-						options={positions.map(pos => ({
-							value: pos.id.toString(),
-							label: pos.name
-						}))}
-					/>
-				)}
+			<div className="flex justify-between items-center mb-4">
+				<div className="text-lg font-medium text-gray-700 dark:text-gray-300">Filtros</div>
+				<div className="flex items-center space-x-3">
+					{renderFilterToggle()}
+				</div>
 			</div>
+
+			{isFiltersOpen && (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+					<div className="mb-2">
+						<h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</h3>
+						<FilterDropdown
+							label="Selecione o status"
+							selectedValues={filters.status}
+							onChange={(values) => handleSelectChange('status', values)}
+							options={statusOptions}
+						/>
+					</div>
+
+					<div className="mb-2">
+						<h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Avaliado</h3>
+						<FilterDropdown
+							label="Selecione o status da avaliação"
+							selectedValues={filters.evaluated}
+							onChange={(values) => handleSelectChange('evaluated', values)}
+							options={evaluatedOptions}
+						/>
+					</div>
+
+					{companies.length > 0 && (
+						<div className="mb-2">
+							<h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Empresa</h3>
+							<FilterDropdown
+								label="Selecione a empresa"
+								selectedValues={filters.companies}
+								onChange={(values) => handleSelectChange('companies', values)}
+								options={companies.map(company => ({
+									value: company.id.toString(),
+									label: company.name
+								}))}
+							/>
+						</div>
+					)}
+
+					{departments.length > 0 && (
+						<div className="mb-2">
+							<h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Setor</h3>
+							<FilterDropdown
+								label="Selecione o setor"
+								selectedValues={filters.departments}
+								onChange={(values) => handleSelectChange('departments', values)}
+								options={departments.map(dept => ({
+									value: dept.id.toString(),
+									label: dept.name
+								}))}
+							/>
+						</div>
+					)}
+
+					{positions.length > 0 && (
+						<div className="mb-2">
+							<h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cargo</h3>
+							<FilterDropdown
+								label="Selecione o cargo"
+								selectedValues={filters.positions}
+								onChange={(values) => handleSelectChange('positions', values)}
+								options={positions.map(pos => ({
+									value: pos.id.toString(),
+									label: pos.name
+								}))}
+							/>
+						</div>
+					)}
+				</div>
+			)}
 
 			<ActiveFilters
 				filters={filters}
 				companies={companies}
 				departments={departments}
 				positions={positions}
-				onRemove={handleRemoveFilter}
+				onRemove={handleFilterChange}
 			/>
 		</div>
 	)

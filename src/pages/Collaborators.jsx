@@ -20,7 +20,8 @@ function Collaborators() {
 		status: [],
 		companies: [],
 		departments: [],
-		positions: [] // Adicionar positions ao estado inicial
+		positions: [],
+		evaluated: []
 	})
 	const [searchTerm, setSearchTerm] = useState('')
 	const [companies, setCompanies] = useState([])
@@ -65,6 +66,10 @@ function Collaborators() {
 			}
 		}
 	}, [token])
+
+	const handleFilterChange = (newFilters) => {
+		setFilters(newFilters)
+	}
 
 	const handleEdit = (collaborator) => {
 		setSelectedCollaborator(collaborator)
@@ -112,13 +117,7 @@ function Collaborators() {
 			<div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 space-y-6">
 				<CollaboratorSearch value={searchTerm} onChange={setSearchTerm} />
 				<div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-					<CollaboratorFilters
-						filters={filters}
-						onChange={setFilters}
-						companies={companies}
-						departments={departments}
-						positions={positions} // Passar positions como prop
-					/>
+					<CollaboratorFilters onFilterChange={handleFilterChange} />
 				</div>
 			</div>
 
@@ -136,8 +135,6 @@ function Collaborators() {
 					onEdit={handleEdit}
 					filters={filters}
 					searchTerm={searchTerm}
-					companies={companies}
-					departments={departments}
 				/>
 			</div>
 

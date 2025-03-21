@@ -11,6 +11,7 @@ import Positions from './pages/Positions'
 import Managers from './pages/Managers'
 import Collaborators from './pages/Collaborators'
 import Courses from './pages/Courses'
+import Assessments from './pages/Assessments'
 import Reports from './pages/Reports'
 import SystemLogs from './pages/SystemLogs'
 import Profile from './pages/Profile'
@@ -33,6 +34,7 @@ export default function App() {
 					<Route path="/managers" element={<Managers />} />
 					<Route path="/collaborators" element={<Collaborators />} />
 					<Route path="/courses" element={<Courses />} />
+					<Route path="/assessments" element={<Assessments />} />
 					<Route path="/reports" element={<Reports />} />
 					<Route path="/reports-buy" element={<ReportsBuy />} />
 					<Route path="/logs" element={<SystemLogs />} />

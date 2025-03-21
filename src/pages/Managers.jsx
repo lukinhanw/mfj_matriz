@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import ManagerList from '../components/managers/ManagerList'
 import ManagerModal from '../components/managers/ManagerModal'
@@ -13,6 +13,7 @@ import api from '../utils/api'
 function Managers() {
 	const { can } = usePermissions()
 	const { user, token } = useAuthStore()
+	const managerListRef = useRef(null)
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedManager, setSelectedManager] = useState(null)
 	const [filters, setFilters] = useState({
@@ -21,7 +22,6 @@ function Managers() {
 		departments: []
 	})
 	const [searchTerm, setSearchTerm] = useState('')
-	const [refreshKey, setRefreshKey] = useState(0)
 	const [companies, setCompanies] = useState([])
 	const [departments, setDepartments] = useState([])
 
@@ -71,7 +71,9 @@ function Managers() {
 
 	const handleSave = () => {
 		setIsModalOpen(false);
-		setRefreshKey(prev => prev + 1); // Alterado para incrementar a chave
+		if (managerListRef.current) {
+			managerListRef.current.fetchManagers();
+		}
 	}
 
 	return (
@@ -114,11 +116,10 @@ function Managers() {
 					</p>
 				</div>
 				<ManagerList
+					ref={managerListRef}
 					onEdit={handleEdit}
 					filters={filters}
 					searchTerm={searchTerm}
-					refreshKey={refreshKey} // Alterado de refresh para refreshKey
-					onRefresh={() => setRefreshKey(prev => prev + 1)} // Nova prop para forçar atualização
 				/>
 			</div>
 
@@ -126,7 +127,7 @@ function Managers() {
 				isOpen={isModalOpen}
 				onClose={handleClose}
 				manager={selectedManager}
-				onSave={handleSave} // Chamado após salvar o gestor
+				onSave={handleSave}
 			/>
 		</div>
 	)

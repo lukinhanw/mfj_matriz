@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
 import {
 	PencilIcon,
@@ -12,7 +12,7 @@ import useAuthStore from '../../store/authStore'
 import { formatCpfCnpj, formatPhoneNumber } from '../../utils/helpers'
 import { usePermissions } from '../../hooks/usePermissions'
 
-export default function ManagerList({ onEdit, filters, searchTerm, refreshKey, onRefresh }) {
+const ManagerList = forwardRef(({ onEdit, filters, searchTerm }, ref) => {
 
 	const { user, token } = useAuthStore()
 	const { can } = usePermissions()
@@ -24,48 +24,54 @@ export default function ManagerList({ onEdit, filters, searchTerm, refreshKey, o
 		managerId: null,
 		currentStatus: null
 	})
+	const [currentPage, setCurrentPage] = useState(1)
+	const [itemsPerPage, setItemsPerPage] = useState(10)
+
+	const fetchManagers = async () => {
+		try {
+			setIsLoading(true)
+			let url;
+			switch (user.role) {
+				case 'admin':
+					url = '/admin/listarGestores'
+					break
+				case 'empresa':
+					url = '/company/listarGestores'
+					break
+				case 'gestor':
+					url = '/manager/listarGestores'
+					break
+				case 'colaborador':
+					url = '/collaborator/listarGestores'
+					break
+			}
+			const response = await api.get(url, {
+				headers: { Authorization: `Bearer ${token}` }
+			})
+			setManagers(response.data)
+		} catch (error) {
+			console.error('Error fetching managers:', error)
+			toast.error(
+				<div>
+					<span className="font-medium text-red-600">Erro ao carregar gestores</span>
+					<br />
+					<span className="text-sm text-red-950">Tente novamente mais tarde</span>
+				</div>
+			)
+		} finally {
+			setIsLoading(false)
+		}
+	}
 
 	useEffect(() => {
-		const fetchManagers = async () => {
-			try {
-				setIsLoading(true)
-				let url;
-				switch (user.role) {
-					case 'admin':
-						url = '/admin/listarGestores'
-						break
-					case 'empresa':
-						url = '/company/listarGestores'
-						break
-					case 'gestor':
-						url = '/manager/listarGestores'
-						break
-					case 'colaborador':
-						url = '/collaborator/listarGestores'
-						break
-				}
-				const response = await api.get(url, {
-					headers: { Authorization: `Bearer ${token}` }
-				})
-				setManagers(response.data)
-			} catch (error) {
-				console.error('Error fetching managers:', error)
-				toast.error(
-					<div>
-						<span className="font-medium text-red-600">Erro ao carregar gestores</span>
-						<br />
-						<span className="text-sm text-red-950">Tente novamente mais tarde</span>
-					</div>
-				)
-			} finally {
-				setIsLoading(false)
-			}
-		}
-
 		if (token) {
 			fetchManagers()
 		}
-	}, [token, refreshKey]) // Incluímos 'refresh' para recarregar a lista após uma alteração
+	}, [token])
+
+	useImperativeHandle(ref, () => ({
+		fetchManagers
+	}))
 
 	const handleDelete = async () => {
 		try {
@@ -84,7 +90,7 @@ export default function ManagerList({ onEdit, filters, searchTerm, refreshKey, o
 				</div>
 			)
 			// Atualiza a lista após deletar
-			onRefresh() // Alterado de refresh() para onRefresh()
+			fetchManagers()
 			setConfirmModal({ show: false, type: null, managerId: null, currentStatus: null })
 		} catch (error) {
 			console.error('Error remover gestor:', error)
@@ -124,7 +130,7 @@ export default function ManagerList({ onEdit, filters, searchTerm, refreshKey, o
 				</div>
 			)
 			// Atualiza a lista após alterar o status
-			onRefresh() // Alterado de refresh() para onRefresh()
+			fetchManagers()
 			setConfirmModal({ show: false, type: null, managerId: null, currentStatus: null })
 		} catch (error) {
 			console.error('Error toggling manager status:', error)
@@ -141,155 +147,262 @@ export default function ManagerList({ onEdit, filters, searchTerm, refreshKey, o
 		})
 	}
 
-	const filteredManagers = managers.filter(manager => {
+	const filteredManagers = useMemo(() => {
+		return managers.filter(manager => {
+			// Search filter
+			if (searchTerm) {
+				const search = searchTerm.toLowerCase()
+				const searchMatch =
+					manager.name?.toLowerCase().includes(search) ||
+					manager.phone?.toLowerCase().includes(search) ||
+					manager.email?.toLowerCase().includes(search)
+				if (!searchMatch) return false
+			}
 
-		// Search filter
-		if (searchTerm) {
-			const search = searchTerm.toLowerCase()
-			const searchMatch =
-				manager.name?.toLowerCase().includes(search) ||
-				manager.phone?.toLowerCase().includes(search) ||
-				manager.email?.toLowerCase().includes(search)
-			if (!searchMatch) return false
-		}
+			// Status filter
+			if (filters.status.length > 0 && !filters.status.includes(manager.status)) {
+				return false
+			}
 
-		// Status filter
-		if (filters.status.length > 0 && !filters.status.includes(manager.status)) {
-			return false
-		}
+			// Company filter
+			if (filters.companies.length > 0 && !filters.companies.includes(manager.company?.id?.toString())) {
+				return false
+			}
 
-		// Company filter
-		if (filters.companies.length > 0 && !filters.companies.includes(manager.company?.id?.toString())) {
-			return false
-		}
+			// Department filter
+			if (filters.departments.length > 0 && !filters.departments.includes(manager.department?.id?.toString())) {
+				return false
+			}
 
-		// Department filter
-		if (filters.departments.length > 0 && !filters.departments.includes(manager.department?.id?.toString())) {
-			return false
-		}
+			return true
+		});
+	}, [managers, searchTerm, filters]);
 
-		return true
-	})
+	const totalPages = Math.ceil(filteredManagers.length / itemsPerPage);
 
-	if (isLoading) {
-		return (
-			<div className="text-center py-12">
-				<p className="text-gray-500">Carregando gestores...</p>
-			</div>
-		)
-	}
+	const paginatedManagers = useMemo(() => {
+		const start = (currentPage - 1) * itemsPerPage;
+		return filteredManagers.slice(start, start + itemsPerPage);
+	}, [filteredManagers, currentPage, itemsPerPage]);
 
-	if (filteredManagers.length === 0) {
-		return (
-			<div className="text-center py-12">
-				<p className="text-gray-500">Nenhum gestor encontrado com os filtros aplicados.</p>
-			</div>
-		)
-	}
+	const handleItemsPerPageChange = (e) => {
+		setItemsPerPage(Number(e.target.value));
+		setCurrentPage(1);
+	};
+
+	const renderStatusIcon = (status) => {
+		return status === 'active' ? (
+			<span className="inline-flex h-2 w-2 rounded-full bg-green-500 mr-2" title="Ativo" />
+		) : (
+			<span className="inline-flex h-2 w-2 rounded-full bg-red-500 mr-2" title="Inativo" />
+		);
+	};
+
+	const renderActionButtons = (manager) => (
+		<div className="flex items-center justify-end space-x-2">
+			{can('canEditManager') && (
+				<>
+					<button
+						onClick={() => onEdit(manager)}
+						className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-900 transition-colors duration-200"
+						title="Editar"
+					>
+						<PencilIcon className="h-5 w-5" />
+					</button>
+
+					<button
+						onClick={() => openConfirmModal('status', manager.id, manager.status)}
+						className={`${manager.status === "active"
+							? 'text-red-600 hover:text-red-900'
+							: 'text-green-600 hover:text-green-900'
+							} transition-colors duration-200`}
+						title={manager.status === "active" ? 'Desativar' : 'Ativar'}
+					>
+						{manager.status === "active" ? (
+							<NoSymbolIcon className="h-5 w-5" />
+						) : (
+							<CheckCircleIcon className="h-5 w-5" />
+						)}
+					</button>
+				</>
+			)}
+			{can('canDeleteManager') && (
+				<button
+					onClick={() => openConfirmModal('delete', manager.id)}
+					className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-900 transition-colors duration-200"
+					title="Excluir"
+				>
+					<TrashIcon className="h-5 w-5" />
+				</button>
+			)}
+		</div>
+	);
 
 	return (
-		<>
-			<div className="overflow-x-auto">
-				<table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-					<thead className="bg-gray-50 dark:bg-gray-700">
-						<tr>
-							{/* Cabeçalhos da tabela */}
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-								Nome
-							</th>
-							{/* Outros cabeçalhos */}
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-								Email
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-								CPF
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-								Setor
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-								Empresa
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-								Status
-							</th>
-							<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-								Ações
-							</th>
-						</tr>
-					</thead>
-					<tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-						{filteredManagers.map((manager) => (
-							<tr key={manager.id}>
-								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm font-medium text-gray-900 dark:text-white">
-										{manager.name}
-									</div>
-								</td>
-								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500 dark:text-gray-400">{manager.email}</div>
-								</td>
-								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500 dark:text-gray-400">{formatCpfCnpj(manager.cpf)}</div>
-								</td>
-								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500 dark:text-gray-400">{manager.department.name || 'N/A'}</div>
-								</td>
-								<td className="px-6 py-4 whitespace-nowrap">
-									<div className="text-sm text-gray-500 dark:text-gray-400">{manager.company.name || 'N/A'}</div>
-								</td>
-								<td className="px-6 py-4 whitespace-nowrap">
-									<span
-										className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${manager.status === "active"
-											? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-400'
-											: 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-400'
-											}`}
-									>
-										{manager.status === "active" ? 'Ativo' : 'Inativo'}
-									</span>
-								</td>
-								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-									{can('canEditManager') &&
-										<>
-											<button
-												onClick={() => onEdit(manager)}
-												className="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-900 mr-4 transition-colors duration-200"
-												title="Editar"
-											>
-												<PencilIcon className="h-5 w-5" />
-											</button>
+		<div className="overflow-hidden">
+			{isLoading && (
+				<div className="p-6 text-center">
+					<div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+					<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Carregando gestores...</p>
+				</div>
+			)}
 
-											<button
-												onClick={() => openConfirmModal('status', manager.id, manager.status)}
-												className={`${manager.status === "active"
-													? 'text-red-600 hover:text-red-900'
-													: 'text-green-600 hover:text-green-900'
-													} mr-4 transition-colors duration-200`}
-												title={manager.status === "active" ? 'Desativar' : 'Ativar'}
-											>
-												{manager.status === "active" ? (
-													<NoSymbolIcon className="h-5 w-5" />
-												) : (
-													<CheckCircleIcon className="h-5 w-5" />
-												)}
-											</button>
-										</>
-									}
-									{can('canDeleteManager') &&
-										<button
-											onClick={() => openConfirmModal('delete', manager.id)}
-											className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-900 transition-colors duration-200"
-											title="Excluir"
-										>
-											<TrashIcon className="h-5 w-5" />
-										</button>
-									}
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
+			{!isLoading && filteredManagers.length === 0 && (
+				<div className="p-6 text-center">
+					<p className="text-sm text-gray-500 dark:text-gray-400">
+						Nenhum gestor encontrado com os filtros selecionados.
+					</p>
+				</div>
+			)}
+
+			{!isLoading && filteredManagers.length > 0 && (
+				<>
+					<div className="flex justify-between mb-4 px-6 py-2">
+						<div>
+							<label htmlFor="itemsPerPage" className="mr-2 text-sm text-gray-700 dark:text-gray-300">
+								Itens por página:
+							</label>
+							<select
+								id="itemsPerPage"
+								value={itemsPerPage}
+								onChange={handleItemsPerPageChange}
+								className="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md dark:bg-gray-700 dark:text-gray-100"
+							>
+								<option value={5}>5</option>
+								<option value={10}>10</option>
+								<option value={20}>20</option>
+								<option value={50}>50</option>
+							</select>
+						</div>
+						{totalPages > 1 && (
+							<div className="flex items-center space-x-3">
+								<button
+									onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+									disabled={currentPage === 1}
+									className={`px-2 py-1 text-sm border rounded-md transition-colors
+										${currentPage === 1
+											? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+											: 'bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+										}`}
+								>
+									Anterior
+								</button>
+								<span className="text-xs text-gray-600 dark:text-gray-400">
+									Página {currentPage} de {totalPages}
+								</span>
+								<button
+									onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+									disabled={currentPage === totalPages}
+									className={`px-2 py-1 text-sm border rounded-md transition-colors
+										${currentPage === totalPages
+											? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+											: 'bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+										}`}
+								>
+									Próxima
+								</button>
+							</div>
+						)}
+					</div>
+
+					<div className="overflow-x-auto">
+						<table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+							<thead className="bg-gray-50 dark:bg-gray-700">
+								<tr>
+									<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-4/12">
+										Gestor
+									</th>
+									<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-3/12">
+										Informações
+									</th>
+									<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-2/12">
+										Empresa
+									</th>
+									<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-2/12">
+										Setor
+									</th>
+									<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-1/12 sticky right-0 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
+										Ações
+									</th>
+								</tr>
+							</thead>
+							<tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+								{paginatedManagers.map((manager) => (
+									<tr key={manager.id} className="group hover:bg-gray-50 dark:hover:bg-gray-700">
+										<td className="px-6 py-4">
+											<div className="flex items-center">
+												{renderStatusIcon(manager.status)}
+												<div>
+													<div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+														{manager.name}
+													</div>
+													<div className="text-sm text-gray-500 dark:text-gray-400">
+														{manager.email}
+													</div>
+												</div>
+											</div>
+										</td>
+										<td className="px-6 py-4">
+											<div className="text-sm text-gray-500 dark:text-gray-400">
+												<div>CPF: {formatCpfCnpj(manager.cpf)}</div>
+											</div>
+										</td>
+										<td className="px-6 py-4">
+											<div className="text-sm text-gray-500 dark:text-gray-400">
+												{manager.company?.name || '-'}
+											</div>
+										</td>
+										<td className="px-6 py-4">
+											<div className="text-sm text-gray-500 dark:text-gray-400">
+												{manager.department?.name || '-'}
+											</div>
+										</td>
+										<td className="px-6 py-4">
+											{renderActionButtons(manager)}
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+
+					{/* Pagination bottom */}
+					<div className="flex justify-between items-center mt-4 p-4 border-t border-gray-200 dark:border-gray-700">
+						<span className="text-sm text-gray-700 dark:text-gray-300">
+							Exibindo {paginatedManagers.length} de {filteredManagers.length} gestores
+						</span>
+						{totalPages > 1 && (
+							<div className="flex items-center space-x-3">
+								<button
+									onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+									disabled={currentPage === 1}
+									className={`px-2 py-1 text-sm border rounded-md transition-colors
+										${currentPage === 1
+											? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+											: 'bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+										}`}
+								>
+									Anterior
+								</button>
+								<span className="text-xs text-gray-600 dark:text-gray-400">
+									Página {currentPage} de {totalPages}
+								</span>
+								<button
+									onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+									disabled={currentPage === totalPages}
+									className={`px-2 py-1 text-sm border rounded-md transition-colors
+										${currentPage === totalPages
+											? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+											: 'bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+										}`}
+								>
+									Próxima
+								</button>
+							</div>
+						)}
+					</div>
+				</>
+			)}
 
 			{/* Modal de confirmação de exclusão */}
 			<ConfirmationModal
@@ -312,6 +425,8 @@ export default function ManagerList({ onEdit, filters, searchTerm, refreshKey, o
 				confirmText={confirmModal.currentStatus === "active" ? 'Desativar' : 'Ativar'}
 				confirmStyle={confirmModal.currentStatus === "active" ? 'danger' : 'success'}
 			/>
-		</>
+		</div>
 	)
-}
+})
+
+export default ManagerList
