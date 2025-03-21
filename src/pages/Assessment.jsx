@@ -193,24 +193,31 @@ export default function Assessment() {
 				</div>
 			)}
 
-			<AssessmentHeader position={assessment?.cargo} />
-			
-			{validationErrors.length > 0 && (
-				<div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-					<p className="text-red-700 dark:text-red-400 font-medium">
-						Por favor, responda todas as perguntas para continuar.
-					</p>
-				</div>
-			)}
+			{!isLoading && !isCompleted && assessment && (
+				<>
+					<AssessmentHeader 
+						position={assessment?.cargo} 
+						competencia={assessment?.competencia} 
+					/>
+					
+					{validationErrors.length > 0 && (
+						<div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+							<p className="text-red-700 dark:text-red-400 font-medium">
+								Por favor, responda todas as perguntas para continuar.
+							</p>
+						</div>
+					)}
 
-			<AssessmentForm
-				questions={assessment?.avaliacao || []}
-				answers={answers}
-				onAnswerChange={handleAnswerChange}
-				onSubmit={handleSubmit}
-				isSubmitting={submitting}
-				validationErrors={validationErrors}
-			/>
+					<AssessmentForm
+						questions={assessment?.avaliacao || []}
+						answers={answers}
+						onAnswerChange={handleAnswerChange}
+						onSubmit={handleSubmit}
+						isSubmitting={submitting}
+						validationErrors={validationErrors}
+					/>
+				</>
+			)}
 
 			<ConfirmationModal
 				isOpen={showConfirmModal}

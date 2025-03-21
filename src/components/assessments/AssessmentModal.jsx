@@ -23,6 +23,7 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 		if (assessment) {
 			reset({
 				positionId: assessment.positionId,
+				competencia: assessment.competencia || '',
 				mandatoryCourses: assessment.mandatoryCourses.map(id => ({
 					value: id,
 					label: courses.find(c => c.id === id)?.title || `Curso ${id}`
@@ -38,6 +39,7 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 		} else {
 			reset({
 				positionId: '',
+				competencia: '',
 				mandatoryCourses: [],
 				questions: Array(10).fill({ text: '', courses: [] })
 			})
@@ -48,6 +50,7 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 		try {
 			const payload = {
 				positionId: data.positionId,
+				competencia: data.competencia,
 				mandatoryCourses: data.mandatoryCourses.map(c => c.value),
 				questions: data.questions
 					.filter(q => q.text.trim() !== '') // Remove questões vazias
@@ -165,6 +168,22 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 												</select>
 												{errors.positionId && (
 													<p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.positionId.message}</p>
+												)}
+											</div>
+
+											{/* Competência */}
+											<div>
+												<label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+													Competência
+												</label>
+												<input
+													type="text"
+													{...register('competencia', { required: 'Competência é obrigatória' })}
+													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+													placeholder="Digite a competência principal da avaliação"
+												/>
+												{errors.competencia && (
+													<p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.competencia.message}</p>
 												)}
 											</div>
 

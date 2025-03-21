@@ -5,6 +5,7 @@ export const mockAssessments = [
 	{
 		id: 1,
 		positionId: 1,
+		competencia: 'Desenvolvimento Web',
 		position: { id: 1, name: 'Desenvolvedor Front-end' },
 		questions: [
 			{ id: 1, text: 'Você conhece os princípios de design responsivo?', courses: [1, 2] },
@@ -18,6 +19,7 @@ export const mockAssessments = [
 	{
 		id: 2,
 		positionId: 2,
+		competencia: 'Engenharia de Software',
 		position: { id: 2, name: 'Desenvolvedor Back-end' },
 		questions: [
 			{ id: 6, text: 'Possui experiência com bancos de dados relacionais?', courses: [8, 9] },
@@ -30,6 +32,7 @@ export const mockAssessments = [
 	{
 		id: 3,
 		positionId: 3,
+		competencia: 'Design & Experiência do Usuário',
 		position: { id: 3, name: 'Designer UX/UI' },
 		questions: [
 			{ id: 10, text: 'Domina ferramentas de design como Figma ou Adobe XD?', courses: [14, 15] },
@@ -77,6 +80,7 @@ export const mockCourses = [
 export const mockUserAssessment = {
 	id: 1,
 	cargo: 'Desenvolvedor Front-end',
+	competencia: 'Desenvolvimento Web',
 	avaliacao: [
 		{ id: 1, text: 'Você conhece os princípios de design responsivo?' },
 		{ id: 2, text: 'Possui experiência com frameworks JavaScript?' },
