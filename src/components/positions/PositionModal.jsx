@@ -3,8 +3,11 @@ import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
+import api from '../../utils/api'
+import useAuthStore from '../../store/authStore'
 
 function PositionModal({ isOpen, onClose, position, refreshPositions }) {
+	const { token } = useAuthStore()
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const {
 		register,
@@ -28,8 +31,28 @@ function PositionModal({ isOpen, onClose, position, refreshPositions }) {
 	const onSubmit = async (data) => {
 		try {
 			setIsSubmitting(true)
-			// Mock API call
-			await new Promise(resolve => setTimeout(resolve, 500))
+			
+			// Definir o endpoint e dados com base em se é edição ou criação
+			let endpoint, requestData
+			
+			if (position) {
+				// Editar cargo existente
+				endpoint = '/admin/editarCargo'
+				requestData = {
+					id: position.id,
+					name: data.name
+				}
+			} else {
+				// Criar novo cargo
+				endpoint = '/admin/cadastrarCargo'
+				requestData = {
+					name: data.name
+				}
+			}
+			
+			await api.post(endpoint, requestData, {
+				headers: { Authorization: `Bearer ${token}` }
+			})
 
 			toast.success(
 				<div>
@@ -43,12 +66,15 @@ function PositionModal({ isOpen, onClose, position, refreshPositions }) {
 			refreshPositions()
 			onClose()
 		} catch (error) {
-			console.error('Error saving position:', error)
+			console.error('Erro ao salvar cargo:', error)
+			const errorMessage = error.response?.data?.error || 'Erro desconhecido ao salvar cargo'
+			const titleMessage = errorMessage.split(":")[0]
+			const bodyMessage = errorMessage.split(":")[1]
 			toast.error(
 				<div>
-					<span className="font-medium text-red-600">Erro ao salvar cargo</span>
+					<span className="font-medium text-red-600">{titleMessage || 'Erro ao salvar cargo'}</span>
 					<br />
-					<span className="text-sm text-red-950">Tente novamente mais tarde</span>
+					<span className="text-sm text-red-950">{bodyMessage || 'Tente novamente mais tarde'}</span>
 				</div>
 			)
 		} finally {

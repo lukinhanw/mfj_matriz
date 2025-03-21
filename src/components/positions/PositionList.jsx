@@ -19,6 +19,7 @@ function PositionList({ onEdit, filters, searchTerm, refresh, itemsPerPage }) {
 	useEffect(() => {
 		const fetchPositions = async () => {
 			try {
+				setLoading(true)
 				const response = await api.get('/admin/listarCargos', {
 					headers: { Authorization: `Bearer ${token}` }
 				})
@@ -31,8 +32,10 @@ function PositionList({ onEdit, filters, searchTerm, refresh, itemsPerPage }) {
 			}
 		}
 
-		fetchPositions()
-	}, [refresh])
+		if (token) {
+			fetchPositions()
+		}
+	}, [token, refresh])
 
 	const [confirmModal, setConfirmModal] = useState({
 		show: false,
@@ -41,9 +44,10 @@ function PositionList({ onEdit, filters, searchTerm, refresh, itemsPerPage }) {
 
 	const handleDelete = async () => {
 		try {
-			// Mock API call
-			await new Promise(resolve => setTimeout(resolve, 500))
-
+			await api.delete('/admin/deletarCargo', {
+				headers: { Authorization: `Bearer ${token}` },
+				data: { id: confirmModal.positionId }
+			})
 			toast.success(
 				<div>
 					<span className="font-medium text-green-600">Sucesso!</span>
@@ -51,10 +55,42 @@ function PositionList({ onEdit, filters, searchTerm, refresh, itemsPerPage }) {
 					<span className="text-sm text-green-950">Cargo removido com sucesso</span>
 				</div>
 			)
+			// Remove o cargo deletado da lista
+			setPositions((prevPositions) => 
+				prevPositions.filter((pos) => pos.id !== confirmModal.positionId)
+			)
 			setConfirmModal({ show: false, positionId: null })
 		} catch (error) {
-			console.error('Error deleting position:', error)
-			toast.error('Erro ao deletar cargo')
+			console.error('Erro ao deletar cargo:', error)
+			const errorMessage = error.response?.data?.error || 'Erro ao deletar cargo: Erro desconhecido'
+			console.log("Mensagem de erro completa:", errorMessage)
+			
+			// Verificar se é uma mensagem personalizada (formato "Erro:Mensagem")
+			if (errorMessage.includes('Erro:')) {
+				const parts = errorMessage.split('Erro:')
+				const titleMessage = 'Erro'
+				const bodyMessage = parts[1] || 'Não foi possível excluir o cargo'
+				
+				toast.error(
+					<div>
+						<span className="font-medium text-red-600">{titleMessage}</span>
+						<br />
+						<span className="text-sm text-red-950">{bodyMessage}</span>
+					</div>
+				)
+			} else {
+				// Formato antigo de mensagem de erro
+				const titleMessage = errorMessage.split(":")[0]
+				const bodyMessage = errorMessage.split(":").slice(1).join(":") || 'Ocorreu um erro ao excluir o cargo'
+				
+				toast.error(
+					<div>
+						<span className="font-medium text-red-600">{titleMessage}</span>
+						<br />
+						<span className="text-sm text-red-950">{bodyMessage}</span>
+					</div>
+				)
+			}
 			setConfirmModal({ show: false, positionId: null })
 		}
 	}
@@ -84,7 +120,8 @@ function PositionList({ onEdit, filters, searchTerm, refresh, itemsPerPage }) {
 	if (loading) {
 		return (
 			<div className="flex justify-center items-center py-12">
-				<div className="loader"></div>
+				<div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+				<p className="ml-2 text-gray-500 dark:text-gray-400">Carregando cargos...</p>
 			</div>
 		)
 	}

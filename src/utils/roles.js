@@ -52,7 +52,10 @@ const ACTION_PERMISSIONS = {
 		canViewLogs: true,
 		canExportData: true,
 		canEditPerfil: true,
-		canManageAssessments: true // Added new permission
+		canManageAssessments: true, // Added new permission
+		canCreatePosition: true,
+		canEditPosition: true,
+		canDeletePosition: true
 	},
 	[ROLES.GESTOR]: {
 		canViewManagers: false,

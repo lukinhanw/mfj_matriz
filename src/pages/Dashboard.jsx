@@ -409,62 +409,66 @@ function Dashboard() {
 
 			{user.role === 'admin' && (
 				<div className="grid gap-6 lg:grid-cols-2">
-					<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
-						<h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-							Inscrições por Curso
-						</h2>
-						<div className="h-80">
-							<ResponsiveContainer width="100%" height="100%">
-								<BarChart data={dashboardData.courseCompletionData}>
-									<CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-									<XAxis dataKey="name" stroke="#9CA3AF" />
-									<YAxis stroke="#9CA3AF" />
-									<Tooltip content={<CustomTooltip />} />
-									<Bar dataKey="subscriptions" name="Inscrições" fill="#22c55e" />
-								</BarChart>
-							</ResponsiveContainer>
+					{dashboardData.courseCompletionData && dashboardData.courseCompletionData.length > 0 && (
+						<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
+							<h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+								Inscrições por Curso
+							</h2>
+							<div className="h-80">
+								<ResponsiveContainer width="100%" height="100%">
+									<BarChart data={dashboardData.courseCompletionData}>
+										<CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+										<XAxis dataKey="name" stroke="#9CA3AF" />
+										<YAxis stroke="#9CA3AF" />
+										<Tooltip content={<CustomTooltip />} />
+										<Bar dataKey="subscriptions" name="Inscrições" fill="#22c55e" />
+									</BarChart>
+								</ResponsiveContainer>
+							</div>
 						</div>
-					</div>
-					<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
-						<h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-							Distribuição de Créditos por Empresa
-						</h2>
-						<div className="h-80">
-							<ResponsiveContainer width="100%" height="100%">
-								<PieChart>
-									<Pie
-										data={formattedCreditsByCompany}
-										cx="50%"
-										cy="50%"
-										labelLine
-										outerRadius={120}
-										fill="#8884d8"
-										dataKey="value"
-										nameKey="name"
-										label={({ name, value }) => `${name}: ${value}`}
-									>
-										{formattedCreditsByCompany.map((entry, index) => (
-											<Cell key={`cell-${index}`} fill={entry.color} />
-										))}
-									</Pie>
-									<Tooltip
-										content={({ active, payload }) => {
-											if (active && payload && payload.length) {
-												const data = payload[0].payload;
-												return (
-													<div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded shadow-sm">
-														<p className="font-medium" style={{ color: data.color }}>{data.name}</p>
-														<p className="text-gray-600 dark:text-gray-400">Créditos: {data.value}</p>
-													</div>
-												);
-											}
-											return null;
-										}}
-									/>
-								</PieChart>
-							</ResponsiveContainer>
+					)}
+					{formattedCreditsByCompany && formattedCreditsByCompany.length > 0 && (
+						<div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6 transition-colors">
+							<h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+								Distribuição de Créditos por Empresa
+							</h2>
+							<div className="h-80">
+								<ResponsiveContainer width="100%" height="100%">
+									<PieChart>
+										<Pie
+											data={formattedCreditsByCompany}
+											cx="50%"
+											cy="50%"
+											labelLine
+											outerRadius={120}
+											fill="#8884d8"
+											dataKey="value"
+											nameKey="name"
+											label={({ name, value }) => `${name}: ${value}`}
+										>
+											{formattedCreditsByCompany.map((entry, index) => (
+												<Cell key={`cell-${index}`} fill={entry.color} />
+											))}
+										</Pie>
+										<Tooltip
+											content={({ active, payload }) => {
+												if (active && payload && payload.length) {
+													const data = payload[0].payload;
+													return (
+														<div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded shadow-sm">
+															<p className="font-medium" style={{ color: data.color }}>{data.name}</p>
+															<p className="text-gray-600 dark:text-gray-400">Créditos: {data.value}</p>
+														</div>
+													);
+												}
+												return null;
+											}}
+										/>
+									</PieChart>
+								</ResponsiveContainer>
+							</div>
 						</div>
-					</div>
+					)}
 				</div>
 			)}
 
