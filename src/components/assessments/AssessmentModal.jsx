@@ -5,8 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import Select from 'react-select'
 import { toast } from 'react-hot-toast'
 import useAuthStore from '../../store/authStore'
-// import api from '../../utils/api'
-import { generateId } from '../../utils/mockData'
+import api from '../../utils/api'
 import { customSelectStyles } from '../../styles/selectStyles'
 
 function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, courses }) {
@@ -59,7 +58,7 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 						courses: q.courses.map(c => c.value)
 					}))
 			}
-			
+
 			// Verificar se há pelo menos uma questão
 			if (payload.questions.length === 0) {
 				toast.error('É necessário adicionar pelo menos uma questão')
@@ -67,37 +66,24 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 			}
 
 			if (assessment) {
-				payload.id = assessment.id
-				
-				// Log para desenvolvedores do backend
-				console.log('PUT request para /admin/editarAvaliacao:');
-				console.log('Payload:', payload);
-				
-				// Código original comentado para referência
-				/* await api.put('/admin/editarAvaliacao', payload, {
+				// Ao editar, usamos o positionId que já está no payload
+				await api.put('/admin/editarAvaliacao', payload, {
 					headers: { Authorization: `Bearer ${token}` }
-				}) */
-				
+				})
+
 				toast.success('Avaliação atualizada com sucesso')
 			} else {
-				payload.id = generateId() // Gera um ID único para simular o backend
-				
-				// Log para desenvolvedores do backend
-				console.log('POST request para /admin/cadastrarAvaliacao:');
-				console.log('Payload:', payload);
-				
-				// Código original comentado para referência
-				/* await api.post('/admin/cadastrarAvaliacao', payload, {
+				await api.post('/admin/cadastrarAvaliacao', payload, {
 					headers: { Authorization: `Bearer ${token}` }
-				}) */
-				
+				})
+
 				toast.success('Avaliação criada com sucesso')
 			}
 
 			onSave()
 		} catch (error) {
 			console.error('Error saving assessment:', error)
-			toast.error('Erro ao salvar avaliação')
+			toast.error(`Erro ao salvar avaliação: ${error.response?.data?.error || 'Erro desconhecido'}`)
 		}
 	}
 
@@ -223,7 +209,7 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 
 														<div>
 															<textarea
-																{...register(`questions.${index}.text`, index < 5 ? { 
+																{...register(`questions.${index}.text`, index < 5 ? {
 																	required: 'Questão é obrigatória'
 																} : {})}
 																rows={3}
@@ -245,8 +231,8 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 																name={`questions.${index}.courses`}
 																control={control}
 																defaultValue={[]}
-																rules={index < 5 ? { 
-																	required: 'Selecione pelo menos um curso relacionado' 
+																rules={index < 5 ? {
+																	required: 'Selecione pelo menos um curso relacionado'
 																} : {}}
 																render={({ field }) => (
 																	<Select

@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import useAuthStore from '../store/authStore'
-// Importando dados mockados ao invés de usar a API
-import { mockPositions, mockCourses } from '../utils/mockData'
+import api from '../utils/api'
 import AssessmentModal from '../components/assessments/AssessmentModal'
 import AssessmentList from '../components/assessments/AssessmentList'
 
@@ -14,30 +13,29 @@ function Assessments() {
 	const [positions, setPositions] = useState([])
 	const [courses, setCourses] = useState([])
 	const [refreshKey, setRefreshKey] = useState(0)
+	const [isLoading, setIsLoading] = useState(true)
 
 	useEffect(() => {
-		// Usando dados mockados ao invés de chamar a API
-		setPositions(mockPositions)
-		setCourses(mockCourses)
-		
-		// Deixando comentado para referência futura
-		/* const fetchData = async () => {
+		const fetchData = async () => {
 			try {
+				setIsLoading(true)
 				const [positionsRes, coursesRes] = await Promise.all([
 					api.get('/admin/listarCargos', { headers: { Authorization: `Bearer ${token}` } }),
 					api.get('/admin/listarCursos', { headers: { Authorization: `Bearer ${token}` } })
 				])
 				setPositions(positionsRes.data)
 				setCourses(coursesRes.data)
+				setIsLoading(false)
 			} catch (error) {
 				console.error('Error fetching data:', error)
 				toast.error('Erro ao carregar dados')
+				setIsLoading(false)
 			}
 		}
 
 		if (token) {
 			fetchData()
-		} */
+		}
 	}, [token])
 
 	const handleEdit = (assessment) => {
@@ -58,6 +56,14 @@ function Assessments() {
 	const handleSave = () => {
 		setIsModalOpen(false)
 		setRefreshKey(prev => prev + 1)
+	}
+
+	if (isLoading) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+			</div>
+		)
 	}
 
 	return (

@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react'
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import useAuthStore from '../../store/authStore'
-// import api from '../../utils/api'
-import { mockAssessments } from '../../utils/mockData'
+import api from '../../utils/api'
 import ConfirmationModal from '../common/ConfirmationModal'
 
 function AssessmentList({ onEdit, refreshKey }) {
@@ -16,20 +15,7 @@ function AssessmentList({ onEdit, refreshKey }) {
 	})
 
 	useEffect(() => {
-		// Simulando carregamento de dados
-		const fetchAssessments = () => {
-			setIsLoading(true)
-			// Pequeno atraso para simular chamada de API
-			setTimeout(() => {
-				setAssessments(mockAssessments)
-				setIsLoading(false)
-			}, 500)
-		}
-
-		fetchAssessments()
-
-		// Deixando código original como referência
-		/* const fetchAssessments = async () => {
+		const fetchAssessments = async () => {
 			try {
 				setIsLoading(true)
 				const response = await api.get('/admin/listarAvaliacoes', {
@@ -46,27 +32,23 @@ function AssessmentList({ onEdit, refreshKey }) {
 
 		if (token) {
 			fetchAssessments()
-		} */
+		}
 	}, [token, refreshKey])
 
 	const handleDelete = async () => {
 		try {
-			// Remover do estado local (sem chamada de API)
-			setAssessments(prev => prev.filter(a => a.id !== confirmModal.assessmentId))
-			toast.success('Avaliação excluída com sucesso')
-			setConfirmModal({ show: false, assessmentId: null })
-			
-			// Log para desenvolvimento do backend
-			console.log('DELETE request payload:', { id: confirmModal.assessmentId });
-			
-			// Código original para referência
-			/* await api.delete('/admin/deletarAvaliacao', {
+			await api.delete('/admin/deletarAvaliacao', {
 				data: { id: confirmModal.assessmentId },
 				headers: { Authorization: `Bearer ${token}` }
-			}) */
+			})
+			
+			// Remover do estado local
+			setAssessments(prev => prev.filter(a => a.positionId !== confirmModal.assessmentId))
+			toast.success('Avaliação excluída com sucesso')
+			setConfirmModal({ show: false, assessmentId: null })
 		} catch (error) {
 			console.error('Error deleting assessment:', error)
-			toast.error('Erro ao excluir avaliação')
+			toast.error(`Erro ao excluir avaliação: ${error.response?.data?.error || 'Erro desconhecido'}`)
 		}
 	}
 
@@ -124,12 +106,12 @@ function AssessmentList({ onEdit, refreshKey }) {
 								</td>
 								<td className="px-6 py-4">
 									<div className="text-sm text-gray-500 dark:text-gray-400">
-										{assessment.questions.length} questões
+										{assessment.questions.length}
 									</div>
 								</td>
 								<td className="px-6 py-4">
 									<div className="text-sm text-gray-500 dark:text-gray-400">
-										{assessment.mandatoryCourses.length} cursos
+										{assessment.mandatoryCourses.length}
 									</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -141,7 +123,7 @@ function AssessmentList({ onEdit, refreshKey }) {
 										<PencilIcon className="h-5 w-5" />
 									</button>
 									<button
-										onClick={() => setConfirmModal({ show: true, assessmentId: assessment.id })}
+										onClick={() => setConfirmModal({ show: true, assessmentId: assessment.positionId })}
 										className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-900 transition-colors duration-200"
 										title="Excluir"
 									>

@@ -7,8 +7,7 @@ import ConfirmationModal from '../components/common/ConfirmationModal'
 import LoadingState from '../components/assessment/LoadingState'
 import CompletedState from '../components/assessment/CompletedState'
 import useAuthStore from '../store/authStore'
-// import api from '../utils/api'
-import { mockUserAssessment } from '../utils/mockData'
+import api from '../utils/api'
 
 export default function Assessment() {
 	const [assessment, setAssessment] = useState(null)
@@ -28,40 +27,26 @@ export default function Assessment() {
 
 	const fetchAssessment = async () => {
 		try {
-			// Simulando carregamento de dados
-			setTimeout(() => {
-				setAssessment(mockUserAssessment)
-				
-				// Inicializa objeto de respostas
-				const initialAnswers = {}
-				mockUserAssessment.avaliacao.forEach(question => {
-					initialAnswers[question.id] = null
-				})
-				setAnswers(initialAnswers)
-				
-				setIsLoading(false)
-			}, 800);
-			
-			// Código original comentado para referência
-			/* const response = await api.get('/collaborator/trazerAvaliacao', {
+			const response = await api.get('/collaborator/trazerAvaliacao', {
 				headers: { Authorization: `Bearer ${token}` }
 			})
 			setAssessment(response.data)
-			// Initialize answers object
+			
+			// Inicializa objeto de respostas
 			const initialAnswers = {}
 			response.data.avaliacao.forEach(question => {
 				initialAnswers[question.id] = null
 			})
-			setAnswers(initialAnswers) */
+			setAnswers(initialAnswers)
+			setIsLoading(false)
 		} catch (error) {
-			if (error.response?.data.error === 'Error: Usuário já realizou a avaliação') {			
+			if (error.response?.data.error === 'Usuário já realizou a avaliação') {			
 				setIsCompleted(true)
 			} else {
 				toast.error('Erro ao carregar avaliação')
 				console.error('Error fetching assessment:', error)
 			}
-		} finally {
-			// setIsLoading(false) // Movido para dentro do setTimeout
+			setIsLoading(false)
 		}
 	}
 
@@ -110,25 +95,16 @@ export default function Assessment() {
 				.filter(([_, value]) => value === false)
 				.map(([id]) => parseInt(id))
 
-			// Log para desenvolvedores do backend
-			console.log('POST request para /collaborator/obterResultados:');
-			console.log('Payload:', { ids: noAnswers });
-			
-			// Código original comentado para referência
-			/* await api.post('/collaborator/obterResultados', {
+			await api.post('/collaborator/obterResultados', {
 				ids: noAnswers
 			}, {
 				headers: { Authorization: `Bearer ${token}` }
-			}) */
+			})
 
-			// Simula sucesso após um pequeno delay
+			setShowSuccess(true)
 			setTimeout(() => {
-				setShowSuccess(true)
-				setTimeout(() => {
-					navigate('/')
-				}, 2000)
-			}, 800);
-
+				navigate('/')
+			}, 2000)
 		} catch (error) {
 			const errorMessage = error.response?.data?.error || 'Erro ao enviar avaliação: Erro desconhecido'
 			const titleMessage = errorMessage.split(":")[0]
