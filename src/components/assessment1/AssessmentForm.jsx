@@ -6,16 +6,18 @@ export default function AssessmentForm({
 	answers,
 	onAnswerChange,
 	onSubmit,
-	isSubmitting
+	isSubmitting,
+	validationErrors = []
 }) {
 	// Group questions by competency
 	const groupedQuestions = useMemo(() => {
 		const groups = {}
 		questions.forEach(question => {
-			if (!groups[question.competencia]) {
-				groups[question.competencia] = []
+			const competencyName = question.competencia || 'Perguntas Gerais'
+			if (!groups[competencyName]) {
+				groups[competencyName] = []
 			}
-			groups[question.competencia].push(question)
+			groups[competencyName].push(question)
 		})
 		return groups
 	}, [questions])
@@ -61,6 +63,7 @@ export default function AssessmentForm({
 						questions={questions}
 						answers={answers}
 						onAnswerChange={onAnswerChange}
+						validationErrors={validationErrors}
 					/>
 				))}
 			</div>

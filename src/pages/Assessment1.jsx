@@ -7,7 +7,8 @@ import ConfirmationModal from '../components/common/ConfirmationModal'
 import LoadingState from '../components/assessment/LoadingState'
 import CompletedState from '../components/assessment/CompletedState'
 import useAuthStore from '../store/authStore'
-import api from '../utils/api'
+// import api from '../utils/api'
+import { mockUserAssessment } from '../utils/mockData'
 
 export default function Assessment() {
 	const [assessment, setAssessment] = useState(null)
@@ -17,6 +18,7 @@ export default function Assessment() {
 	const [submitting, setSubmitting] = useState(false)
 	const [isCompleted, setIsCompleted] = useState(false)
 	const [showSuccess, setShowSuccess] = useState(false)
+	const [validationErrors, setValidationErrors] = useState([])
 	const { token } = useAuthStore()
 	const navigate = useNavigate()
 
@@ -26,7 +28,22 @@ export default function Assessment() {
 
 	const fetchAssessment = async () => {
 		try {
-			const response = await api.get('/collaborator/trazerAvaliacao', {
+			// Simulando carregamento de dados
+			setTimeout(() => {
+				setAssessment(mockUserAssessment)
+				
+				// Inicializa objeto de respostas
+				const initialAnswers = {}
+				mockUserAssessment.avaliacao.forEach(question => {
+					initialAnswers[question.id] = null
+				})
+				setAnswers(initialAnswers)
+				
+				setIsLoading(false)
+			}, 800);
+			
+			// Código original comentado para referência
+			/* const response = await api.get('/collaborator/trazerAvaliacao', {
 				headers: { Authorization: `Bearer ${token}` }
 			})
 			setAssessment(response.data)
@@ -35,7 +52,7 @@ export default function Assessment() {
 			response.data.avaliacao.forEach(question => {
 				initialAnswers[question.id] = null
 			})
-			setAnswers(initialAnswers)
+			setAnswers(initialAnswers) */
 		} catch (error) {
 			if (error.response?.data.error === 'Error: Usuário já realizou a avaliação') {			
 				setIsCompleted(true)
@@ -44,7 +61,7 @@ export default function Assessment() {
 				console.error('Error fetching assessment:', error)
 			}
 		} finally {
-			setIsLoading(false)
+			// setIsLoading(false) // Movido para dentro do setTimeout
 		}
 	}
 
@@ -53,15 +70,33 @@ export default function Assessment() {
 			...prev,
 			[questionId]: value
 		}))
+		
+		// Atualiza erros de validação
+		if (value !== null) {
+			setValidationErrors(prev => prev.filter(id => id !== questionId))
+		}
 	}
 
 	const validateAnswers = () => {
-		return Object.values(answers).every(answer => answer !== null)
+		const unansweredQuestions = [];
+		
+		// Verifica se todas as questões foram respondidas
+		Object.entries(answers).forEach(([id, answer]) => {
+			if (answer === null) {
+				unansweredQuestions.push(parseInt(id));
+			}
+		});
+		
+		// Atualiza o estado de erros
+		setValidationErrors(unansweredQuestions);
+		
+		// Retorna verdadeiro se todas foram respondidas
+		return unansweredQuestions.length === 0;
 	}
 
 	const handleSubmit = async () => {
 		if (!validateAnswers()) {
-			toast.error('Por favor, responda todas as perguntas')
+			toast.error('Por favor, responda todas as perguntas destacadas')
 			return
 		}
 		setShowConfirmModal(true)
@@ -75,16 +110,24 @@ export default function Assessment() {
 				.filter(([_, value]) => value === false)
 				.map(([id]) => parseInt(id))
 
-			await api.post('/collaborator/obterResultados', {
+			// Log para desenvolvedores do backend
+			console.log('POST request para /collaborator/obterResultados:');
+			console.log('Payload:', { ids: noAnswers });
+			
+			// Código original comentado para referência
+			/* await api.post('/collaborator/obterResultados', {
 				ids: noAnswers
 			}, {
 				headers: { Authorization: `Bearer ${token}` }
-			})
+			}) */
 
-			setShowSuccess(true)
+			// Simula sucesso após um pequeno delay
 			setTimeout(() => {
-				navigate('/')
-			}, 2000)
+				setShowSuccess(true)
+				setTimeout(() => {
+					navigate('/')
+				}, 2000)
+			}, 800);
 
 		} catch (error) {
 			const errorMessage = error.response?.data?.error || 'Erro ao enviar avaliação: Erro desconhecido'
@@ -150,15 +193,31 @@ export default function Assessment() {
 				</div>
 			)}
 
-			<AssessmentHeader position={assessment?.cargo} />
+			{!isLoading && !isCompleted && assessment && (
+				<>
+					<AssessmentHeader 
+						position={assessment?.cargo} 
+						competencia={assessment?.competencia} 
+					/>
+					
+					{validationErrors.length > 0 && (
+						<div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+							<p className="text-red-700 dark:text-red-400 font-medium">
+								Por favor, responda todas as perguntas para continuar.
+							</p>
+						</div>
+					)}
 
-			<AssessmentForm
-				questions={assessment?.avaliacao || []}
-				answers={answers}
-				onAnswerChange={handleAnswerChange}
-				onSubmit={handleSubmit}
-				isSubmitting={submitting}
-			/>
+					<AssessmentForm
+						questions={assessment?.avaliacao || []}
+						answers={answers}
+						onAnswerChange={handleAnswerChange}
+						onSubmit={handleSubmit}
+						isSubmitting={submitting}
+						validationErrors={validationErrors}
+					/>
+				</>
+			)}
 
 			<ConfirmationModal
 				isOpen={showConfirmModal}
