@@ -8,6 +8,8 @@ alwaysApply: true
 
 O backend se encontra na pasta ./api-matriz-MFJ
 
+Sempre que for verificar ou alterar algo banco de dados, utilize o comando "mysql" e use as credencias que está no arquivo .env 
+
 ## Estrutura do Projeto
 
 ### Arquitetura

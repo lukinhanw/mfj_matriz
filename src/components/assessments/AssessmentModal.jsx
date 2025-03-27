@@ -22,13 +22,13 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 		if (assessment) {
 			reset({
 				positionId: assessment.positionId,
-				competencia: assessment.competencia || '',
 				mandatoryCourses: assessment.mandatoryCourses.map(id => ({
 					value: id,
 					label: courses.find(c => c.id === id)?.title || `Curso ${id}`
 				})),
 				questions: assessment.questions.map(q => ({
 					text: q.text,
+					competencia: q.competencia || '',
 					courses: q.courses.map(id => ({
 						value: id,
 						label: courses.find(c => c.id === id)?.title || `Curso ${id}`
@@ -38,9 +38,8 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 		} else {
 			reset({
 				positionId: '',
-				competencia: '',
 				mandatoryCourses: [],
-				questions: Array(10).fill({ text: '', courses: [] })
+				questions: Array(10).fill({ text: '', competencia: '', courses: [] })
 			})
 		}
 	}, [assessment, reset, courses])
@@ -49,12 +48,12 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 		try {
 			const payload = {
 				positionId: data.positionId,
-				competencia: data.competencia,
 				mandatoryCourses: data.mandatoryCourses.map(c => c.value),
 				questions: data.questions
 					.filter(q => q.text.trim() !== '') // Remove questões vazias
 					.map(q => ({
 						text: q.text,
+						competencia: q.competencia,
 						courses: q.courses.map(c => c.value)
 					}))
 			}
@@ -157,22 +156,6 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 												)}
 											</div>
 
-											{/* Competência */}
-											<div>
-												<label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-													Competência
-												</label>
-												<input
-													type="text"
-													{...register('competencia', { required: 'Competência é obrigatória' })}
-													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
-													placeholder="Digite a competência principal da avaliação"
-												/>
-												{errors.competencia && (
-													<p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.competencia.message}</p>
-												)}
-											</div>
-
 											{/* Cursos Obrigatórios */}
 											<div>
 												<label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -219,6 +202,25 @@ function AssessmentModal({ isOpen, onClose, assessment, onSave, positions, cours
 															{errors.questions?.[index]?.text && (
 																<p className="mt-1 text-sm text-red-600 dark:text-red-400">
 																	{errors.questions[index].text.message}
+																</p>
+															)}
+														</div>
+
+														<div>
+															<label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+																Competência
+															</label>
+															<input
+																type="text"
+																{...register(`questions.${index}.competencia`, index < 5 ? {
+																	required: 'Competência é obrigatória'
+																} : {})}
+																className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+																placeholder="Digite a competência desta questão"
+															/>
+															{errors.questions?.[index]?.competencia && (
+																<p className="mt-1 text-sm text-red-600 dark:text-red-400">
+																	{errors.questions[index].competencia.message}
 																</p>
 															)}
 														</div>

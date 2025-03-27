@@ -52,6 +52,13 @@ function AssessmentList({ onEdit, refreshKey }) {
 		}
 	}
 
+	// Função para contar as competências únicas em um assessment
+	const countUniqueCompetencias = (assessment) => {
+		if (!assessment || !assessment.questions) return 0;
+		const competencias = new Set(assessment.questions.map(q => q.competencia));
+		return competencias.size;
+	}
+
 	if (isLoading) {
 		return (
 			<div className="text-center py-12">
@@ -78,7 +85,7 @@ function AssessmentList({ onEdit, refreshKey }) {
 								Cargo
 							</th>
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-								Competência
+								Competências
 							</th>
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
 								Questões
@@ -101,7 +108,7 @@ function AssessmentList({ onEdit, refreshKey }) {
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<div className="text-sm text-gray-700 dark:text-gray-300">
-										{assessment.competencia || 'Não especificada'}
+										{countUniqueCompetencias(assessment)} competências distintas
 									</div>
 								</td>
 								<td className="px-6 py-4">

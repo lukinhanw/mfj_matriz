@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import QuestionGroup from './QuestionGroup'
+import QuestionItem from './QuestionItem'
 
 export default function AssessmentForm({
 	questions,
@@ -8,18 +8,6 @@ export default function AssessmentForm({
 	onSubmit,
 	isSubmitting
 }) {
-	// Group questions by competency
-	const groupedQuestions = useMemo(() => {
-		const groups = {}
-		questions.forEach(question => {
-			if (!groups[question.competencia]) {
-				groups[question.competencia] = []
-			}
-			groups[question.competencia].push(question)
-		})
-		return groups
-	}, [questions])
-
 	// Calculate progress
 	const progress = useMemo(() => {
 		const answered = Object.values(answers).filter(answer => answer !== null).length
@@ -52,14 +40,13 @@ export default function AssessmentForm({
 				</div>
 			</div>
 
-			{/* Questions grouped by competency */}
+			{/* Questions list */}
 			<div className="space-y-6">
-				{Object.entries(groupedQuestions).map(([competency, questions]) => (
-					<QuestionGroup
-						key={competency}
-						competency={competency}
-						questions={questions}
-						answers={answers}
+				{questions.map((question) => (
+					<QuestionItem
+						key={question.id}
+						question={question}
+						answer={answers[question.id]}
 						onAnswerChange={onAnswerChange}
 					/>
 				))}
